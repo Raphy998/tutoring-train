@@ -1,2 +1,0 @@
-# tutoring-train
-BSD-Project
