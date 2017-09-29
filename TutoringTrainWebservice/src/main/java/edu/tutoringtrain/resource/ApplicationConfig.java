@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.resource;
 
+import edu.tutoringtrain.annotations.AuthenticationFilter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

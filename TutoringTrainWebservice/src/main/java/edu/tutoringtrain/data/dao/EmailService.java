@@ -22,8 +22,8 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailService {
     private static final String LINE_SEP = System.getProperty("line.separator");
-    private static final String SMTP_CRED_EMAIL = "esantner99@gmail.com";
-    private static final String SMTP_CRED_PASS = "stefen_m";
+    private static final String SMTP_CRED_EMAIL = "...";
+    private static final String SMTP_CRED_PASS = "...";
     
     private static final String VER_SUBJECT = "TutoringTrain - Account Verification";
     private static final String VER_CONTENT = "Hello %s!" + LINE_SEP + "Please click the following Link to verify your TutoringTrain account!" + LINE_SEP + LINE_SEP + "%s";

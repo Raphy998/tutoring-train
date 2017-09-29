@@ -5,9 +5,9 @@
  */
 package edu.tutoringtrain.resource;
 
+import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.User;
 import edu.tutoringtrain.data.dao.UserService;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.Consumes;
@@ -15,7 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -25,11 +24,11 @@ import javax.ws.rs.core.Response;
  *
  * @author Elias
  */
-@Path("user")
+@Path("/user")
 public class UserResource {
     
     @POST
-    @Path("register")
+    @Path("/register")
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response register(@Context HttpServletRequest httpServletRequest,
@@ -64,6 +63,7 @@ public class UserResource {
     }
     
     @GET
+    @Secured
     @Path("/verify")
     @Produces(value = { MediaType.APPLICATION_JSON})
     public Response verifyAccount(@Context HttpServletRequest httpServletRequest,
@@ -81,7 +81,7 @@ public class UserResource {
             }
         }
         catch (Exception e) {
-           // handelAndThrowError(e, r);
+           msg = "Ex";
         }
         finally {
             response.entity(msg);
@@ -89,4 +89,6 @@ public class UserResource {
 
         return response.build();
     }
+    
+    
 }
