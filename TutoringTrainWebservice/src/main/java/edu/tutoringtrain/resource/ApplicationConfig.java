@@ -19,10 +19,13 @@ import javax.ws.rs.core.Application;
 public class ApplicationConfig extends Application {
 
     @Override
-    public Set<Class<?>> getClasses() {
+    public Set<Class<?>> getClasses() {        
         Set<Class<?>> resources = new java.util.HashSet<>();
         resources.add(UserResource.class);
+        resources.add(AuthenticationResource.class);
         resources.add(AuthenticationFilter.class);
+        resources.add(SubjectResource.class);
+        resources.add(OfferResource.class);
         return resources;
     }
 

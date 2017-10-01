@@ -7,9 +7,11 @@ package edu.tutoringtrain.annotations;
 
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.AuthenticationService;
+import edu.tutoringtrain.entities.User;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +25,7 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 /**
@@ -37,18 +40,16 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Context
     private ResourceInfo resourceInfo;
-
     
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        System.out.println("TEST");
         // Get the Authorization header from the request
         String authorizationHeader =
                 requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
         // Validate the Authorization header
         if (!isTokenBasedAuthentication(authorizationHeader)) {
-            abortWithUnauthorized(requestContext);
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED);
             return;
         }
 
@@ -75,11 +76,45 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             }
 
         } catch (NotAuthorizedException e) {
-            abortWithUnauthorized(requestContext);
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED);
         }
         catch (ForbiddenException e) {
-            abortWithForbidden(requestContext);
+            abortWithStatus(requestContext, Response.Status.FORBIDDEN);
         }
+        
+        User user = AuthenticationService.getInstance().getUserByToken(token);
+        final String username = user != null ? user.getUsername() : null;
+        
+        final SecurityContext currentSecurityContext = requestContext.getSecurityContext();
+            requestContext.setSecurityContext(new SecurityContext() {
+
+                @Override
+                public Principal getUserPrincipal() {
+
+                    return new Principal() {
+
+                        @Override
+                        public String getName() {
+                            return username;
+                        }
+                    };
+                }
+
+                @Override
+                public boolean isUserInRole(String role) {
+                    return true;
+                }
+
+                @Override
+                public boolean isSecure() {
+                    return currentSecurityContext.isSecure();
+                }
+
+                @Override
+                public String getAuthenticationScheme() {
+                    return AUTHENTICATION_SCHEME;
+                }
+            });
     }
     
     // Extract the roles from the annotated element
@@ -106,20 +141,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     .startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ");
     }
 
-    private void abortWithUnauthorized(ContainerRequestContext requestContext) {
+    private void abortWithStatus(ContainerRequestContext requestContext, Response.Status status) {
         // Abort the filter chain with a 401 status code
         // The "WWW-Authenticate" is sent along with the response
         requestContext.abortWith(
-                Response.status(Response.Status.UNAUTHORIZED)
-                        .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME)
-                        .build());
-    }
-    
-    private void abortWithForbidden(ContainerRequestContext requestContext) {
-        // Abort the filter chain with a 401 status code
-        // The "WWW-Authenticate" is sent along with the response
-        requestContext.abortWith(
-                Response.status(Response.Status.FORBIDDEN)
+                Response.status(status)
                         .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME)
                         .build());
     }

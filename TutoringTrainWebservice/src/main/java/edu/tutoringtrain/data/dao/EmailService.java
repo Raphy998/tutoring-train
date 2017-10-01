@@ -5,7 +5,7 @@
  */
 package edu.tutoringtrain.data.dao;
 
-import edu.tutoringtrain.data.User;
+import edu.tutoringtrain.entities.User;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;

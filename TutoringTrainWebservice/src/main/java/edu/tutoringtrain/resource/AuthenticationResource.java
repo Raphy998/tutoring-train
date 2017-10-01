@@ -6,19 +6,11 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.data.Credentials;
-import edu.tutoringtrain.data.User;
 import edu.tutoringtrain.data.dao.AuthenticationService;
-import edu.tutoringtrain.data.dao.UserService;
-import java.util.ArrayList;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -34,7 +26,6 @@ public class AuthenticationResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response authenticateUser(Credentials creds) {
-
         try {
             AuthenticationService authService = AuthenticationService.getInstance();
             // Authenticate the user using the credentials provided
@@ -47,6 +38,7 @@ public class AuthenticationResource {
             return Response.ok(token).build();
 
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.status(Response.Status.FORBIDDEN).build();
         }      
     }
