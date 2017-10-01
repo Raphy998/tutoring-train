@@ -1,3 +1,6 @@
+CREATE SEQUENCE seq_subject;
+CREATE SEQUENCE seq_offer;
+
 CREATE TABLE GENDER(
     id Number,
     name VARCHAR2(20),
@@ -20,6 +23,8 @@ CREATE TABLE TUSER(
     averageRating NUMBER(2,1),
     education VARCHAR2(20),
     gender NUMBER,
+	authkey VARCHAR(32),
+	authexpirydate TIMESTAMP,
     CONSTRAINT pk_tuser PRIMARY KEY (username),
     CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id)
 );
@@ -46,7 +51,7 @@ Create Table Rating (
 
 Create Table Offer (
     id NUMBER,
-    postedOn Date,
+    postedOn TIMESTAMP,
     dueDate Date,
     Subject Number,
     isActive CHAR(1),
