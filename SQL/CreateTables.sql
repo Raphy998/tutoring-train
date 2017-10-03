@@ -1,3 +1,8 @@
+CREATE SEQUENCE seq_gender;
+CREATE SEQUENCE seq_subject;
+CREATE SEQUENCE seq_request;
+CREATE SEQUENCE seq_offer;
+
 CREATE TABLE GENDER(
     id Number,
     name VARCHAR2(20),
@@ -24,6 +29,14 @@ CREATE TABLE TUSER(
     CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id)
 );
 
+CREATE TABLE TSESSION(
+    username VARCHAR(20),
+    authkey VARCHAR(32),
+    expirydate TIMESTAMP,
+    CONSTRAINT pk_session PRIMARY KEY (username, authkey),
+    CONSTRAINT fk_session_username FOREIGN KEY (username) references TUSER (username)
+)
+
 Create Table Blocked(
     username VARCHAR(20),
     reason VARCHAR2(100),
@@ -46,7 +59,7 @@ Create Table Rating (
 
 Create Table Offer (
     id NUMBER,
-    postedOn Date,
+    postedOn TIMESTAMP,
     dueDate Date,
     Subject Number,
     isActive CHAR(1),

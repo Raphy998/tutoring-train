@@ -1,3 +1,4 @@
+DROP TABLE Tsession CASCADE CONSTRAINTS;
 DROP TABLE TUSER CASCADE CONSTRAINTS;
 DROP TABLE GENDER CASCADE CONSTRAINTS;
 DROP TABLE Subject CASCADE CONSTRAINTS;
@@ -15,7 +16,6 @@ CREATE SEQUENCE seq_gender;
 CREATE SEQUENCE seq_subject;
 CREATE SEQUENCE seq_request;
 CREATE SEQUENCE seq_offer;
-
 
 CREATE TABLE GENDER(
     id Number,
@@ -43,6 +43,14 @@ CREATE TABLE TUSER(
     CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id)
 );
 
+CREATE TABLE TSESSION(
+    username VARCHAR(20),
+    authkey VARCHAR(32),
+    expirydate TIMESTAMP,
+    CONSTRAINT pk_session PRIMARY KEY (username, authkey),
+    CONSTRAINT fk_session_username FOREIGN KEY (username) references TUSER (username)
+)
+
 Create Table Blocked(
     username VARCHAR(20),
     reason VARCHAR2(100),
@@ -65,7 +73,7 @@ Create Table Rating (
 
 Create Table Offer (
     id NUMBER,
-    postedOn Date,
+    postedOn TIMESTAMP,
     dueDate Date,
     Subject Number,
     isActive CHAR(1),
@@ -88,11 +96,3 @@ Create Table Request (
     CONSTRAINT fk_request_user FOREIGN KEY (username) references TUser (username),
     CONSTRAINT fk_request_subject FOREIGN KEY (subject) references Subject (id)
 );
-
-
-
-
-
-
-
-
