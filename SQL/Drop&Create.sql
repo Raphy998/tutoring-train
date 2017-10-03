@@ -39,6 +39,8 @@ CREATE TABLE TUSER(
     averageRating NUMBER(2,1),
     education VARCHAR2(20),
     gender NUMBER,
+	authkey VARCHAR(32),
+	authexpirydate TIMESTAMP,
     CONSTRAINT pk_tuser PRIMARY KEY (username),
     CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id)
 );
@@ -65,7 +67,7 @@ Create Table Rating (
 
 Create Table Offer (
     id NUMBER,
-    postedOn Date,
+    postedOn TIMESTAMP,
     dueDate Date,
     Subject Number,
     isActive CHAR(1),
@@ -88,11 +90,3 @@ Create Table Request (
     CONSTRAINT fk_request_user FOREIGN KEY (username) references TUser (username),
     CONSTRAINT fk_request_subject FOREIGN KEY (subject) references Subject (id)
 );
-
-
-
-
-
-
-
-
