@@ -19,6 +19,8 @@ import edu.tutoringtrain.data.Error;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.entities.Subject;
+import edu.tutoringtrain.utils.Views;
+import java.util.List;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -30,22 +32,25 @@ import javax.ws.rs.PathParam;
  * @author Elias
  */
 @Path("/subject")
-public class SubjectResource {
+public class SubjectResource extends AbstractResource {
     
     @Secured
     @GET
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getAll(@Context HttpServletRequest httpServletRequest) throws Exception {
-
-        Subject[] subjects;
+        
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
-            subjects = SubjectService.getInstance().getAllSubjects().toArray(new Subject[0]);
-            response.entity(subjects);
+            List<Subject> subjects = SubjectService.getInstance().getAllSubjects();
+            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).writeValueAsString(subjects.toArray()));
         } 
-        catch (Exception ex) { 
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new Error(Error.UNKNOWN, ex.getMessage()));
+        catch (Exception ex) {
+            try {
+                handleException(ex, response);
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();
@@ -56,20 +61,28 @@ public class SubjectResource {
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response create(@Context HttpServletRequest httpServletRequest,
-                    final Subject subject) throws Exception {
+                    final String subjectStr) throws Exception {
         
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
-
+        Subject subjectIn = null;
+        
         try {
-            response.entity(SubjectService.getInstance().createSubject(subject.getName()));
+            subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).withType(Subject.class).readValue(subjectStr);
+            Subject subjectOut = SubjectService.getInstance().createSubject(subjectIn);
+            
+            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).writeValueAsString(subjectOut));
         } 
-        catch (RollbackException ex) {
-            response.status(Response.Status.CONFLICT);
-            response.entity(new Error(Error.DUPLICATE_SUBJECT_NAME, "subject '" + subject.getName() + "' already exists"));
-        }
         catch (Exception ex) {
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new Error(Error.UNKNOWN, ex.getMessage()));
+            try {
+                handleException(ex, response);
+            }
+            catch (RollbackException rbex) {
+                response.status(Response.Status.CONFLICT);
+                response.entity(new Error(Error.DUPLICATE_SUBJECT_NAME, "subject '" + subjectIn.getName() + "' already exists"));
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();
@@ -80,19 +93,24 @@ public class SubjectResource {
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response update(@Context HttpServletRequest httpServletRequest,
-                    final Subject subject) throws Exception {
+                    final String subjectStr) throws Exception {
         
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            SubjectService.getInstance().updateSubject(subject);
+            Subject subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).withType(Subject.class).readValue(subjectStr);
+            SubjectService.getInstance().updateSubject(subjectIn);
         } 
-        catch (NullPointerException ex) {
-            response.status(Response.Status.NOT_FOUND);
-        }
         catch (Exception ex) {
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new Error(Error.UNKNOWN, ex.getMessage()));
+            try {
+                handleException(ex, response);
+            }
+            catch (NullPointerException npex) {
+                response.status(Response.Status.NOT_FOUND);
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();
@@ -102,7 +120,7 @@ public class SubjectResource {
     @DELETE
     @Path("{id}")
     @Produces(value = MediaType.APPLICATION_JSON)
-    public Response update(@Context HttpServletRequest httpServletRequest,
+    public Response delete(@Context HttpServletRequest httpServletRequest,
                     @PathParam(value = "id") Integer subjectId) throws Exception {
         
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
@@ -110,12 +128,16 @@ public class SubjectResource {
         try {
             SubjectService.getInstance().removeSubject(subjectId);
         } 
-        catch (NullPointerException ex) {
-            response.status(Response.Status.NOT_FOUND);
-        }
         catch (Exception ex) {
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new Error(Error.UNKNOWN, ex.getMessage()));
+            try {
+                handleException(ex, response);
+            }
+            catch (NullPointerException npex) {
+                response.status(Response.Status.NOT_FOUND);
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();

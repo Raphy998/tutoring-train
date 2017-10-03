@@ -5,6 +5,8 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -43,9 +45,11 @@ public class Gender implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
+    @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private BigDecimal id;
     @Size(max = 20)
     @Column(name = "NAME", length = 20)
+    @JsonView({Views.User.Out.Public.class})
     private String name;
     @OneToMany(mappedBy = "gender")
     private Collection<User> userCollection;

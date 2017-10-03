@@ -5,6 +5,8 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -24,6 +26,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -39,11 +42,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Offer.findByDuedate", query = "SELECT o FROM Offer o WHERE o.duedate = :duedate")
     , @NamedQuery(name = "Offer.findByIsactive", query = "SELECT o FROM Offer o WHERE o.isactive = :isactive")
     , @NamedQuery(name = "Offer.findByDescription", query = "SELECT o FROM Offer o WHERE o.description = :description")
-    , @NamedQuery(name = "Offer.findByIdAndUsername", query = "SELECT o FROM Offer o WHERE o.id = :id AND o.username.username = :username")
+    , @NamedQuery(name = "Offer.findByIdAndUsername", query = "SELECT o FROM Offer o WHERE o.id = :id AND o.user.username = :username")
     , @NamedQuery(name = "Offer.findNewest", query = "SELECT o FROM Offer o ORDER BY o.postedon DESC")
-    , @NamedQuery(name = "Offer.findNewestOfUser", query = "SELECT o FROM Offer o WHERE o.username.username = :username ORDER BY o.postedon DESC")})
+    , @NamedQuery(name = "Offer.findNewestOfUser", query = "SELECT o FROM Offer o WHERE o.user.username = :username ORDER BY o.postedon DESC")})
 public class Offer implements Serializable {
-
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Id
@@ -52,24 +54,32 @@ public class Offer implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
+    @JsonView({Views.Offer.In.Update.class, Views.Offer.Out.Public.class})
     private BigDecimal id;
     @Column(name = "POSTEDON")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(Views.Offer.Out.Public.class)
     private Date postedon;
     @Column(name = "DUEDATE")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
     private Date duedate;
     @Column(name = "ISACTIVE")
+    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Update.class})
     private Character isactive;
     @Size(max = 500)
     @Column(name = "DESCRIPTION", length = 500)
+    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
     private String description;
     @JoinColumn(name = "SUBJECT", referencedColumnName = "ID")
     @ManyToOne
+    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
     private Subject subject;
     @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")
     @ManyToOne
-    private User username;
+    @XmlTransient
+    @JsonView(Views.Offer.Out.Public.class)
+    private User user;
 
     public Offer() {
     }
@@ -126,12 +136,12 @@ public class Offer implements Serializable {
         this.subject = subject;
     }
 
-    public User getUsername() {
-        return username;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsername(User username) {
-        this.username = username;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

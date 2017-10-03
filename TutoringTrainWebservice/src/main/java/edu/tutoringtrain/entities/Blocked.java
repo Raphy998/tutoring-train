@@ -5,6 +5,8 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -42,12 +44,15 @@ public class Blocked implements Serializable {
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "USERNAME", nullable = false, length = 20)
+    @JsonView({Views.Block.In.Create.class})
     private String username;
     @Size(max = 100)
     @Column(name = "REASON", length = 100)
+    @JsonView({Views.User.Out.Private.class, Views.Block.In.Create.class})
     private String reason;
     @Column(name = "DUEDATE")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView({Views.User.Out.Private.class, Views.Block.In.Create.class})
     private Date duedate;
     @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)

@@ -5,16 +5,12 @@
  */
 package edu.tutoringtrain.data.dao;
 
-import edu.tutoringtrain.data.CreateOfferRequest;
-import edu.tutoringtrain.data.UpdateOfferRequest;
 import edu.tutoringtrain.entities.Offer;
 import edu.tutoringtrain.entities.Subject;
+import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.DateUtils;
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -92,7 +88,7 @@ public class OfferService extends AbstractService {
         return results;
     }
     
-    public Offer createOffer(String username, CreateOfferRequest offerReq) throws NullPointerException {
+    public Offer createOffer(String username, Offer offerReq) throws NullPointerException {
         if (username == null) {
             throw new NullPointerException("name must not be null");
         }
@@ -100,18 +96,26 @@ public class OfferService extends AbstractService {
             throw new NullPointerException("offer must not be null");
         }
         
+        Subject s = SubjectService.getInstance().getSubject(offerReq.getSubject().getId());
+        if (s == null) {
+            throw new IllegalArgumentException("subject not found");
+        }
+        
+        User user = UserService.getInstance().getUserByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("user not found");
+        }
+        
         openEmf();
         EntityManager em = emf.createEntityManager();
         
-        Offer offer = new Offer();
         try {
             em.getTransaction().begin();
-            offer.setDescription(offerReq.getDescription());
-            offer.setSubject(SubjectService.getInstance().getSubject(offerReq.getSubject()));
-            offer.setIsactive('1');
-            offer.setPostedon(DateUtils.toDate(LocalDateTime.now()));
-            offer.setUsername(UserService.getInstance().getUserByUsername(username));
-            this.persist(offer);
+            offerReq.setSubject(s);
+            offerReq.setUser(user);
+            offerReq.setIsactive('1');
+            offerReq.setPostedon(DateUtils.toDate(LocalDateTime.now()));
+            this.persist(offerReq);
             em.getTransaction().commit();
         }
         finally {
@@ -121,10 +125,10 @@ public class OfferService extends AbstractService {
             closeEmf();
         }
         
-        return offer;
+        return offerReq;
     }
     
-    public void updateOffer(String username, UpdateOfferRequest offerReq) throws NullPointerException {
+    public void updateOffer(String username, Offer offerReq) throws NullPointerException {
         if (offerReq == null) {
             throw new NullPointerException("offer must not be null");
         }
@@ -145,10 +149,10 @@ public class OfferService extends AbstractService {
             }
             Offer dbOffer = results.get(0);  
             if (offerReq.getDescription() != null) dbOffer.setDescription(offerReq.getDescription());
-            if (offerReq.getDuedateDate() != null) dbOffer.setDuedate(offerReq.getDuedateDate());
-            if (offerReq.getPostedonDate() != null) dbOffer.setPostedon(offerReq.getPostedonDate());
+            if (offerReq.getDuedate() != null) dbOffer.setDuedate(offerReq.getDuedate());
+            if (offerReq.getPostedon() != null) dbOffer.setPostedon(offerReq.getPostedon());
             if (offerReq.getIsactive() != null) dbOffer.setIsactive(offerReq.getIsactive());
-            if (offerReq.getSubject() != null) dbOffer.setSubject(SubjectService.getInstance().getSubject(offerReq.getSubject()));
+            if (offerReq.getSubject() != null) dbOffer.setSubject(SubjectService.getInstance().getSubject(offerReq.getSubject().getId()));
             em.getTransaction().commit();
         }
         finally {

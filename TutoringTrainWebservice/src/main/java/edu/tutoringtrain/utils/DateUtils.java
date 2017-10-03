@@ -5,7 +5,6 @@
  */
 package edu.tutoringtrain.utils;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,12 +15,19 @@ import java.util.Date;
  * @author Elias
  */
 public class DateUtils {
+    private static String datePattern = "yyyy-MM-dd'T'hh:mm:ss";
+    
     public static Date toDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
     
+    public static String toString(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+        return ((date != null) ? sdf.format(date) : null);
+    }
+    
     public static Date toDate(String dateString) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
         Date date = null;
         try {
             date = sdf.parse(dateString);

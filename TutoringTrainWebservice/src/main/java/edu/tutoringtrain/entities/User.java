@@ -5,10 +5,13 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -17,13 +20,13 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -41,10 +44,11 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name")
     , @NamedQuery(name = "User.findByAveragerating", query = "SELECT u FROM User u WHERE u.averagerating = :averagerating")
     , @NamedQuery(name = "User.findByEducation", query = "SELECT u FROM User u WHERE u.education = :education")
-    , @NamedQuery(name = "User.findByAuthkey", query = "SELECT u FROM User u WHERE u.authkey = :authkey")
-    , @NamedQuery(name = "User.findByAuthexpirydate", query = "SELECT u FROM User u WHERE u.authexpirydate = :authexpirydate")
     , @NamedQuery(name = "User.findByUsernameAndPassword", query = "SELECT u FROM User u WHERE u.username = :username AND u.password = :password")})
 public class User implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Collection<Session> sessionCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -52,39 +56,42 @@ public class User implements Serializable {
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "USERNAME", nullable = false, length = 20)
+    @JsonView({Views.Offer.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class})
     private String username;
     @Size(max = 32)
     @Column(name = "PASSWORD", length = 32)
+    @JsonView({Views.User.In.Register.class})
     private String password;
     @Column(name = "ROLE")
+    @JsonView({Views.User.Out.Public.class})
     private Character role;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 30)
     @Column(name = "EMAIL", length = 30)
+    @JsonView({Views.User.In.Register.class, Views.User.Out.Private.class})
     private String email;
     @Size(max = 30)
     @Column(name = "NAME", length = 30)
+    @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private String name;
     @Lob
     @Column(name = "AVATAR")
     private Serializable avatar;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "AVERAGERATING", precision = 2, scale = 1)
+    @JsonView({Views.User.Out.Public.class})
     private BigDecimal averagerating;
     @Size(max = 20)
     @Column(name = "EDUCATION", length = 20)
+    @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private String education;
-    @Size(max = 32)
-    @Column(name = "AUTHKEY", length = 32)
-    private String authkey;
-    @Column(name = "AUTHEXPIRYDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date authexpirydate;
     @JoinColumn(name = "GENDER", referencedColumnName = "ID")
     @ManyToOne
+    @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private Gender gender;
     @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)
+    @JsonView({Views.User.Out.Private.class})
     private Blocked block;
 
     public User() {
@@ -168,22 +175,6 @@ public class User implements Serializable {
         this.education = education;
     }
 
-    public String getAuthkey() {
-        return authkey;
-    }
-
-    public void setAuthkey(String authkey) {
-        this.authkey = authkey;
-    }
-
-    public Date getAuthexpirydate() {
-        return authexpirydate;
-    }
-
-    public void setAuthexpirydate(Date authexpirydate) {
-        this.authexpirydate = authexpirydate;
-    }
-
     public Gender getGender() {
         return gender;
     }
@@ -215,6 +206,15 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "edu.tutoringtrain.entities.User[ username=" + username + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Session> getSessionCollection() {
+        return sessionCollection;
+    }
+
+    public void setSessionCollection(Collection<Session> sessionCollection) {
+        this.sessionCollection = sessionCollection;
     }
     
 }

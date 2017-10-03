@@ -16,6 +16,7 @@ public class Error implements Serializable {
     public static final int DUPLICATE_USERNAME = 2;
     public static final int DUPLICATE_SUBJECT_NAME = 3;
     public static final int MISSING_QUERY_PARAMS = 4;
+    public static final int MALFORMED_JSON = 5;
     
     private int code;
     private String message;

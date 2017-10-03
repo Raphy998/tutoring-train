@@ -8,6 +8,7 @@ package edu.tutoringtrain.data.dao;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.entities.Blocked;
+import edu.tutoringtrain.entities.Session;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.DateUtils;
 import java.math.BigInteger;
@@ -39,8 +40,6 @@ public class AuthenticationService extends AbstractService {
     }
     
     public void authenticate(String username, String password) throws Exception {
-        Blocked blockOfUser = UserService.getInstance().getBlockOfUser(username);
-        
         openEmf();
         EntityManager em = emf.createEntityManager();
         
@@ -50,15 +49,14 @@ public class AuthenticationService extends AbstractService {
             query.setParameter("username", username);
             query.setParameter("password", password);
             List<User> results = query.getResultList();
-           
-            //System.out.println(results.get(0).getBlock());
             
             if (results.isEmpty()) {
                 throw new Exception("authentication failed");
             }
-            
-            if (blockOfUser != null) {
-                throw new Exception("user blocked: '" + blockOfUser.getReason() + "'");
+            //check if user is blocked
+            Blocked block = results.get(0).getBlock();
+            if (block != null) {
+                throw new Exception("user blocked: '" + block.getReason() + "'");
             }
         }
         finally {
@@ -83,15 +81,9 @@ public class AuthenticationService extends AbstractService {
             //persisting entity
             em.getTransaction().begin();
             
-            User user = em.find(User.class, username);
-            //if user has no token or it's expired, issue new one, else take old one
-            if (user.getAuthkey() != null && user.getAuthexpirydate().after(DateUtils.toDate(LocalDateTime.now()))) {
-                token = user.getAuthkey();
-            }
-            else {
-                user.setAuthkey(token);
-                user.setAuthexpirydate(DateUtils.toDate(LocalDateTime.now().plusDays(7)));
-            }
+            Session session = new Session(username, token);
+            session.setExpirydate(DateUtils.toDate(LocalDateTime.now().plusDays(1)));
+            em.persist(session);
             em.getTransaction().commit();
         }
         finally {
@@ -111,6 +103,12 @@ public class AuthenticationService extends AbstractService {
         if (user == null) {
             throw new NotAuthorizedException("token '" + token + "' not valid");
         }
+        //check if user is blocked
+        Blocked block = user.getBlock();
+        if (block != null) {
+            throw new NotAuthorizedException("user blocked: '" + block.getReason() + "'");
+        }
+        
         if (!hasPermissions(user, roles)) {
             throw new ForbiddenException("insufficient priveliges");
         }
@@ -142,12 +140,17 @@ public class AuthenticationService extends AbstractService {
         User u = null;
         
         try {
-            TypedQuery<User> query =
-            em.createNamedQuery("User.findByAuthkey", User.class);
+            TypedQuery<Session> query =
+            em.createNamedQuery("Session.findByAuthkey", Session.class);
             query.setParameter("authkey", token);
-            List<User> results = query.getResultList();
+            List<Session> results = query.getResultList();
             if (!results.isEmpty()) {
-                u = results.get(0);
+                Session session = results.get(0);
+                if (session.getExpirydate() != null && session.getExpirydate().before(DateUtils.toDate(LocalDateTime.now()))) {
+                    throw new NotAuthorizedException("token expired");
+                    //TODO (maybe): remove old token
+                }
+                u = session.getUser();
             }
         }
         finally {

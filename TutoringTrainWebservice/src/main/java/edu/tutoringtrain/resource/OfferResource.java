@@ -6,12 +6,10 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
-import edu.tutoringtrain.data.CreateOfferRequest;
-import edu.tutoringtrain.data.OfferResponse;
-import edu.tutoringtrain.data.UpdateOfferRequest;
 import edu.tutoringtrain.data.dao.OfferService;
 import edu.tutoringtrain.entities.Offer;
-import java.util.ArrayList;
+import edu.tutoringtrain.utils.Views;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,26 +30,31 @@ import javax.ws.rs.core.SecurityContext;
  * @author Elias
  */
 @Path("/offer")
-public class OfferResource {
+public class OfferResource extends AbstractResource {
 
     @Secured
     @POST
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response create(@Context HttpServletRequest httpServletRequest,
-                    final CreateOfferRequest offer,
+                    final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Offer o = OfferService.getInstance().createOffer(username, offer);
-            response.entity(new OfferResponse(o.getDescription(), o.getId(), o.getIsactive(), o.getPostedon(), o.getDuedate(), o.getSubject(), o.getUsername().getUsername()));
-        } 
+            Offer offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Offer.class).readValue(offerStr);
+            Offer offerOut = OfferService.getInstance().createOffer(username, offerIn);
+            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(offerOut));
+        }
         catch (Exception ex) {
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.UNKNOWN, ex.getMessage()));
+            try {
+                handleException(ex, response);
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();
@@ -62,19 +65,23 @@ public class OfferResource {
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response update(@Context HttpServletRequest httpServletRequest,
-                    final UpdateOfferRequest offer,
+                    final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            OfferService.getInstance().updateOffer(username, offer);
+            Offer offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Offer.class).readValue(offerStr);
+            OfferService.getInstance().updateOffer(username, offerIn);
         } 
         catch (Exception ex) {
-            ex.printStackTrace();
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.UNKNOWN, ex.getMessage()));
+            try {
+                handleException(ex, response);
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();
@@ -94,20 +101,20 @@ public class OfferResource {
             if (start == null || pageSize == null) {
                 throw new IllegalArgumentException("start and pageSize must be given in query string");
             }
-            
-            ArrayList<OfferResponse> offers = new ArrayList<>();
-            for (Offer o: OfferService.getInstance().getNewestOffers(start, pageSize)) {
-                offers.add(new OfferResponse(o.getDescription(), o.getId(), o.getIsactive(), o.getPostedon(), o.getDuedate(), o.getSubject(), o.getUsername().getUsername()));
-            }
-            response.entity(offers.toArray(new OfferResponse[0]));
+            List<Offer> newestOffers = OfferService.getInstance().getNewestOffers(start, pageSize);
+            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
         } 
-        catch (IllegalArgumentException ex) {
-            response.status(Response.Status.BAD_REQUEST);
-            response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MISSING_QUERY_PARAMS, ex.getMessage()));
-        }
         catch (Exception ex) {
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.UNKNOWN, ex.getMessage()));
+            try {
+                handleException(ex, response);
+            }
+            catch (IllegalArgumentException iaex) {
+                response.status(Response.Status.BAD_REQUEST);
+                response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MISSING_QUERY_PARAMS, iaex.getMessage()));
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();
@@ -133,19 +140,20 @@ public class OfferResource {
                 throw new IllegalArgumentException("start and pageSize must be given in query string");
             }
             
-            ArrayList<OfferResponse> offers = new ArrayList<>();
-            for (Offer o: OfferService.getInstance().getNewestOffersOfUser(username, start, pageSize)) {
-                offers.add(new OfferResponse(o.getDescription(), o.getId(), o.getIsactive(), o.getPostedon(), o.getDuedate(), o.getSubject(), o.getUsername().getUsername()));
-            }
-            response.entity(offers.toArray(new OfferResponse[0]));
+            List<Offer> newestOffers = OfferService.getInstance().getNewestOffersOfUser(username, start, pageSize);
+            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
         } 
-        catch (IllegalArgumentException ex) {
-            response.status(Response.Status.BAD_REQUEST);
-            response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MISSING_QUERY_PARAMS, ex.getMessage()));
-        }
         catch (Exception ex) {
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.UNKNOWN, ex.getMessage()));
+            try {
+                handleException(ex, response);
+            }
+            catch (IllegalArgumentException iaex) {
+                response.status(Response.Status.BAD_REQUEST);
+                response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MISSING_QUERY_PARAMS, iaex.getMessage()));
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
 
         return response.build();

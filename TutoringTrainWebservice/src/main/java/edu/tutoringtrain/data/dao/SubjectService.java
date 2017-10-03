@@ -70,14 +70,13 @@ public class SubjectService extends AbstractService {
         return s;
     }
     
-    public Subject createSubject(String name) throws NullPointerException {
-        if (name == null) {
+    public Subject createSubject(Subject s) throws NullPointerException {
+        if (s.getName() == null) {
             throw new NullPointerException("name must not be null");
         }
         
         openEmf();
         EntityManager em = emf.createEntityManager();
-        Subject s = new Subject(name);
         try {
             this.persist(s);
         }

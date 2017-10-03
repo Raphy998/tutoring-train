@@ -5,11 +5,9 @@
  */
 package edu.tutoringtrain.data.dao;
 
-import edu.tutoringtrain.data.RegisterUserRequest;
 import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Gender;
-import edu.tutoringtrain.entities.Offer;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
 import java.math.BigDecimal;
@@ -36,7 +34,7 @@ public class UserService extends AbstractService {
         return instance;
     }
     
-    public User registerUser(RegisterUserRequest userReq) throws IllegalArgumentException, NullPointerException {
+    public User registerUser(User userReq) throws IllegalArgumentException, NullPointerException {
         if (userReq == null) {
             throw new NullPointerException("user must not be null");
         }
@@ -45,32 +43,16 @@ public class UserService extends AbstractService {
         }
         
         //get gender for user
-        Gender gender;
-        try {
-            gender = getGenderById(userReq.getGender());
-        }
-        catch (NullPointerException ex) {
-            try {
-                gender = getGenderById(DEFAULT_GENDER);
-            }
-            catch (NullPointerException iex) {
-                gender = null;
-            }
-        }
+        Gender gender = getGenderOrDefault(userReq.getGender().getId());
         
         openEmf();
         EntityManager em = emf.createEntityManager();
-        User user = new User();
         
         try {
             em.getTransaction().begin();
-            user.setName(userReq.getName());
-            user.setUsername(userReq.getUsername());
-            user.setEmail(userReq.getEmail());
-            user.setPassword(userReq.getPassword());
-            user.setGender(gender);
-            user.setRole(UserRoles.USER);
-            this.persist(user);
+            userReq.setGender(gender);
+            userReq.setRole(UserRoles.USER);
+            this.persist(userReq);
             em.getTransaction().commit();
         }
         finally {
@@ -80,9 +62,65 @@ public class UserService extends AbstractService {
             closeEmf();
         }
         
-        return user;
+        return userReq;
         //TODO: send verification email
     }
+    
+    public void updateUser(User userReq) throws IllegalArgumentException, NullPointerException {
+        if (userReq == null || userReq.getUsername() == null) {
+            throw new NullPointerException("user must not be null");
+        }
+        if (!EmailUtils.isEmailValid(userReq.getEmail())) {
+            throw new IllegalArgumentException("email has invalid format");
+        }
+        
+        //get gender for user
+        Gender gender = getGenderOrDefault(userReq.getGender().getId());
+        
+        openEmf();
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            em.getTransaction().begin();
+            User currentUser = em.find(User.class, userReq.getUsername());
+            if (currentUser == null) {
+                throw new NullPointerException("user not found");
+            }
+            
+            if (userReq.getEducation() != null) currentUser.setEducation(userReq.getEducation());
+            if (userReq.getEmail() != null) currentUser.setEmail(userReq.getEmail());
+            if (gender != null) currentUser.setGender(gender);
+            if (userReq.getName() != null) currentUser.setName(userReq.getName());
+            if (userReq.getPassword()!= null) currentUser.setPassword(userReq.getPassword());
+
+            em.getTransaction().commit();
+        }
+        finally {
+            if (em.isOpen()) {
+                em.close();
+            }
+            closeEmf();
+        }
+
+        //TODO: send verification email
+    }
+    
+    private Gender getGenderOrDefault(BigDecimal id) {
+        Gender gender;
+        try {
+            gender = getGenderById(id);
+        }
+        catch (NullPointerException ex) {
+            try {
+                gender = getGenderById(DEFAULT_GENDER);
+            }
+            catch (NullPointerException npex) {
+                gender = null;
+            }
+        }
+        
+        return gender;
+    } 
     
     public User getUserByUsername(String username) throws IllegalArgumentException, NullPointerException {
         if (username == null) {
@@ -162,8 +200,8 @@ public class UserService extends AbstractService {
     }
     
     //TODO: implement duedate
-    public void lockUser(String username, boolean lock, String reason) throws IllegalArgumentException, NullPointerException {
-        if (username == null) {
+    public void blockUser(Blocked block, boolean isBlock) throws IllegalArgumentException, NullPointerException {
+        if (block.getUsername() == null) {
             throw new NullPointerException("username must not be null");
         }
         
@@ -171,23 +209,22 @@ public class UserService extends AbstractService {
         EntityManager em = emf.createEntityManager();
         
         try {
-            User user = em.find(User.class, username);
+            User user = em.find(User.class, block.getUsername());
             if (user == null) {
                 throw new NullPointerException("user not found");
             }
             em.getTransaction().begin();
-            Blocked block = getBlockOfUser(username, em);
+            Blocked oldBlock = getBlockOfUser(block.getUsername(), em);
             
-            if (block != null && !lock) {
-                em.remove(block);
+            if (oldBlock != null && !isBlock) {
+                em.remove(oldBlock);
             }
-            else if (block == null && lock) {
-                block = new Blocked(username);
-                block.setReason(reason);
+            else if (oldBlock == null && isBlock) {
                 em.persist(block);
             }
-            else if (block != null && lock) {
-                block.setReason(reason);
+            else if (oldBlock != null && isBlock) {
+                oldBlock.setReason(block.getReason());
+                oldBlock.setDuedate(block.getDuedate());
             }
             em.getTransaction().commit();
         }

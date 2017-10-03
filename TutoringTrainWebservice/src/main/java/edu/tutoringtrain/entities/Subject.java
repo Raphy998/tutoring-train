@@ -5,6 +5,8 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -44,9 +46,12 @@ public class Subject implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
+    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class, Views.Subject.Out.Public.class, 
+        Views.Subject.In.Update.class})
     private BigDecimal id;
     @Size(max = 25)
     @Column(name = "NAME", length = 25)
+    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String name;
     @OneToMany(mappedBy = "subject")
     private Collection<Request> requestCollection;
