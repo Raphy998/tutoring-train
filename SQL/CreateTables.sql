@@ -1,4 +1,6 @@
+CREATE SEQUENCE seq_gender;
 CREATE SEQUENCE seq_subject;
+CREATE SEQUENCE seq_request;
 CREATE SEQUENCE seq_offer;
 
 CREATE TABLE GENDER(
