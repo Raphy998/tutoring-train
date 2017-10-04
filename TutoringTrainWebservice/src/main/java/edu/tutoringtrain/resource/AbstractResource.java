@@ -13,6 +13,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.tutoringtrain.data.CustomHttpStatusCodes;
+import edu.tutoringtrain.data.exceptions.BlockedException;
 import java.text.SimpleDateFormat;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -44,6 +46,10 @@ public abstract class AbstractResource {
         catch (JsonMappingException | JsonParseException ex) {
             response.status(Response.Status.INTERNAL_SERVER_ERROR);
             response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MALFORMED_JSON, ex.getMessage()));
+        }
+        catch (BlockedException ex) {
+            response.status(CustomHttpStatusCodes.BLOCKED);
+            response.entity(ex.getMessage());
         }
         catch (Exception e) {
             throw e;

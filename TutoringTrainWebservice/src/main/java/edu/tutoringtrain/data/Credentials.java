@@ -14,12 +14,14 @@ import java.io.Serializable;
 public class Credentials implements Serializable {
     private String username;
     private String password;
+    private String calledFrom;
 
     public Credentials() {}
     
-    public Credentials(String username, String password) {
+    public Credentials(String username, String password, String calledFrom) {
         this.username = username;
         this.password = password;
+        this.calledFrom = calledFrom;
     }
 
     public String getUsername() {
@@ -38,5 +40,16 @@ public class Credentials implements Serializable {
         this.password = password;
     }
 
-    
+    public String getCalledFrom() {
+        return calledFrom;
+    }
+
+    public void setCalledFrom(String calledFrom) {
+        this.calledFrom = calledFrom;
+    }
+
+    @Override
+    public String toString() {
+        return "Credentials{" + "username=" + username + ", password=" + password + ", calledFrom=" + calledFrom + '}';
+    }
 }

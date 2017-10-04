@@ -5,8 +5,10 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.CalledFrom;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Session;
 import edu.tutoringtrain.entities.User;
@@ -39,7 +41,7 @@ public class AuthenticationService extends AbstractService {
         return instance;
     }
     
-    public void authenticate(String username, String password) throws Exception {
+    public void authenticate(String username, String password, String calledFrom) throws NotAuthorizedException, ForbiddenException, BlockedException {
         openEmf();
         EntityManager em = emf.createEntityManager();
         
@@ -51,12 +53,16 @@ public class AuthenticationService extends AbstractService {
             List<User> results = query.getResultList();
             
             if (results.isEmpty()) {
-                throw new Exception("authentication failed");
+                throw new NotAuthorizedException("authentication failed");
+            }
+            
+            if (!canAuthenticate(calledFrom, results.get(0).getRole())) {
+                throw new ForbiddenException("only admins can access admin applications");
             }
             //check if user is blocked
             Blocked block = results.get(0).getBlock();
             if (block != null) {
-                throw new Exception("user blocked: '" + block.getReason() + "'");
+                throw new BlockedException("user blocked: '" + block.getReason() + "'");
             }
         }
         finally {
@@ -65,6 +71,17 @@ public class AuthenticationService extends AbstractService {
             }
             closeEmf();
         }
+    }
+    
+    private boolean canAuthenticate(String calledFrom, Character role) {
+        boolean canAuth = true;
+        
+        //if non-admin logges in via admin application
+        if (calledFrom != null && calledFrom.equals(CalledFrom.ADMIN_APPL) && !role.equals(UserRoles.ADMIN)) {
+            canAuth = false;
+        }
+        
+        return canAuth;
     }
     
     /**
@@ -98,7 +115,7 @@ public class AuthenticationService extends AbstractService {
         return token;
     }
     
-    public void checkPermissions(String token, List<Role> roles) throws NotAuthorizedException, ForbiddenException {
+    public void checkPermissions(String token, List<Role> roles) throws NotAuthorizedException, ForbiddenException, BlockedException {
         User user = getUserByToken(token);
         if (user == null) {
             throw new NotAuthorizedException("token '" + token + "' not valid");
@@ -106,7 +123,7 @@ public class AuthenticationService extends AbstractService {
         //check if user is blocked
         Blocked block = user.getBlock();
         if (block != null) {
-            throw new NotAuthorizedException("user blocked: '" + block.getReason() + "'");
+            throw new BlockedException("user blocked: '" + block.getReason() + "'");
         }
         
         if (!hasPermissions(user, roles)) {

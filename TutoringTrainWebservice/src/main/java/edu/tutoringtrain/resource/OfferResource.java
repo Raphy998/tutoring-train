@@ -72,7 +72,7 @@ public class OfferResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Offer offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Offer.class).readValue(offerStr);
+            Offer offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).withType(Offer.class).readValue(offerStr);
             OfferService.getInstance().updateOffer(username, offerIn);
         } 
         catch (Exception ex) {

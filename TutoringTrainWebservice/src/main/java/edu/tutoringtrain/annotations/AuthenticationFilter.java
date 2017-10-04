@@ -5,8 +5,10 @@
  */
 package edu.tutoringtrain.annotations;
 
+import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.AuthenticationService;
+import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.entities.User;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
@@ -75,11 +77,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 AuthenticationService.getInstance().checkPermissions(token, methodRoles);
             }
 
-        } catch (NotAuthorizedException e) {
+        } 
+        catch (NotAuthorizedException e) {
             abortWithStatus(requestContext, Response.Status.UNAUTHORIZED);
         }
         catch (ForbiddenException e) {
             abortWithStatus(requestContext, Response.Status.FORBIDDEN);
+        }
+        catch (BlockedException e) {
+            abortWithStatus(requestContext, Response.Status.fromStatusCode(CustomHttpStatusCodes.BLOCKED));
         }
         
         User user = AuthenticationService.getInstance().getUserByToken(token);
