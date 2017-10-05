@@ -14,14 +14,14 @@ import java.io.Serializable;
 public class Credentials implements Serializable {
     private String username;
     private String password;
-    private String calledFrom;
+    private Character requiredRole;
 
     public Credentials() {}
     
-    public Credentials(String username, String password, String calledFrom) {
+    public Credentials(String username, String password, Character requiredRole) {
         this.username = username;
         this.password = password;
-        this.calledFrom = calledFrom;
+        this.requiredRole = requiredRole;
     }
 
     public String getUsername() {
@@ -40,16 +40,16 @@ public class Credentials implements Serializable {
         this.password = password;
     }
 
-    public String getCalledFrom() {
-        return calledFrom;
+    public Character getRequiredRole() {
+        return requiredRole;
     }
 
-    public void setCalledFrom(String calledFrom) {
-        this.calledFrom = calledFrom;
+    public void setRequiredRole(Character requiredRole) {
+        this.requiredRole = requiredRole;
     }
 
     @Override
     public String toString() {
-        return "Credentials{" + "username=" + username + ", password=" + password + ", calledFrom=" + calledFrom + '}';
+        return "Credentials{" + "username=" + username + ", password=" + password + ", requiredRole=" + requiredRole + '}';
     }
 }

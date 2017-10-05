@@ -16,8 +16,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import edu.tutoringtrain.data.Error;
 import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.exceptions.BlockException;
+import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Gender;
 import edu.tutoringtrain.entities.User;
@@ -58,7 +59,7 @@ public class UserResource extends AbstractResource {
             }
             catch (RollbackException rbex) {
                 response.status(Response.Status.CONFLICT);
-                response.entity(new Error(Error.DUPLICATE_USERNAME, "username '" + userIn.getUsername() + "' not available"));
+                response.entity("username '" + userIn.getUsername() + "' not available");
             }
             catch (Exception e) {
                 unknownError(e, response);
@@ -221,15 +222,15 @@ public class UserResource extends AbstractResource {
             Blocked blockIn = getMapper().readerWithView(Views.Block.In.Create.class).withType(Blocked.class).readValue(blockStr);
             
             if (securityContext.getUserPrincipal().getName().equals(blockIn.getUsername())) {
-                throw new IllegalArgumentException("cannot block own user");
+                throw new BlockException("cannot block own user");
             }
             
             User user2Block = UserService.getInstance().getUserByUsername(blockIn.getUsername());
             if (user2Block == null) {
-                throw new IllegalArgumentException("cannot find user");
+                throw new UserNotFoundException("cannot find user");
             }
             else if (user2Block.getRole().equals('A')) {
-                throw new IllegalArgumentException("cannot block other admins");
+                throw new BlockException("cannot block other admins");
             }
             
             UserService.getInstance().blockUser(blockIn, true);
@@ -258,12 +259,12 @@ public class UserResource extends AbstractResource {
 
         try {
             if (securityContext.getUserPrincipal().getName().equals(user2unblock)) {
-                throw new IllegalArgumentException("cannot unblock own user");
+                throw new BlockException("cannot unblock own user");
             }
             
             User user = UserService.getInstance().getUserByUsername(user2unblock);
             if (user == null) {
-                throw new IllegalArgumentException("cannot find user");
+                throw new UserNotFoundException("cannot find user");
             }
             
             UserService.getInstance().blockUser(new Blocked(user2unblock), false);

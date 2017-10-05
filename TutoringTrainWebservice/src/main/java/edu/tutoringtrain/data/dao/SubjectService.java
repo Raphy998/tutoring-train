@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.entities.Subject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class SubjectService extends AbstractService {
         return results;
     }
     
-    public Subject getSubject(BigDecimal id) throws NullPointerException {
+    public Subject getSubject(BigDecimal id) throws SubjectNotFoundException {
         Subject s;
         
         openEmf();
@@ -57,7 +58,7 @@ public class SubjectService extends AbstractService {
         try {
             s = em.find(Subject.class, id);
             if (s == null) {
-                throw new NullPointerException("subject no found");
+                throw new SubjectNotFoundException("subject no found");
             }
         }
         finally {
@@ -90,7 +91,7 @@ public class SubjectService extends AbstractService {
         return s;
     }
     
-    public void updateSubject(Subject subject) throws NullPointerException {
+    public void updateSubject(Subject subject) throws NullPointerException, SubjectNotFoundException {
         if (subject == null) {
             throw new NullPointerException("subject must not be null");
         }
@@ -101,7 +102,7 @@ public class SubjectService extends AbstractService {
             em.getTransaction().begin();
             Subject dbSubject = em.find(Subject.class, subject.getId());
             if (subject == null) {
-                throw new NullPointerException("subject not found");
+                throw new SubjectNotFoundException("subject not found");
             }
             dbSubject.setName(subject.getName());
             em.getTransaction().commit();
@@ -114,14 +115,14 @@ public class SubjectService extends AbstractService {
         }
     }
     
-    public void removeSubject(int subjectID) throws NullPointerException {
+    public void removeSubject(int subjectID) throws SubjectNotFoundException {
         openEmf();
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             Subject subject = em.find(Subject.class, new BigDecimal(subjectID));
             if (subject == null) {
-                throw new NullPointerException("subject not found");
+                throw new SubjectNotFoundException("subject not found");
             }
             
             em.remove(subject);

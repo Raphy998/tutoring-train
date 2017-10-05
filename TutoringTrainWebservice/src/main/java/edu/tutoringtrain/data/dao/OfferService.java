@@ -5,6 +5,9 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
+import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
+import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Offer;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.entities.User;
@@ -88,7 +91,7 @@ public class OfferService extends AbstractService {
         return results;
     }
     
-    public Offer createOffer(String username, Offer offerReq) throws NullPointerException {
+    public Offer createOffer(String username, Offer offerReq) throws NullPointerException, SubjectNotFoundException, UserNotFoundException {
         if (username == null) {
             throw new NullPointerException("name must not be null");
         }
@@ -98,12 +101,12 @@ public class OfferService extends AbstractService {
         
         Subject s = SubjectService.getInstance().getSubject(offerReq.getSubject().getId());
         if (s == null) {
-            throw new IllegalArgumentException("subject not found");
+            throw new SubjectNotFoundException("subject not found");
         }
         
         User user = UserService.getInstance().getUserByUsername(username);
         if (user == null) {
-            throw new IllegalArgumentException("user not found");
+            throw new UserNotFoundException("user not found");
         }
         
         openEmf();
@@ -128,7 +131,7 @@ public class OfferService extends AbstractService {
         return offerReq;
     }
     
-    public void updateOffer(String username, Offer offerReq) throws NullPointerException {
+    public void updateOffer(String username, Offer offerReq) throws NullPointerException, OfferNotFoundException, SubjectNotFoundException {
         if (offerReq == null) {
             throw new NullPointerException("offer must not be null");
         }
@@ -145,7 +148,7 @@ public class OfferService extends AbstractService {
             List<Offer> results = query.getResultList();
 
             if (results.isEmpty()) {
-                throw new NullPointerException("offer not found");
+                throw new OfferNotFoundException("offer not found");
             }
             Offer dbOffer = results.get(0);  
             if (offerReq.getDescription() != null) dbOffer.setDescription(offerReq.getDescription());

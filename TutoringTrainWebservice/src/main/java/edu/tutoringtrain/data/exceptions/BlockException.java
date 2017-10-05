@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data;
+package edu.tutoringtrain.data.exceptions;
 
 /**
  *
  * @author Elias
  */
-public class CalledFrom {
-    public static final String ADMIN_APPL = "admin_appl";
+public class BlockException extends Exception {
+    public BlockException(String message) {
+        super(message);
+    }
 }

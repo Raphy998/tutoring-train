@@ -5,7 +5,6 @@
  */
 package edu.tutoringtrain.data.dao;
 
-import edu.tutoringtrain.data.CalledFrom;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.data.exceptions.BlockedException;
@@ -41,7 +40,7 @@ public class AuthenticationService extends AbstractService {
         return instance;
     }
     
-    public void authenticate(String username, String password, String calledFrom) throws NotAuthorizedException, ForbiddenException, BlockedException {
+    public void authenticate(String username, String password, Character requiredRole) throws NotAuthorizedException, ForbiddenException, BlockedException {
         openEmf();
         EntityManager em = emf.createEntityManager();
         
@@ -56,7 +55,7 @@ public class AuthenticationService extends AbstractService {
                 throw new NotAuthorizedException("authentication failed");
             }
             
-            if (!canAuthenticate(calledFrom, results.get(0).getRole())) {
+            if (!canAuthenticate(requiredRole, results.get(0).getRole())) {
                 throw new ForbiddenException("only admins can access admin applications");
             }
             //check if user is blocked
@@ -73,11 +72,11 @@ public class AuthenticationService extends AbstractService {
         }
     }
     
-    private boolean canAuthenticate(String calledFrom, Character role) {
+    private boolean canAuthenticate(Character requiredRole, Character role) {
         boolean canAuth = true;
         
         //if non-admin logges in via admin application
-        if (calledFrom != null && calledFrom.equals(CalledFrom.ADMIN_APPL) && !role.equals(UserRoles.ADMIN)) {
+        if (requiredRole != null && requiredRole.equals(UserRoles.ADMIN) && !role.equals(UserRoles.ADMIN)) {
             canAuth = false;
         }
         

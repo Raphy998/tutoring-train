@@ -6,6 +6,7 @@
 package edu.tutoringtrain.data.dao;
 
 import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Gender;
 import edu.tutoringtrain.entities.User;
@@ -66,7 +67,7 @@ public class UserService extends AbstractService {
         //TODO: send verification email
     }
     
-    public void updateUser(User userReq) throws IllegalArgumentException, NullPointerException {
+    public void updateUser(User userReq) throws IllegalArgumentException, NullPointerException, UserNotFoundException {
         if (userReq == null || userReq.getUsername() == null) {
             throw new NullPointerException("user must not be null");
         }
@@ -84,7 +85,7 @@ public class UserService extends AbstractService {
             em.getTransaction().begin();
             User currentUser = em.find(User.class, userReq.getUsername());
             if (currentUser == null) {
-                throw new NullPointerException("user not found");
+                throw new UserNotFoundException("user not found");
             }
             
             if (userReq.getEducation() != null) currentUser.setEducation(userReq.getEducation());
@@ -122,7 +123,7 @@ public class UserService extends AbstractService {
         return gender;
     } 
     
-    public User getUserByUsername(String username) throws IllegalArgumentException, NullPointerException {
+    public User getUserByUsername(String username) throws NullPointerException, UserNotFoundException {
         if (username == null) {
             throw new NullPointerException("username must not be null");
         }
@@ -133,7 +134,7 @@ public class UserService extends AbstractService {
         try {
             user = em.find(User.class, username);
             if (user == null) {
-                throw new NullPointerException("user not found");
+                throw new UserNotFoundException("user not found");
             }
         }
         finally {

@@ -14,7 +14,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tutoringtrain.data.CustomHttpStatusCodes;
+import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.BlockedException;
+import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
+import edu.tutoringtrain.data.exceptions.QueryStringException;
+import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
+import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import java.text.SimpleDateFormat;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -44,11 +49,31 @@ public abstract class AbstractResource {
             throw exception;
         }
         catch (JsonMappingException | JsonParseException ex) {
-            response.status(Response.Status.INTERNAL_SERVER_ERROR);
-            response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MALFORMED_JSON, ex.getMessage()));
+            response.status(CustomHttpStatusCodes.MALFORMED_JSON);
+            response.entity(ex.getMessage());
         }
         catch (BlockedException ex) {
             response.status(CustomHttpStatusCodes.BLOCKED);
+            response.entity(ex.getMessage());
+        }
+        catch (SubjectNotFoundException ex) {
+            response.status(CustomHttpStatusCodes.SUBJECT_NOT_FOUND);
+            response.entity(ex.getMessage());
+        }
+        catch (UserNotFoundException ex) {
+            response.status(CustomHttpStatusCodes.USER_NOT_FOUND);
+            response.entity(ex.getMessage());
+        }
+        catch (OfferNotFoundException ex) {
+            response.status(CustomHttpStatusCodes.OFFER_NOT_FOUND);
+            response.entity(ex.getMessage());
+        }
+        catch (QueryStringException ex) {
+            response.status(CustomHttpStatusCodes.INVALID_QUERY_STRING);
+            response.entity(ex.getMessage());
+        }
+        catch (BlockException ex) {
+            response.status(CustomHttpStatusCodes.BLOCK_ERROR);
             response.entity(ex.getMessage());
         }
         catch (Exception e) {
@@ -56,8 +81,8 @@ public abstract class AbstractResource {
         }
     }
     
-    protected void unknownError(Exception exception, ResponseBuilder response) throws Exception {
+    protected void unknownError(Exception ex, ResponseBuilder response) throws Exception {
         response.status(Response.Status.INTERNAL_SERVER_ERROR);
-        response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.UNKNOWN, exception.getMessage()));
+        response.entity(ex.getMessage());
     }
 }

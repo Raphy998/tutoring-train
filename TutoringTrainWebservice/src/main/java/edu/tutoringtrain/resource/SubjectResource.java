@@ -15,7 +15,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import edu.tutoringtrain.data.Error;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.entities.Subject;
@@ -78,7 +77,7 @@ public class SubjectResource extends AbstractResource {
             }
             catch (RollbackException rbex) {
                 response.status(Response.Status.CONFLICT);
-                response.entity(new Error(Error.DUPLICATE_SUBJECT_NAME, "subject '" + subjectIn.getName() + "' already exists"));
+                response.entity("subject '" + subjectIn.getName() + "' already exists");
             }
             catch (Exception e) {
                 unknownError(e, response);
@@ -131,9 +130,6 @@ public class SubjectResource extends AbstractResource {
         catch (Exception ex) {
             try {
                 handleException(ex, response);
-            }
-            catch (NullPointerException npex) {
-                response.status(Response.Status.NOT_FOUND);
             }
             catch (Exception e) {
                 unknownError(e, response);

@@ -35,7 +35,7 @@ public class AuthenticationResource {
         try {
             AuthenticationService authService = AuthenticationService.getInstance();
             // Authenticate the user using the credentials provided
-            authService.authenticate(creds.getUsername(), creds.getPassword(), creds.getCalledFrom());
+            authService.authenticate(creds.getUsername(), creds.getPassword(), creds.getRequiredRole());
 
             // Issue a token for the user
             String token = authService.issueToken(creds.getUsername());
@@ -43,7 +43,7 @@ public class AuthenticationResource {
             // Return the token on the response
             response.entity(token);
         } 
-        catch (NotAuthorizedException e) {
+        catch (NotAuthorizedException e) { 
             response.status(Response.Status.UNAUTHORIZED);
         }
         catch (ForbiddenException e) {

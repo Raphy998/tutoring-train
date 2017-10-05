@@ -7,6 +7,8 @@ package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.dao.OfferService;
+import edu.tutoringtrain.data.exceptions.QueryStringException;
+import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Offer;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
@@ -99,7 +101,7 @@ public class OfferResource extends AbstractResource {
 
         try {
             if (start == null || pageSize == null) {
-                throw new IllegalArgumentException("start and pageSize must be given in query string");
+                throw new QueryStringException("start and pageSize must be given in query string");
             }
             List<Offer> newestOffers = OfferService.getInstance().getNewestOffers(start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
@@ -107,10 +109,6 @@ public class OfferResource extends AbstractResource {
         catch (Exception ex) {
             try {
                 handleException(ex, response);
-            }
-            catch (IllegalArgumentException iaex) {
-                response.status(Response.Status.BAD_REQUEST);
-                response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MISSING_QUERY_PARAMS, iaex.getMessage()));
             }
             catch (Exception e) {
                 unknownError(e, response);
@@ -133,11 +131,11 @@ public class OfferResource extends AbstractResource {
 
         try {
             if (username == null) {
-                throw new IllegalArgumentException("username must be given");
+                throw new UserNotFoundException("username must be given");
             }
             
             if (start == null || pageSize == null) {
-                throw new IllegalArgumentException("start and pageSize must be given in query string");
+                throw new QueryStringException("start and pageSize must be given in query string");
             }
             
             List<Offer> newestOffers = OfferService.getInstance().getNewestOffersOfUser(username, start, pageSize);
@@ -146,10 +144,6 @@ public class OfferResource extends AbstractResource {
         catch (Exception ex) {
             try {
                 handleException(ex, response);
-            }
-            catch (IllegalArgumentException iaex) {
-                response.status(Response.Status.BAD_REQUEST);
-                response.entity(new edu.tutoringtrain.data.Error(edu.tutoringtrain.data.Error.MISSING_QUERY_PARAMS, iaex.getMessage()));
             }
             catch (Exception e) {
                 unknownError(e, response);
