@@ -35,7 +35,7 @@ CREATE TABLE TSESSION(
     expirydate TIMESTAMP,
     CONSTRAINT pk_session PRIMARY KEY (username, authkey),
     CONSTRAINT fk_session_username FOREIGN KEY (username) references TUSER (username)
-)
+);
 
 Create Table Blocked(
     username VARCHAR(20),
