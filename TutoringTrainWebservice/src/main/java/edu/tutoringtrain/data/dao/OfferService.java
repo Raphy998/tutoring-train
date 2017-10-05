@@ -69,12 +69,17 @@ public class OfferService extends AbstractService {
      * @param pageSize maximum number of results returned
      * @return 
      */
-    public List<Offer> getNewestOffersOfUser(String username, int start, int pageSize) {
+    public List<Offer> getNewestOffersOfUser(String username, int start, int pageSize) throws UserNotFoundException {
         List<Offer> results = new ArrayList<>();
         
         openEmf();
         EntityManager em = emf.createEntityManager();
         try {
+            User user = em.find(User.class, username);
+            if (user == null) {
+                throw new UserNotFoundException("user not found");
+            }
+            
             TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewestOfUser", Offer.class);
             query.setParameter("username", username);
             query.setFirstResult(start);
