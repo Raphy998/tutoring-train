@@ -30,12 +30,12 @@ CREATE TABLE TUSER(
 );
 
 CREATE TABLE TSESSION(
-    username VARCHAR(20),
-    authkey VARCHAR(32),
-    expirydate TIMESTAMP,
-    CONSTRAINT pk_session PRIMARY KEY (username, authkey),
+	username VARCHAR(20),
+	authkey VARCHAR(32),
+	expirydate TIMESTAMP,
+	CONSTRAINT pk_session PRIMARY KEY (username, authkey),
     CONSTRAINT fk_session_username FOREIGN KEY (username) references TUSER (username)
-)
+);
 
 Create Table Blocked(
     username VARCHAR(20),
@@ -43,7 +43,7 @@ Create Table Blocked(
     dueDate DATE,
     CONSTRAINT pk_blocked PRIMARY KEY (username),
     CONSTRAINT fk_blocked_user FOREIGN KEY (username) references TUser (username)
-    );
+);
 
 
 Create Table Rating (
@@ -82,3 +82,10 @@ Create Table Request (
     CONSTRAINT fk_request_user FOREIGN KEY (username) references TUser (username),
     CONSTRAINT fk_request_subject FOREIGN KEY (subject) references Subject (id)
 );
+
+INSERT INTO Gender VALUES (1, 'Unspecified');
+INSERT INTO Gender VALUES (2, 'Male');
+INSERT INTO Gender VALUES (3, 'Female');
+
+INSERT INTO TUser VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'A', 'admin@tutoringtrain.com', 'Admin', null, null, 'HTL', 1);
+commit;
