@@ -62,6 +62,7 @@ public class UserResource extends AbstractResource {
                 response.entity("username '" + userIn.getUsername() + "' not available");
             }
             catch (Exception e) {
+                e.printStackTrace();
                 unknownError(e, response);
             } 
         }

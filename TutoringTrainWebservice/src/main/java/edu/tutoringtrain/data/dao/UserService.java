@@ -39,12 +39,12 @@ public class UserService extends AbstractService {
         if (userReq == null) {
             throw new NullPointerException("user must not be null");
         }
-        if (!EmailUtils.isEmailValid(userReq.getEmail())) {
+        if (userReq.getEmail() != null && !EmailUtils.isEmailValid(userReq.getEmail())) {
             throw new IllegalArgumentException("email has invalid format");
         }
         
         //get gender for user
-        Gender gender = getGenderOrDefault(userReq.getGender().getId());
+        Gender gender = getGenderOrDefault(userReq.getGender());
         
         openEmf();
         EntityManager em = emf.createEntityManager();
@@ -76,7 +76,7 @@ public class UserService extends AbstractService {
         }
         
         //get gender for user
-        Gender gender = getGenderOrDefault(userReq.getGender().getId());
+        Gender gender = getGenderOrDefault(userReq.getGender());
         
         openEmf();
         EntityManager em = emf.createEntityManager();
@@ -106,21 +106,20 @@ public class UserService extends AbstractService {
         //TODO: send verification email
     }
     
-    private Gender getGenderOrDefault(BigDecimal id) {
-        Gender gender;
+    private Gender getGenderOrDefault(Gender g) {
         try {
-            gender = getGenderById(id);
+            g = getGenderById(g.getId());
         }
         catch (NullPointerException ex) {
             try {
-                gender = getGenderById(DEFAULT_GENDER);
+                g = getGenderById(DEFAULT_GENDER);
             }
             catch (NullPointerException npex) {
-                gender = null;
+                g = null;
             }
         }
         
-        return gender;
+        return g;
     } 
     
     public User getUserByUsername(String username) throws NullPointerException, UserNotFoundException {
