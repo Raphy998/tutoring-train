@@ -47,7 +47,6 @@ public class OfferService extends AbstractService {
         TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewest", Offer.class);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
-        query.setHint("eclipselink.refresh", true);
         results = query.getResultList();
 
         return results;
@@ -73,7 +72,6 @@ public class OfferService extends AbstractService {
         query.setParameter("username", username);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
-        query.setHint("eclipselink.refresh", true);
         results = query.getResultList();
 
         return results;

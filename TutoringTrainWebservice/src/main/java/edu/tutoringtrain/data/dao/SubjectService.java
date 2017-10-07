@@ -30,7 +30,6 @@ public class SubjectService extends AbstractService {
         
         TypedQuery<Subject> query =
         em.createNamedQuery("Subject.findAll", Subject.class);
-        query.setHint("eclipselink.refresh", true);
         results = query.getResultList();
 
         return results;
@@ -39,7 +38,6 @@ public class SubjectService extends AbstractService {
     @Transactional
     public Subject getSubject(BigDecimal id) throws SubjectNotFoundException {
         Subject s = em.find(Subject.class, id);
-        em.refresh(s);
         if (s == null) {
             throw new SubjectNotFoundException("subject no found");
         }

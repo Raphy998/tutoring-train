@@ -117,7 +117,6 @@ public class UserService extends AbstractService {
         TypedQuery<User> query = em.createNamedQuery("User.findAll", User.class);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
-        query.setHint("eclipselink.refresh", true);
         users = query.getResultList();
         
         return users;
@@ -162,7 +161,6 @@ public class UserService extends AbstractService {
         List<Gender> results;
         
         TypedQuery<Gender> query = em.createNamedQuery("Gender.findAll", Gender.class);
-        query.setHint("eclipselink.refresh", true);
         results = query.getResultList();
         
         return results;
