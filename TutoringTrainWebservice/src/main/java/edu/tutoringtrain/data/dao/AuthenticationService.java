@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
@@ -35,13 +34,14 @@ public class AuthenticationService extends AbstractService {
     public AuthenticationService() {
     }
     
+    @Transactional(dontRollbackOn = Exception.class)
     public void authenticate(String username, String password, Character requiredRole) throws NotAuthorizedException, ForbiddenException, BlockedException {
         TypedQuery<User> query =
         em.createNamedQuery("User.findByUsernameAndPassword", User.class);
         query.setParameter("username", username);
         query.setParameter("password", password);
         List<User> results = query.getResultList();
-
+        
         if (results.isEmpty()) {
             throw new NotAuthorizedException("authentication failed");
         }
@@ -131,7 +131,6 @@ public class AuthenticationService extends AbstractService {
             Session session = results.get(0);
             if (session.getExpirydate() != null && session.getExpirydate().before(DateUtils.toDate(LocalDateTime.now()))) {
                 throw new NotAuthorizedException("token expired");
-                //TODO (maybe): remove old token
             }
             u = session.getUser();
         }

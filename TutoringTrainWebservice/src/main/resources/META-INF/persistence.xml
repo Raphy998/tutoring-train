@@ -1,13 +1,8 @@
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
-    <persistence-unit name="aphrodite4" transaction-type="JTA">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <properties>
-            <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@212.152.179.117:1521:ora11g"/>
-            <property name="javax.persistence.jdbc.user" value="d5b15"/>
-            <property name="javax.persistence.jdbc.password" value="d5b"/>
-            <property name="javax.persistence.schema-generation.database.action" value="none"/>
-        </properties>
-    </persistence-unit>
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd">
+  <persistence-unit name="aphrodite4" transaction-type="JTA">
+    <jta-data-source>java:app/aphrodite4</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties/>
+  </persistence-unit>
 </persistence>
