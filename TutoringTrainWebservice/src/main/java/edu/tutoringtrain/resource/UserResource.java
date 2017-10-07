@@ -24,6 +24,10 @@ import edu.tutoringtrain.entities.Gender;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.TransactionalException;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
@@ -36,7 +40,10 @@ import javax.ws.rs.core.SecurityContext;
  * @author Elias
  */
 @Path("/user")
+@RequestScoped
 public class UserResource extends AbstractResource {
+    @Inject
+    UserService userService;
     
     @POST
     @Path("/register")
@@ -49,20 +56,20 @@ public class UserResource extends AbstractResource {
         User userIn = null;
         try {
             userIn = getMapper().readerWithView(Views.User.In.Register.class).withType(User.class).readValue(userStr);
-            User userOut = UserService.getInstance().registerUser(userIn);
+            User userOut = userService.registerUser(userIn);
             
             response.entity(getMapper().writerWithView(Views.User.Out.Private.class).writeValueAsString(userOut));
         } 
         catch (Exception ex) {
             try {
+                ex.printStackTrace();
                 handleException(ex, response);
             }
-            catch (RollbackException rbex) {
+            catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
                 response.entity("username '" + userIn.getUsername() + "' not available");
             }
             catch (Exception e) {
-                e.printStackTrace();
                 unknownError(e, response);
             } 
         }
@@ -85,7 +92,7 @@ public class UserResource extends AbstractResource {
             User userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
             userIn.setUsername(securityContext.getUserPrincipal().getName());       //set user to logged in user (to avoid making another json view)
             
-            UserService.getInstance().updateUser(userIn);
+            userService.updateUser(userIn);
         } 
         catch (Exception ex) {
             try {
@@ -111,7 +118,7 @@ public class UserResource extends AbstractResource {
         
         try {
             User userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
-            UserService.getInstance().updateUser(userIn);
+            userService.updateUser(userIn);
         } 
         catch (Exception ex) {
             try {
@@ -134,7 +141,7 @@ public class UserResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            List<Gender> genders = UserService.getInstance().getAllGenders();
+            List<Gender> genders = userService.getAllGenders();
             response.entity(getMapper().writerWithView(Views.User.Out.Public.class).writeValueAsString(genders.toArray()));
         } 
         catch (Exception ex) {
@@ -160,7 +167,7 @@ public class UserResource extends AbstractResource {
 
         try {
             response.entity(getMapper().writerWithView(Views.User.Out.Private.class)
-                    .writeValueAsString(UserService.getInstance().getUserByUsername(username)));
+                    .writeValueAsString(userService.getUserByUsername(username)));
         } 
         catch (Exception ex) {
             try {
@@ -187,10 +194,10 @@ public class UserResource extends AbstractResource {
         try {
             List<User> userEntities;
             if (start != null && pageSize != null) {
-                userEntities = UserService.getInstance().getUsers(start, pageSize);
+                userEntities = userService.getUsers(start, pageSize);
             }
             else {
-                userEntities = UserService.getInstance().getUsers();
+                userEntities = userService.getUsers();
             }
 
             response.entity(getMapper().writerWithView(Views.User.Out.Private.class)
@@ -226,7 +233,7 @@ public class UserResource extends AbstractResource {
                 throw new BlockException("cannot block own user");
             }
             
-            User user2Block = UserService.getInstance().getUserByUsername(blockIn.getUsername());
+            User user2Block = userService.getUserByUsername(blockIn.getUsername());
             if (user2Block == null) {
                 throw new UserNotFoundException("cannot find user");
             }
@@ -234,7 +241,7 @@ public class UserResource extends AbstractResource {
                 throw new BlockException("cannot block other admins");
             }
             
-            UserService.getInstance().blockUser(blockIn, true);
+            userService.blockUser(blockIn, true);
         } 
         catch (Exception ex) {
             try {
@@ -263,12 +270,12 @@ public class UserResource extends AbstractResource {
                 throw new BlockException("cannot unblock own user");
             }
             
-            User user = UserService.getInstance().getUserByUsername(user2unblock);
+            User user = userService.getUserByUsername(user2unblock);
             if (user == null) {
                 throw new UserNotFoundException("cannot find user");
             }
             
-            UserService.getInstance().blockUser(new Blocked(user2unblock), false);
+            userService.blockUser(new Blocked(user2unblock), false);
         } 
         catch (Exception ex) {
             try {

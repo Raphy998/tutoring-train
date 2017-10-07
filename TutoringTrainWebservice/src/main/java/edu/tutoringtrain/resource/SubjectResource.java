@@ -20,6 +20,10 @@ import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -31,7 +35,11 @@ import javax.ws.rs.PathParam;
  * @author Elias
  */
 @Path("/subject")
+@RequestScoped
 public class SubjectResource extends AbstractResource {
+    
+    @Inject
+    SubjectService subjectService;
     
     @Secured
     @GET
@@ -40,7 +48,7 @@ public class SubjectResource extends AbstractResource {
         
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
-            List<Subject> subjects = SubjectService.getInstance().getAllSubjects();
+            List<Subject> subjects = subjectService.getAllSubjects();
             response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).writeValueAsString(subjects.toArray()));
         } 
         catch (Exception ex) {
@@ -67,7 +75,7 @@ public class SubjectResource extends AbstractResource {
         
         try {
             subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).withType(Subject.class).readValue(subjectStr);
-            Subject subjectOut = SubjectService.getInstance().createSubject(subjectIn);
+            Subject subjectOut = subjectService.createSubject(subjectIn);
             
             response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).writeValueAsString(subjectOut));
         } 
@@ -98,7 +106,7 @@ public class SubjectResource extends AbstractResource {
 
         try {
             Subject subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).withType(Subject.class).readValue(subjectStr);
-            SubjectService.getInstance().updateSubject(subjectIn);
+            subjectService.updateSubject(subjectIn);
         } 
         catch (Exception ex) {
             try {
@@ -125,7 +133,7 @@ public class SubjectResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            SubjectService.getInstance().removeSubject(subjectId);
+            subjectService.removeSubject(subjectId);
         } 
         catch (Exception ex) {
             try {

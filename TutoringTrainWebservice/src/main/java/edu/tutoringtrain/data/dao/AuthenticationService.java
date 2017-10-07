@@ -18,8 +18,10 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 
@@ -27,48 +29,30 @@ import javax.ws.rs.NotAuthorizedException;
  *
  * @author Elias
  */
+@ApplicationScoped
 public class AuthenticationService extends AbstractService {
-    private static AuthenticationService instance = null;
     
-    private AuthenticationService() {
-    }
-    
-    public static AuthenticationService getInstance() {
-        if (instance == null) {
-            instance = new AuthenticationService();
-        }
-        return instance;
+    public AuthenticationService() {
     }
     
     public void authenticate(String username, String password, Character requiredRole) throws NotAuthorizedException, ForbiddenException, BlockedException {
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        
-        try {
-            TypedQuery<User> query =
-            em.createNamedQuery("User.findByUsernameAndPassword", User.class);
-            query.setParameter("username", username);
-            query.setParameter("password", password);
-            List<User> results = query.getResultList();
-            
-            if (results.isEmpty()) {
-                throw new NotAuthorizedException("authentication failed");
-            }
-            
-            if (!canAuthenticate(requiredRole, results.get(0).getRole())) {
-                throw new ForbiddenException("only admins can access admin applications");
-            }
-            //check if user is blocked
-            Blocked block = results.get(0).getBlock();
-            if (block != null) {
-                throw new BlockedException("user blocked: '" + block.getReason() + "'");
-            }
+        TypedQuery<User> query =
+        em.createNamedQuery("User.findByUsernameAndPassword", User.class);
+        query.setParameter("username", username);
+        query.setParameter("password", password);
+        List<User> results = query.getResultList();
+
+        if (results.isEmpty()) {
+            throw new NotAuthorizedException("authentication failed");
         }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
+
+        if (!canAuthenticate(requiredRole, results.get(0).getRole())) {
+            throw new ForbiddenException("only admins can access admin applications");
+        }
+        //check if user is blocked
+        Blocked block = results.get(0).getBlock();
+        if (block != null) {
+            throw new BlockedException("user blocked: '" + block.getReason() + "'");
         }
     }
     
@@ -88,29 +72,14 @@ public class AuthenticationService extends AbstractService {
      * @param username 
      * @return authentication token
      */
+    @Transactional
     public String issueToken(String username) {
         String token = getRandomToken();
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        
-        try {
-            //persisting entity
-            em.getTransaction().begin();
+
+        Session session = new Session(username, token);
+        session.setExpirydate(DateUtils.toDate(LocalDateTime.now().plusDays(1)));
+        em.persist(session);
             
-            Session session = new Session(username, token);
-            session.setExpirydate(DateUtils.toDate(LocalDateTime.now().plusDays(1)));
-            em.persist(session);
-            em.getTransaction().commit();
-        }
-        finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
         return token;
     }
     
@@ -150,30 +119,21 @@ public class AuthenticationService extends AbstractService {
         return hasPerm;
     }
     
+    @Transactional
     public User getUserByToken(String token) {
-        openEmf();
-        EntityManager em = emf.createEntityManager();
         User u = null;
         
-        try {
-            TypedQuery<Session> query =
-            em.createNamedQuery("Session.findByAuthkey", Session.class);
-            query.setParameter("authkey", token);
-            List<Session> results = query.getResultList();
-            if (!results.isEmpty()) {
-                Session session = results.get(0);
-                if (session.getExpirydate() != null && session.getExpirydate().before(DateUtils.toDate(LocalDateTime.now()))) {
-                    throw new NotAuthorizedException("token expired");
-                    //TODO (maybe): remove old token
-                }
-                u = session.getUser();
+        TypedQuery<Session> query =
+        em.createNamedQuery("Session.findByAuthkey", Session.class);
+        query.setParameter("authkey", token);
+        List<Session> results = query.getResultList();
+        if (!results.isEmpty()) {
+            Session session = results.get(0);
+            if (session.getExpirydate() != null && session.getExpirydate().before(DateUtils.toDate(LocalDateTime.now()))) {
+                throw new NotAuthorizedException("token expired");
+                //TODO (maybe): remove old token
             }
-        }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
+            u = session.getUser();
         }
         
         return u;

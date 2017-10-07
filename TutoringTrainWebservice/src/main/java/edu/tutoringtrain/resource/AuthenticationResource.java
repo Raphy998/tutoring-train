@@ -9,6 +9,9 @@ import edu.tutoringtrain.data.Credentials;
 import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.dao.AuthenticationService;
 import edu.tutoringtrain.data.exceptions.BlockedException;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
@@ -24,7 +27,11 @@ import javax.ws.rs.core.Response;
  * @author Elias
  */
 @Path("/authentication")
+@RequestScoped
 public class AuthenticationResource {
+    
+    @Inject
+    AuthenticationService authService;
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -33,7 +40,6 @@ public class AuthenticationResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         
         try {
-            AuthenticationService authService = AuthenticationService.getInstance();
             // Authenticate the user using the credentials provided
             authService.authenticate(creds.getUsername(), creds.getPassword(), creds.getRequiredRole());
 
@@ -44,6 +50,7 @@ public class AuthenticationResource {
             response.entity(token);
         } 
         catch (NotAuthorizedException e) { 
+            e.printStackTrace();
             response.status(Response.Status.UNAUTHORIZED);
         }
         catch (ForbiddenException e) {

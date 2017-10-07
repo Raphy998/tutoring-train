@@ -15,24 +15,23 @@ import edu.tutoringtrain.utils.DateUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 
 /**
  *
  * @author Elias
  */
+@ApplicationScoped
 public class OfferService extends AbstractService {
-    private static OfferService instance = null;
+    @Inject
+    UserService userService;
+    @Inject
+    SubjectService subjectService;
     
-    private OfferService() {
-    }
-    
-    public static OfferService getInstance() {
-        if (instance == null) {
-            instance = new OfferService();
-        }
-        return instance;
+    public OfferService() {
     }
     
     /**
@@ -41,23 +40,14 @@ public class OfferService extends AbstractService {
      * @param pageSize maximum number of results returned
      * @return 
      */
+    @Transactional
     public List<Offer> getNewestOffers(int start, int pageSize) {
         List<Offer> results = new ArrayList<>();
-        
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewest", Offer.class);
-            query.setFirstResult(start);
-            query.setMaxResults(pageSize);
-            results = query.getResultList();
-        }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+
+        TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewest", Offer.class);
+        query.setFirstResult(start);
+        query.setMaxResults(pageSize);
+        results = query.getResultList();
 
         return results;
     }
@@ -69,33 +59,25 @@ public class OfferService extends AbstractService {
      * @param pageSize maximum number of results returned
      * @return 
      */
+    @Transactional
     public List<Offer> getNewestOffersOfUser(String username, int start, int pageSize) throws UserNotFoundException {
         List<Offer> results = new ArrayList<>();
         
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            User user = em.find(User.class, username);
-            if (user == null) {
-                throw new UserNotFoundException("user not found");
-            }
-            
-            TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewestOfUser", Offer.class);
-            query.setParameter("username", username);
-            query.setFirstResult(start);
-            query.setMaxResults(pageSize);
-            results = query.getResultList();
+        User user = em.find(User.class, username);
+        if (user == null) {
+            throw new UserNotFoundException("user not found");
         }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+
+        TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewestOfUser", Offer.class);
+        query.setParameter("username", username);
+        query.setFirstResult(start);
+        query.setMaxResults(pageSize);
+        results = query.getResultList();
 
         return results;
     }
     
+    @Transactional
     public Offer createOffer(String username, Offer offerReq) throws NullPointerException, SubjectNotFoundException, UserNotFoundException {
         if (username == null) {
             throw new NullPointerException("name must not be null");
@@ -104,70 +86,44 @@ public class OfferService extends AbstractService {
             throw new NullPointerException("offer must not be null");
         }
         
-        Subject s = SubjectService.getInstance().getSubject(offerReq.getSubject().getId());
+        Subject s = subjectService.getSubject(offerReq.getSubject().getId());
         if (s == null) {
             throw new SubjectNotFoundException("subject not found");
         }
         
-        User user = UserService.getInstance().getUserByUsername(username);
+        User user = userService.getUserByUsername(username);
         if (user == null) {
             throw new UserNotFoundException("user not found");
         }
-        
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        
-        try {
-            em.getTransaction().begin();
-            offerReq.setSubject(s);
-            offerReq.setUser(user);
-            offerReq.setIsactive('1');
-            offerReq.setPostedon(DateUtils.toDate(LocalDateTime.now()));
-            this.persist(offerReq);
-            em.getTransaction().commit();
-        }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+
+        offerReq.setSubject(s);
+        offerReq.setUser(user);
+        offerReq.setIsactive('1');
+        offerReq.setPostedon(DateUtils.toDate(LocalDateTime.now()));
+        em.persist(offerReq);
         
         return offerReq;
     }
     
+    @Transactional
     public void updateOffer(String username, Offer offerReq) throws NullPointerException, OfferNotFoundException, SubjectNotFoundException {
         if (offerReq == null) {
             throw new NullPointerException("offer must not be null");
         }
         
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            
-            TypedQuery<Offer> query = em.createNamedQuery("Offer.findByIdAndUsername", Offer.class);
-            query.setParameter("id", offerReq.getId());
-            query.setParameter("username", username);
-            System.out.println(query.getParameterValue("id") + " - " + query.getParameterValue("username"));
-            List<Offer> results = query.getResultList();
+        TypedQuery<Offer> query = em.createNamedQuery("Offer.findByIdAndUsername", Offer.class);
+        query.setParameter("id", offerReq.getId());
+        query.setParameter("username", username);
+        List<Offer> results = query.getResultList();
 
-            if (results.isEmpty()) {
-                throw new OfferNotFoundException("offer not found");
-            }
-            Offer dbOffer = results.get(0);  
-            if (offerReq.getDescription() != null) dbOffer.setDescription(offerReq.getDescription());
-            if (offerReq.getDuedate() != null) dbOffer.setDuedate(offerReq.getDuedate());
-            if (offerReq.getPostedon() != null) dbOffer.setPostedon(offerReq.getPostedon());
-            if (offerReq.getIsactive() != null) dbOffer.setIsactive(offerReq.getIsactive());
-            if (offerReq.getSubject() != null) dbOffer.setSubject(SubjectService.getInstance().getSubject(offerReq.getSubject().getId()));
-            em.getTransaction().commit();
+        if (results.isEmpty()) {
+            throw new OfferNotFoundException("offer not found");
         }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+        Offer dbOffer = results.get(0);  
+        if (offerReq.getDescription() != null) dbOffer.setDescription(offerReq.getDescription());
+        if (offerReq.getDuedate() != null) dbOffer.setDuedate(offerReq.getDuedate());
+        if (offerReq.getPostedon() != null) dbOffer.setPostedon(offerReq.getPostedon());
+        if (offerReq.getIsactive() != null) dbOffer.setIsactive(offerReq.getIsactive());
+        if (offerReq.getSubject() != null) dbOffer.setSubject(subjectService.getSubject(offerReq.getSubject().getId()));
     }
 }

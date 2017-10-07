@@ -5,47 +5,16 @@
  */
 package edu.tutoringtrain.data.dao;
 
-import javax.persistence.Entity;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 
 /**
  *
  * @author Elias
  */
-public abstract class AbstractService {
-    protected EntityManagerFactory emf;
-    
-    protected void persist(Object entity) {
-        if (!entity.getClass().isAnnotationPresent(Entity.class)) {
-            throw new IllegalArgumentException("not a entity class");
-        }
-        
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        
-        try {
-            //persisting entity
-            em.getTransaction().begin();
-            em.persist(entity);
-            em.getTransaction().commit();
-        }
-        finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
-    }
-    
-    protected void openEmf() {
-        emf =  EmProvider.getInstance().getEntityManagerFactory();
-    }
-    
-    protected void closeEmf() {
-        EmProvider.getInstance().closeEmf();
-    }
+@ApplicationScoped
+public class AbstractService {
+    @PersistenceContext(unitName = "aphrodite4")
+    protected EntityManager em;
 }

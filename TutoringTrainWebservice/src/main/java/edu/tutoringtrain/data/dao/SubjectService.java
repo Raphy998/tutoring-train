@@ -10,129 +10,73 @@ import edu.tutoringtrain.entities.Subject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 
 /**
  *
  * @author Elias
  */
+@ApplicationScoped
 public class SubjectService extends AbstractService {
-    private static SubjectService instance = null;
     
-    private SubjectService() {
+    public SubjectService() {
     }
     
-    public static SubjectService getInstance() {
-        if (instance == null) {
-            instance = new SubjectService();
-        }
-        return instance;
-    }
-    
+    @Transactional
     public List<Subject> getAllSubjects() {
         List<Subject> results = new ArrayList<>();
         
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<Subject> query =
-            em.createNamedQuery("Subject.findAll", Subject.class);
-            results = query.getResultList();
-        }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+        TypedQuery<Subject> query =
+        em.createNamedQuery("Subject.findAll", Subject.class);
+        results = query.getResultList();
 
         return results;
     }
     
+    @Transactional
     public Subject getSubject(BigDecimal id) throws SubjectNotFoundException {
-        Subject s;
-        
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            s = em.find(Subject.class, id);
-            if (s == null) {
-                throw new SubjectNotFoundException("subject no found");
-            }
-        }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
+        Subject s = em.find(Subject.class, id);
+        if (s == null) {
+            throw new SubjectNotFoundException("subject no found");
         }
 
         return s;
     }
     
+    @Transactional
     public Subject createSubject(Subject s) throws NullPointerException {
         if (s.getName() == null) {
             throw new NullPointerException("name must not be null");
         }
-        
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            this.persist(s);
-        }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+        em.persist(s);
         
         return s;
     }
     
+    @Transactional
     public void updateSubject(Subject subject) throws NullPointerException, SubjectNotFoundException {
         if (subject == null) {
             throw new NullPointerException("subject must not be null");
         }
         
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Subject dbSubject = em.find(Subject.class, subject.getId());
-            if (subject == null) {
-                throw new SubjectNotFoundException("subject not found");
-            }
-            dbSubject.setName(subject.getName());
-            em.getTransaction().commit();
+        Subject dbSubject = em.find(Subject.class, subject.getId());
+        if (subject == null) {
+            throw new SubjectNotFoundException("subject not found");
         }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+        dbSubject.setName(subject.getName());
     }
     
+    @Transactional
     public void removeSubject(int subjectID) throws SubjectNotFoundException {
-        openEmf();
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Subject subject = em.find(Subject.class, new BigDecimal(subjectID));
-            if (subject == null) {
-                throw new SubjectNotFoundException("subject not found");
-            }
-            
-            em.remove(subject);
-            em.getTransaction().commit();
+        
+        Subject subject = em.find(Subject.class, new BigDecimal(subjectID));
+        if (subject == null) {
+            throw new SubjectNotFoundException("subject not found");
         }
-        finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-            closeEmf();
-        }
+
+        em.remove(subject);
     }
 }

@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Elias
  */
 @Entity
-@Table(name = "BLOCKED", catalog = "", schema="d5b15")
+@Table(name = "BLOCKED", catalog = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Blocked.findAll", query = "SELECT b FROM Blocked b")

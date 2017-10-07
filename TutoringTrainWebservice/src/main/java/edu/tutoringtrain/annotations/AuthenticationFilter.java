@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Priority;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Priorities;
@@ -37,8 +41,12 @@ import javax.ws.rs.ext.Provider;
 @Secured
 @Provider
 @Priority(Priorities.AUTHENTICATION)
+@RequestScoped
 public class AuthenticationFilter implements ContainerRequestFilter {
     private static final String AUTHENTICATION_SCHEME = "Bearer";
+    
+    @Inject
+    AuthenticationService authService;
 
     @Context
     private ResourceInfo resourceInfo;
@@ -72,9 +80,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             // Check if the user is allowed to execute the method
             // The method annotations override the class annotations
             if (methodRoles.isEmpty()) {
-                AuthenticationService.getInstance().checkPermissions(token, classRoles);
+                authService.checkPermissions(token, classRoles);
             } else {
-                AuthenticationService.getInstance().checkPermissions(token, methodRoles);
+                authService.checkPermissions(token, methodRoles);
             }
 
         } 
@@ -88,7 +96,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             abortWithStatus(requestContext, Response.Status.fromStatusCode(CustomHttpStatusCodes.BLOCKED));
         }
         
-        User user = AuthenticationService.getInstance().getUserByToken(token);
+        User user = authService.getUserByToken(token);
         final String username = user != null ? user.getUsername() : null;
         
         final SecurityContext currentSecurityContext = requestContext.getSecurityContext();

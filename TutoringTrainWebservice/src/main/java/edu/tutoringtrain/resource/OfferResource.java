@@ -7,11 +7,15 @@ package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.dao.OfferService;
+import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Offer;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,8 +36,12 @@ import javax.ws.rs.core.SecurityContext;
  * @author Elias
  */
 @Path("/offer")
+@RequestScoped
 public class OfferResource extends AbstractResource {
 
+    @Inject
+    OfferService offerService;
+    
     @Secured
     @POST
     @Consumes(value = MediaType.APPLICATION_JSON)
@@ -47,7 +55,7 @@ public class OfferResource extends AbstractResource {
 
         try {
             Offer offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Offer.class).readValue(offerStr);
-            Offer offerOut = OfferService.getInstance().createOffer(username, offerIn);
+            Offer offerOut = offerService.createOffer(username, offerIn);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(offerOut));
         }
         catch (Exception ex) {
@@ -75,7 +83,7 @@ public class OfferResource extends AbstractResource {
 
         try {
             Offer offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).withType(Offer.class).readValue(offerStr);
-            OfferService.getInstance().updateOffer(username, offerIn);
+            offerService.updateOffer(username, offerIn);
         } 
         catch (Exception ex) {
             try {
@@ -103,7 +111,7 @@ public class OfferResource extends AbstractResource {
             if (start == null || pageSize == null) {
                 throw new QueryStringException("start and pageSize must be given in query string");
             }
-            List<Offer> newestOffers = OfferService.getInstance().getNewestOffers(start, pageSize);
+            List<Offer> newestOffers = offerService.getNewestOffers(start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
         } 
         catch (Exception ex) {
@@ -138,7 +146,7 @@ public class OfferResource extends AbstractResource {
                 throw new QueryStringException("start and pageSize must be given in query string");
             }
             
-            List<Offer> newestOffers = OfferService.getInstance().getNewestOffersOfUser(username, start, pageSize);
+            List<Offer> newestOffers = offerService.getNewestOffersOfUser(username, start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
         } 
         catch (Exception ex) {
