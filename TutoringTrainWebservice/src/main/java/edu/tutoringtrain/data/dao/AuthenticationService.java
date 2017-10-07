@@ -40,6 +40,7 @@ public class AuthenticationService extends AbstractService {
         em.createNamedQuery("User.findByUsernameAndPassword", User.class);
         query.setParameter("username", username);
         query.setParameter("password", password);
+        query.setHint("eclipselink.refresh", true);
         List<User> results = query.getResultList();
         
         if (results.isEmpty()) {
@@ -83,11 +84,14 @@ public class AuthenticationService extends AbstractService {
         return token;
     }
     
+    @Transactional
     public void checkPermissions(String token, List<Role> roles) throws NotAuthorizedException, ForbiddenException, BlockedException {
         User user = getUserByToken(token);
         if (user == null) {
             throw new NotAuthorizedException("token '" + token + "' not valid");
         }
+        
+        em.refresh(user);
         //check if user is blocked
         Blocked block = user.getBlock();
         if (block != null) {
@@ -126,6 +130,8 @@ public class AuthenticationService extends AbstractService {
         TypedQuery<Session> query =
         em.createNamedQuery("Session.findByAuthkey", Session.class);
         query.setParameter("authkey", token);
+        query.setHint("eclipselink.refresh", true);
+        
         List<Session> results = query.getResultList();
         if (!results.isEmpty()) {
             Session session = results.get(0);

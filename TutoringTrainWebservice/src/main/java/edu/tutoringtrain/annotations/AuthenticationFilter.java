@@ -57,7 +57,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         // Validate the Authorization header
         if (!isTokenBasedAuthentication(authorizationHeader)) {
-            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED);
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode());
             return;
         }
 
@@ -85,13 +85,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         } 
         catch (NotAuthorizedException e) {
-            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED);
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode());
         }
         catch (ForbiddenException e) {
-            abortWithStatus(requestContext, Response.Status.FORBIDDEN);
+            abortWithStatus(requestContext, Response.Status.FORBIDDEN.getStatusCode());
         }
         catch (BlockedException e) {
-            abortWithStatus(requestContext, Response.Status.fromStatusCode(CustomHttpStatusCodes.BLOCKED));
+            abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getMessage());
         }
         
         User user = authService.getUserByToken(token);
@@ -153,12 +153,22 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     .startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ");
     }
 
-    private void abortWithStatus(ContainerRequestContext requestContext, Response.Status status) {
+    private void abortWithStatus(ContainerRequestContext requestContext, int status) {
         // Abort the filter chain with a 401 status code
         // The "WWW-Authenticate" is sent along with the response
         requestContext.abortWith(
                 Response.status(status)
                         .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME)
+                        .build());
+    }
+    
+    private void abortWithStatus(ContainerRequestContext requestContext, int status, String msg) {
+        // Abort the filter chain with a 401 status code
+        // The "WWW-Authenticate" is sent along with the response
+        requestContext.abortWith(
+                Response.status(status)
+                        .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME)
+                        .entity(msg)
                         .build());
     }
 }

@@ -42,11 +42,12 @@ public class OfferService extends AbstractService {
      */
     @Transactional
     public List<Offer> getNewestOffers(int start, int pageSize) {
-        List<Offer> results = new ArrayList<>();
+        List<Offer> results;
 
         TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewest", Offer.class);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
+        query.setHint("eclipselink.refresh", true);
         results = query.getResultList();
 
         return results;
@@ -61,7 +62,7 @@ public class OfferService extends AbstractService {
      */
     @Transactional
     public List<Offer> getNewestOffersOfUser(String username, int start, int pageSize) throws UserNotFoundException {
-        List<Offer> results = new ArrayList<>();
+        List<Offer> results;
         
         User user = em.find(User.class, username);
         if (user == null) {
@@ -72,6 +73,7 @@ public class OfferService extends AbstractService {
         query.setParameter("username", username);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
+        query.setHint("eclipselink.refresh", true);
         results = query.getResultList();
 
         return results;

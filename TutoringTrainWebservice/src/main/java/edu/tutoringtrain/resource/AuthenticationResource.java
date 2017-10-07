@@ -50,7 +50,6 @@ public class AuthenticationResource {
             response.entity(token);
         } 
         catch (NotAuthorizedException e) { 
-            e.printStackTrace();
             response.status(Response.Status.UNAUTHORIZED);
         }
         catch (ForbiddenException e) {
