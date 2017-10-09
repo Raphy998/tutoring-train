@@ -26,7 +26,8 @@ CREATE TABLE GENDER(
 Create Table Subject(
     id number,
     name VARCHAR2(25),
-    CONSTRAINT pk_subject PRIMARY KEY (id)
+    CONSTRAINT pk_subject PRIMARY KEY (id),
+    CONSTRAINT u_subject_name UNIQUE (name)
     );
 
 CREATE TABLE TUSER(
@@ -40,7 +41,8 @@ CREATE TABLE TUSER(
     education VARCHAR2(20),
     gender NUMBER,
     CONSTRAINT pk_tuser PRIMARY KEY (username),
-    CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id)
+    CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id),
+    CONSTRAINT u_user_email UNIQUE (email)
 );
 
 CREATE TABLE TSESSION(
