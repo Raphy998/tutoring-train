@@ -12,7 +12,8 @@ CREATE TABLE GENDER(
 Create Table Subject(
     id number,
     name VARCHAR2(25),
-    CONSTRAINT pk_subject PRIMARY KEY (id)
+    CONSTRAINT pk_subject PRIMARY KEY (id),
+    CONSTRAINT u_subject_name UNIQUE (name)
     );
 
 CREATE TABLE TUSER(
@@ -26,7 +27,8 @@ CREATE TABLE TUSER(
     education VARCHAR2(20),
     gender NUMBER,
     CONSTRAINT pk_tuser PRIMARY KEY (username),
-    CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id)
+    CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id),
+    CONSTRAINT u_user_email UNIQUE (email)
 );
 
 CREATE TABLE TSESSION(
@@ -88,4 +90,5 @@ INSERT INTO Gender VALUES (2, 'Male');
 INSERT INTO Gender VALUES (3, 'Female');
 
 INSERT INTO TUser VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'A', 'admin@tutoringtrain.com', 'Admin', null, null, 'HTL', 1);
+
 commit;
