@@ -82,18 +82,25 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             } else {
                 authService.checkPermissions(token, methodRoles);
             }
-
         } 
         catch (NotAuthorizedException e) {
-            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode());
+            String msg;
+            try {
+                msg = e.getChallenges().get(0).toString();
+            }
+            catch (Exception ex) {
+                msg = "";
+            }
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode(), msg);
         }
         catch (ForbiddenException e) {
-            abortWithStatus(requestContext, Response.Status.FORBIDDEN.getStatusCode());
+            abortWithStatus(requestContext, Response.Status.FORBIDDEN.getStatusCode(), e.getMessage());
         }
         catch (BlockedException e) {
-            abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getMessage());
+            abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getBlock());
         }
         
+        //set user principal
         User user = authService.getUserByToken(token);
         final String username = user != null ? user.getUsername() : null;
         
@@ -162,7 +169,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                         .build());
     }
     
-    private void abortWithStatus(ContainerRequestContext requestContext, int status, String msg) {
+    private void abortWithStatus(ContainerRequestContext requestContext, int status, Object msg) {
         // Abort the filter chain with a 401 status code
         // The "WWW-Authenticate" is sent along with the response
         requestContext.abortWith(

@@ -9,7 +9,7 @@ import edu.tutoringtrain.data.Credentials;
 import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.dao.AuthenticationService;
 import edu.tutoringtrain.data.exceptions.BlockedException;
-import javax.enterprise.context.ApplicationScoped;
+import edu.tutoringtrain.utils.Views;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/authentication")
 @RequestScoped
-public class AuthenticationResource {
+public class AuthenticationResource extends AbstractResource {
     
     @Inject
     AuthenticationService authService;
@@ -36,7 +36,7 @@ public class AuthenticationResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response authenticateUser(Credentials creds) {
+    public Response authenticateUser(Credentials creds) throws Exception {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         
         try {
@@ -49,14 +49,13 @@ public class AuthenticationResource {
             // Return the token on the response
             response.entity(token);
         } 
-        catch (NotAuthorizedException e) { 
-            response.status(Response.Status.UNAUTHORIZED);
-        }
-        catch (ForbiddenException e) {
-            response.status(Response.Status.FORBIDDEN);
-        }
-        catch (BlockedException e) {
-            response.status(CustomHttpStatusCodes.BLOCKED).entity(e.getMessage());
+        catch (Exception ex) {
+            try {
+                handleException(ex, response);
+            }
+            catch (Exception e) {
+                unknownError(e, response);
+            } 
         }
         
         return response.build();

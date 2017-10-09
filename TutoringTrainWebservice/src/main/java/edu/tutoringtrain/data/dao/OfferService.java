@@ -13,7 +13,6 @@ import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.DateUtils;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

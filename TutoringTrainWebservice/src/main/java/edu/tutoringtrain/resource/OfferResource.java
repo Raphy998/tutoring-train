@@ -7,13 +7,11 @@ package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.dao.OfferService;
-import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Offer;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;

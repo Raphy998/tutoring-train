@@ -52,7 +52,7 @@ public class AuthenticationService extends AbstractService {
         //check if user is blocked
         Blocked block = results.get(0).getBlock();
         if (block != null) {
-            throw new BlockedException("user blocked: '" + block.getReason() + "'");
+            throw new BlockedException(block);
         }
     }
     
@@ -83,6 +83,7 @@ public class AuthenticationService extends AbstractService {
         return token;
     }
     
+    @Transactional(dontRollbackOn = {NotAuthorizedException.class, ForbiddenException.class, BlockedException.class})
     public void checkPermissions(String token, List<Role> roles) throws NotAuthorizedException, ForbiddenException, BlockedException {
         User user = getUserByToken(token);
         if (user == null) {
@@ -92,7 +93,7 @@ public class AuthenticationService extends AbstractService {
         //check if user is blocked
         Blocked block = user.getBlock();
         if (block != null) {
-            throw new BlockedException("user blocked: '" + block.getReason() + "'");
+            throw new BlockedException(block);
         }
         
         if (!hasPermissions(user, roles)) {
@@ -120,8 +121,8 @@ public class AuthenticationService extends AbstractService {
         return hasPerm;
     }
     
-    @Transactional
-    public User getUserByToken(String token) {
+    @Transactional(dontRollbackOn = NotAuthorizedException.class)
+    public User getUserByToken(String token) throws NotAuthorizedException {
         User u = null;
         
         TypedQuery<Session> query =

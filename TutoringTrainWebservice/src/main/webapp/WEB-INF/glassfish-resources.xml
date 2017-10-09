@@ -7,7 +7,7 @@
         <property name="databaseName" value="ora11g"/>
         <property name="User" value="d5b15"/>
         <property name="Password" value="d5b"/>
-        <property name="URL" value="jdbc:oracle:thin:@212.152.179.117:1521:ora11g"/>
+        <property name="URL" value="jdbc:oracle:thin:@192.168.128.152:1521:ora11g"/>
         <property name="driverClass" value="oracle.jdbc.OracleDriver"/>
     </jdbc-connection-pool>
     <jdbc-resource enabled="true" jndi-name="java:app/aphrodite4" object-type="user" pool-name="oracle-thin_ora11g_d5b15Pool"/>

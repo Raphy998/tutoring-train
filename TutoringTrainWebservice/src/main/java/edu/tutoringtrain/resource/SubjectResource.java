@@ -20,10 +20,9 @@ import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+import javax.transaction.TransactionalException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -83,7 +82,7 @@ public class SubjectResource extends AbstractResource {
             try {
                 handleException(ex, response);
             }
-            catch (RollbackException rbex) {
+            catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
                 response.entity("subject '" + subjectIn.getName() + "' already exists");
             }

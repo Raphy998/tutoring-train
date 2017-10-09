@@ -7,7 +7,6 @@ package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.dao.UserService;
-import javax.persistence.RollbackException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.Consumes;
@@ -24,7 +23,6 @@ import edu.tutoringtrain.entities.Gender;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.TransactionalException;

@@ -20,7 +20,9 @@ import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.utils.Views;
 import java.text.SimpleDateFormat;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -48,13 +50,24 @@ public abstract class AbstractResource {
         try {
             throw exception;
         }
+        catch (NotAuthorizedException ex) {
+            response.status(Response.Status.UNAUTHORIZED);
+            String msg;
+            try {
+                msg = ex.getChallenges().get(0).toString();
+            }
+            catch (Exception e) {
+                msg = "";
+            }
+            response.entity(msg);
+        }
         catch (JsonMappingException | JsonParseException ex) {
             response.status(CustomHttpStatusCodes.MALFORMED_JSON);
             response.entity(ex.getMessage());
         }
         catch (BlockedException ex) {
             response.status(CustomHttpStatusCodes.BLOCKED);
-            response.entity(ex.getMessage());
+            response.entity(getMapper().writerWithView(Views.User.Out.Private.class).writeValueAsString(ex.getBlock()));
         }
         catch (SubjectNotFoundException ex) {
             response.status(CustomHttpStatusCodes.SUBJECT_NOT_FOUND);
