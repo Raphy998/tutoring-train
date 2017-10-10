@@ -22,6 +22,7 @@ import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.utils.Views;
 import java.text.SimpleDateFormat;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -60,6 +61,10 @@ public abstract class AbstractResource {
                 msg = "";
             }
             response.entity(msg);
+        }
+        catch (ForbiddenException ex) {
+            response.status(Response.Status.FORBIDDEN);
+            response.entity(ex.getMessage());
         }
         catch (JsonMappingException | JsonParseException ex) {
             response.status(CustomHttpStatusCodes.MALFORMED_JSON);

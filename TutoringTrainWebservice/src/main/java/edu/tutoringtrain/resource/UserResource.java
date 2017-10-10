@@ -60,7 +60,6 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                ex.printStackTrace();
                 handleException(ex, response);
             }
             catch (TransactionalException rbex) {
