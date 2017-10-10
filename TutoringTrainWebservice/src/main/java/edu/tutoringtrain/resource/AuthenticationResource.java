@@ -36,15 +36,16 @@ public class AuthenticationResource extends AbstractResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response authenticateUser(Credentials creds) throws Exception {
+    public Response authenticateUser(String creds) throws Exception {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         
         try {
+            Credentials credentials = getMapper().reader().withType(Credentials.class).readValue(creds);
             // Authenticate the user using the credentials provided
-            authService.authenticate(creds.getUsername(), creds.getPassword(), creds.getRequiredRole());
+            authService.authenticate(credentials.getUsername(), credentials.getPassword(), credentials.getRequiredRole());
 
             // Issue a token for the user
-            String token = authService.issueToken(creds.getUsername());
+            String token = authService.issueToken(credentials.getUsername());
 
             // Return the token on the response
             response.entity(token);
