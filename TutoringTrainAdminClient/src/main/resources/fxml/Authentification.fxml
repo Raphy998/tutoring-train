@@ -13,14 +13,14 @@
 
 <AnchorPane id="AnchorPane" prefHeight="450.0" prefWidth="450.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.bsd.tutoringtrain.controller.AuthentificationController">
    <children>
-      <PasswordField fx:id="txtPassword" layoutX="156.0" layoutY="287.0" prefHeight="30.0" prefWidth="280.0" AnchorPane.rightAnchor="50.0" />
+      <TextField fx:id="txtUsername" layoutX="156.0" layoutY="240.0" prefHeight="30.0" prefWidth="281.0" text="admin" AnchorPane.rightAnchor="50.0" />
+      <PasswordField fx:id="txtPassword" layoutX="156.0" layoutY="287.0" prefHeight="30.0" prefWidth="280.0" text="admin" AnchorPane.rightAnchor="50.0" />
       <Button fx:id="btnLogin" layoutX="310.0" layoutY="347.0" mnemonicParsing="false" onAction="#onBtnLogin" prefHeight="30.0" prefWidth="90.0" text="Login" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="50.0">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
       <Label layoutX="79.0" layoutY="246.0" prefWidth="54.0" text="Username" AnchorPane.leftAnchor="50.0" />
-      <TextField fx:id="txtUsername" layoutX="156.0" layoutY="240.0" prefHeight="30.0" prefWidth="281.0" AnchorPane.rightAnchor="50.0" />
       <Label layoutX="81.0" layoutY="293.0" text="Password" AnchorPane.leftAnchor="50.0" />
       <Label fx:id="lblMessage" layoutX="66.0" layoutY="419.0" style="-fx-background-color: #eeeeee;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <padding>

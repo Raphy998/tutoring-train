@@ -1,13 +1,15 @@
 package at.bsd.tutoringtrain.controller;
 
-import at.bsd.tutoringtrain.network.AuthenticationResult;
+import at.bsd.tutoringtrain.data.Database;
+import at.bsd.tutoringtrain.debugging.MessageLogger;
 import at.bsd.tutoringtrain.network.Communicator;
+import at.bsd.tutoringtrain.network.Result;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -35,42 +37,82 @@ public class AuthentificationController implements Initializable {
     private Label lblMessage;
     
     private Communicator communicator;
+    private Database db;
+    private MessageLogger logger;
    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        logger = MessageLogger.getINSTANCE();
         communicator = Communicator.getInstance();
-        
+        logger.objectInitialized(this, getClass());
     }    
 
     @FXML
     void onBtnLogin(ActionEvent event) {
+        Parent root;
+        Stage stage;
+        Result result;
         try {
-            AuthenticationResult authresult;
-            if ((authresult = communicator.authenticate(txtUsername.getText(), txtPassword.getText())) == AuthenticationResult.ALLOWED) {
-                Parent root;
-                Stage stage;
+            disableInput();
+            clearMessage();
+            result = communicator.authenticate(txtUsername.getText(), txtPassword.getText());
+            if (!result.isError()) {
+                logger.info("Authentification successful", getClass());                
                 root = FXMLLoader.load(getClass().getResource("/fxml/Main.fxml"));
                 stage = new Stage();
                 stage.setTitle("TutoringTrain - Admin Client");
                 stage.setScene(new Scene(root));
                 stage.show();
-                
-                ((Stage)btnLogin.getScene().getWindow()).close();
+
+                closeWindow();
             } else {
-                switch (authresult) {
-                    case FORBIDDEN:
-                        lblMessage.setText("Access forbidden! username or password incorrect.");
-                        break;
-                    case UNAUTHORIZED:
-                        lblMessage.setText("Access forbidden! user not allowed to use admin client.");
-                        break;
-                    default:
-                        lblMessage.setText("Unknown authentification result.");
-                        break;
-                }
+                enableInput();
+                displayMessage(result.toString());
+                logger.error(result.toString(), getClass());
             }
         } catch (Exception ex) {
             lblMessage.setText(ex.getMessage());
+            logger.error(ex.getMessage(), getClass());
         }
+    }
+    
+    /**
+     * 
+     * @param message 
+     */
+    private void displayMessage(String message) {
+        lblMessage.setText(message);
+    }
+    
+    /**
+     * 
+     */
+    private void clearMessage() {
+        lblMessage.setText("");
+    }
+    
+    /**
+     * 
+     */
+    private void disableInput() {
+        txtPassword.setDisable(true);
+        txtUsername.setDisable(true);
+        btnLogin.setDisable(true);
+    }
+    
+    /**
+     * 
+     */
+    private void enableInput() {
+        txtPassword.setDisable(false);
+        txtUsername.setDisable(false);
+        btnLogin.setDisable(false);
+    }
+    
+    /**
+     * 
+     */
+    private void closeWindow() {
+        ((Stage)btnLogin.getScene().getWindow()).close();
     }
 }

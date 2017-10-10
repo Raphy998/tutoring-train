@@ -9,12 +9,14 @@ import java.io.Serializable;
 public class Credentials implements Serializable {
     private String username;
     private String password;
+    private Character requiredRole;
 
     public Credentials() {}
     
     public Credentials(String username, String password) {
         this.username = username;
         this.password = password;
+        this.requiredRole = 'U';
     }
 
     public String getUsername() {
@@ -31,5 +33,18 @@ public class Credentials implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Character getRequiredRole() {
+        return requiredRole;
+    }
+
+    public void setRequiredRole(Character requiredRole) {
+        this.requiredRole = requiredRole;
+    }
+
+    @Override
+    public String toString() {
+        return "Credentials{" + "username=" + username + ", password=" + password + ", requiredRole=" + requiredRole + '}';
     }
 }
