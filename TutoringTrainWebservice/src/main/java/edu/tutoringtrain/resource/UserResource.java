@@ -22,6 +22,8 @@ import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Gender;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -63,8 +65,25 @@ public class UserResource extends AbstractResource {
                 handleException(ex, response);
             }
             catch (TransactionalException rbex) {
+                String msg = "";
+                try {
+                    SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) rbex.getCause().getCause().getCause().getCause();
+                    if (innerEx.getMessage().contains("U_USER_EMAIL")) {
+                        msg = "email '" + userIn.getEmail() + "' not available";
+                    }
+                    else if (innerEx.getMessage().contains("PK_TUSER")) {
+                        msg = "username '" + userIn.getUsername() + "' not available";
+                    }
+                    else {
+                        msg = innerEx.getMessage();
+                    }
+                }
+                catch (Exception e) {
+                    msg = "unknown error happened";
+                }
+                
                 response.status(Response.Status.CONFLICT);
-                response.entity("username '" + userIn.getUsername() + "' not available");
+                response.entity(msg);
             }
             catch (Exception e) {
                 unknownError(e, response);
@@ -84,9 +103,10 @@ public class UserResource extends AbstractResource {
                     @Context SecurityContext securityContext) throws Exception {
         
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        User userIn = null;
         
         try {
-            User userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
+            userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
             userIn.setUsername(securityContext.getUserPrincipal().getName());       //set user to logged in user (to avoid making another json view)
             
             userService.updateUser(userIn);
@@ -94,6 +114,27 @@ public class UserResource extends AbstractResource {
         catch (Exception ex) {
             try {
                 handleException(ex, response);
+            }
+            catch (TransactionalException rbex) {
+                String msg = "";
+                try {
+                    SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) rbex.getCause().getCause().getCause().getCause();
+                    if (innerEx.getMessage().contains("U_USER_EMAIL")) {
+                        msg = "email '" + userIn.getEmail() + "' not available";
+                    }
+                    else if (innerEx.getMessage().contains("PK_TUSER")) {
+                        msg = "username '" + userIn.getUsername() + "' not available";
+                    }
+                    else {
+                        msg = innerEx.getMessage();
+                    }
+                }
+                catch (Exception e) {
+                    msg = "unknown error happened";
+                }
+                
+                response.status(Response.Status.CONFLICT);
+                response.entity(msg);
             }
             catch (Exception e) {
                 unknownError(e, response);
@@ -112,14 +153,36 @@ public class UserResource extends AbstractResource {
                     final String userStr) throws Exception {
         
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        User userIn = null;
         
         try {
-            User userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
+            userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
             userService.updateUser(userIn);
         } 
         catch (Exception ex) {
             try {
                 handleException(ex, response);
+            }
+            catch (TransactionalException rbex) {
+                String msg = "";
+                try {
+                    SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) rbex.getCause().getCause().getCause().getCause();
+                    if (innerEx.getMessage().contains("U_USER_EMAIL")) {
+                        msg = "email '" + userIn.getEmail() + "' not available";
+                    }
+                    else if (innerEx.getMessage().contains("PK_TUSER")) {
+                        msg = "username '" + userIn.getUsername() + "' not available";
+                    }
+                    else {
+                        msg = innerEx.getMessage();
+                    }
+                }
+                catch (Exception e) {
+                    msg = "unknown error happened";
+                }
+                
+                response.status(Response.Status.CONFLICT);
+                response.entity(msg);
             }
             catch (Exception e) {
                 unknownError(e, response);
