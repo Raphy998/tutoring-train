@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.resource;
 
+import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
@@ -36,6 +37,7 @@ import javax.ws.rs.core.SecurityContext;
  *
  * @author Elias
  */
+@Localized
 @Path("/offer")
 @RequestScoped
 public class OfferResource extends AbstractResource {
@@ -51,6 +53,7 @@ public class OfferResource extends AbstractResource {
                     final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
@@ -61,10 +64,10 @@ public class OfferResource extends AbstractResource {
         }
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 
@@ -79,6 +82,7 @@ public class OfferResource extends AbstractResource {
                     final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
@@ -88,10 +92,10 @@ public class OfferResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 
@@ -106,6 +110,7 @@ public class OfferResource extends AbstractResource {
             @QueryParam(value = "start") Integer start,
             @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
 
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -117,10 +122,10 @@ public class OfferResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 
@@ -136,6 +141,7 @@ public class OfferResource extends AbstractResource {
             @QueryParam(value = "start") Integer start,
             @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
 
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -152,10 +158,10 @@ public class OfferResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import edu.tutoringtrain.annotations.AuthenticationFilter;
+import edu.tutoringtrain.annotations.LanguageFilter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,9 +47,11 @@ public class ApplicationConfig extends Application {
     public Set<Class<?>> getClasses() {        
         Set<Class<?>> resources = new java.util.HashSet<>();
         
+        resources.add(AuthenticationFilter.class);
+        resources.add(LanguageFilter.class);
+        
         resources.add(UserResource.class);
         resources.add(AuthenticationResource.class);
-        resources.add(AuthenticationFilter.class);
         resources.add(SubjectResource.class);
         resources.add(OfferResource.class);
         return resources;

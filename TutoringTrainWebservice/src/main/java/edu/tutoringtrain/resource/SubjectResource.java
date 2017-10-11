@@ -5,11 +5,10 @@
  */
 package edu.tutoringtrain.resource;
 
+import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
-import static edu.tutoringtrain.data.error.ErrorBuilder.*;
-import javax.persistence.RollbackException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.Consumes;
@@ -38,6 +37,7 @@ import javax.ws.rs.PathParam;
  *
  * @author Elias
  */
+@Localized
 @Path("/subject")
 @RequestScoped
 public class SubjectResource extends AbstractResource {
@@ -50,6 +50,7 @@ public class SubjectResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getAll(@Context HttpServletRequest httpServletRequest) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
             List<Subject> subjects = subjectService.getAllSubjects();
@@ -57,10 +58,10 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 
@@ -74,6 +75,7 @@ public class SubjectResource extends AbstractResource {
     public Response create(@Context HttpServletRequest httpServletRequest,
                     final String subjectStr) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         Subject subjectIn = null;
         
@@ -85,17 +87,17 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
                 response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
                         .withParams(subjectIn.getName())
-                        .withLang(Language.getDefault())
+                        .withLang(lang)
                         .build());
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 
@@ -109,6 +111,7 @@ public class SubjectResource extends AbstractResource {
     public Response update(@Context HttpServletRequest httpServletRequest,
                     final String subjectStr) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -117,16 +120,16 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (NullValueException npex) {
                 response.status(Response.Status.NOT_FOUND);
                 response.entity(new ErrorBuilder(Error.USER_NOT_FOUND)
-                        .withLang(Language.getDefault())
+                        .withLang(lang)
                         .build());
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 
@@ -140,6 +143,7 @@ public class SubjectResource extends AbstractResource {
     public Response delete(@Context HttpServletRequest httpServletRequest,
                     @PathParam(value = "id") Integer subjectId) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -147,10 +151,10 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
 

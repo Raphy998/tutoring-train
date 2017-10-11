@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.resource;
 
+import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
@@ -41,6 +42,7 @@ import javax.ws.rs.core.SecurityContext;
  *
  * @author Elias
  */
+@Localized
 @Path("/user")
 @RequestScoped
 public class UserResource extends AbstractResource {
@@ -54,8 +56,10 @@ public class UserResource extends AbstractResource {
     public Response register(@Context HttpServletRequest httpServletRequest,
                     final String userStr) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
+        
         try {
             userIn = getMapper().readerWithView(Views.User.In.Register.class).withType(User.class).readValue(userStr);
             User userOut = userService.registerUser(userIn);
@@ -64,14 +68,14 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
-                response.entity(getError(rbex, userIn).withLang(Language.getDefault()).build());
+                response.entity(getError(rbex, userIn).withLang(lang).build());
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  
@@ -87,6 +91,7 @@ public class UserResource extends AbstractResource {
                     final String userStr,
                     @Context SecurityContext securityContext) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
         
@@ -98,14 +103,14 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
-                response.entity(getError(rbex, userIn).withLang(Language.getDefault()).build());
+                response.entity(getError(rbex, userIn).withLang(lang).build());
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  
@@ -120,6 +125,7 @@ public class UserResource extends AbstractResource {
     public Response updateAny(@Context HttpServletRequest httpServletRequest,
                     final String userStr) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
         
@@ -129,14 +135,14 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
-                response.entity(getError(rbex, userIn).withLang(Language.getDefault()).build());
+                response.entity(getError(rbex, userIn).withLang(lang).build());
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  
@@ -149,6 +155,7 @@ public class UserResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getAllGenders(@Context HttpServletRequest httpServletRequest) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -157,10 +164,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  
@@ -173,6 +180,7 @@ public class UserResource extends AbstractResource {
     public Response getOwnUser(@Context HttpServletRequest httpServletRequest,
                     @Context SecurityContext securityContext) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
@@ -182,10 +190,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  
@@ -199,7 +207,8 @@ public class UserResource extends AbstractResource {
     public Response getUsers(@Context HttpServletRequest httpServletRequest,
                     @QueryParam(value = "start") Integer start,
                     @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
-
+        
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -216,10 +225,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  
@@ -235,6 +244,7 @@ public class UserResource extends AbstractResource {
                     final String blockStr,
                     @Context SecurityContext securityContext) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -256,10 +266,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  
@@ -274,6 +284,7 @@ public class UserResource extends AbstractResource {
                     @PathParam("username") String user2unblock,
                     @Context SecurityContext securityContext) throws Exception {
         
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -290,10 +301,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.getDefault());
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.getDefault());
+                unknownError(e, response, lang);
             } 
         }
  

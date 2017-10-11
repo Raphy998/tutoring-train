@@ -56,6 +56,17 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         // Get the Authorization header from the request
         String authorizationHeader =
                 requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+        
+        // Get the ACCEPT_LANGUAGE header from the request
+        String languageHeader =
+                requestContext.getHeaderString(HttpHeaders.ACCEPT_LANGUAGE);
+        Language lang;
+        try {
+            lang = Language.valueOf(languageHeader.toUpperCase());
+        } 
+        catch (Exception e) {
+            lang = Language.getDefault();
+        }
 
         // Validate the Authorization header
         if (!isTokenBasedAuthentication(authorizationHeader)) {
@@ -86,13 +97,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             }
         } 
         catch (UnauthorizedException e) {
-            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode(), e.getError().withLang(Language.getDefault()).build());
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode(), e.getError().withLang(lang).build());
         }
         catch (ForbiddenException e) {
-            abortWithStatus(requestContext, Response.Status.FORBIDDEN.getStatusCode(), e.getError().withLang(Language.getDefault()).build());
+            abortWithStatus(requestContext, Response.Status.FORBIDDEN.getStatusCode(), e.getError().withLang(lang).build());
         }
         catch (BlockedException e) {
-            abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getError().withLang(Language.getDefault()).build());
+            abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getError().withLang(lang).build());
         }
         
         //set user principal

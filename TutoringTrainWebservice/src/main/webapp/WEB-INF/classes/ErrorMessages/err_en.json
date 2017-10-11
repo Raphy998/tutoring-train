@@ -6,7 +6,7 @@
     "5": "insufficient priveliges",
     "6": "username must not be null",
     "7": "name must not be null",
-    "8": "offer must not be null",
+    "8": "user must not be null",
     "9": "offer must not be null",
     "10": "gender must not be null",
     "11": "subject must not be null",
