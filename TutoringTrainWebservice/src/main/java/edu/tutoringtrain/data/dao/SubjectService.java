@@ -5,6 +5,9 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.error.Error;
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.entities.Subject;
 import java.math.BigDecimal;
@@ -26,7 +29,7 @@ public class SubjectService extends AbstractService {
     
     @Transactional
     public List<Subject> getAllSubjects() {
-        List<Subject> results = new ArrayList<>();
+        List<Subject> results;
         
         TypedQuery<Subject> query =
         em.createNamedQuery("Subject.findAll", Subject.class);
@@ -39,16 +42,16 @@ public class SubjectService extends AbstractService {
     public Subject getSubject(BigDecimal id) throws SubjectNotFoundException {
         Subject s = em.find(Subject.class, id);
         if (s == null) {
-            throw new SubjectNotFoundException("subject no found");
+            throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(id));
         }
 
         return s;
     }
     
     @Transactional
-    public Subject createSubject(Subject s) throws NullPointerException {
+    public Subject createSubject(Subject s) throws NullValueException {
         if (s.getName() == null) {
-            throw new NullPointerException("name must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.NAME_NULL));
         }
         em.persist(s);
         
@@ -56,14 +59,14 @@ public class SubjectService extends AbstractService {
     }
     
     @Transactional
-    public void updateSubject(Subject subject) throws NullPointerException, SubjectNotFoundException {
+    public void updateSubject(Subject subject) throws NullValueException, SubjectNotFoundException {
         if (subject == null) {
-            throw new NullPointerException("subject must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.SUBJECT_NULL));
         }
         
         Subject dbSubject = em.find(Subject.class, subject.getId());
         if (subject == null) {
-            throw new SubjectNotFoundException("subject not found");
+            throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(subject.getId()));
         }
         dbSubject.setName(subject.getName());
     }
@@ -73,7 +76,7 @@ public class SubjectService extends AbstractService {
         
         Subject subject = em.find(Subject.class, new BigDecimal(subjectID));
         if (subject == null) {
-            throw new SubjectNotFoundException("subject not found");
+            throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(subjectID));
         }
 
         em.remove(subject);

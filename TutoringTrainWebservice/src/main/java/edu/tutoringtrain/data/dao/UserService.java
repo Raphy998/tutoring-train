@@ -5,7 +5,11 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
+import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Gender;
@@ -28,13 +32,13 @@ public class UserService extends AbstractService {
         
     }
     
-    @Transactional
-    public User registerUser(User userReq) throws IllegalArgumentException, NullPointerException {
+    @Transactional(dontRollbackOn = {Exception.class})
+    public User registerUser(User userReq) throws InvalidArgumentException, NullValueException {
         if (userReq == null) {
-            throw new NullPointerException("user must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
         }
         if (userReq.getEmail() != null && !EmailUtils.isEmailValid(userReq.getEmail())) {
-            throw new IllegalArgumentException("email has invalid format");
+            throw new InvalidArgumentException(new ErrorBuilder(Error.INVALID_EMAIL).withParams(userReq.getEmail()));
         }
         
         Gender gender = getGenderOrDefault(userReq.getGender());
@@ -48,12 +52,12 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    public void updateUser(User userReq) throws IllegalArgumentException, NullPointerException, UserNotFoundException {
+    public void updateUser(User userReq) throws InvalidArgumentException, NullValueException, UserNotFoundException {
         if (userReq == null || userReq.getUsername() == null) {
-            throw new NullPointerException("user must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
         }
-        if (!EmailUtils.isEmailValid(userReq.getEmail())) {
-            throw new IllegalArgumentException("email has invalid format");
+        if (userReq.getEmail() != null && !EmailUtils.isEmailValid(userReq.getEmail())) {
+            throw new InvalidArgumentException(new ErrorBuilder(Error.INVALID_EMAIL).withParams(userReq.getEmail()));
         }
         
         //get gender for user
@@ -61,7 +65,7 @@ public class UserService extends AbstractService {
         
         User currentUser = em.find(User.class, userReq.getUsername());
         if (currentUser == null) {
-            throw new UserNotFoundException("user not found");
+            throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(userReq.getUsername()));
         }
 
         if (userReq.getEducation() != null) currentUser.setEducation(userReq.getEducation());
@@ -74,15 +78,15 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    private Gender getGenderOrDefault(Gender g) {
+    private Gender getGenderOrDefault(Gender g)  {
         try {
             g = getGenderById(g.getId());
         }
-        catch (NullPointerException ex) {
+        catch (NullPointerException | NullValueException ex) {
             try {
                 g = getGenderById(DEFAULT_GENDER);
             }
-            catch (NullPointerException npex) {
+            catch (NullPointerException | NullValueException npex) {
                 g = null;
             }
         }
@@ -91,14 +95,14 @@ public class UserService extends AbstractService {
     } 
     
     @Transactional
-    public User getUserByUsername(String username) throws NullPointerException, UserNotFoundException {
+    public User getUserByUsername(String username) throws NullValueException, UserNotFoundException {
         if (username == null) {
-            throw new NullPointerException("username must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
 
         User user = em.find(User.class, username);
         if (user == null) {
-            throw new UserNotFoundException("user not found");
+            throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
         }
         
         return user;
@@ -122,9 +126,9 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    public Blocked getBlockOfUser(String username) {
+    public Blocked getBlockOfUser(String username) throws NullValueException {
         if (username == null) {
-            throw new NullPointerException("username must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
         
         return em.find(Blocked.class, username);
@@ -132,14 +136,14 @@ public class UserService extends AbstractService {
     
     //TODO: implement duedate
     @Transactional
-    public void blockUser(Blocked block, boolean isBlock) throws IllegalArgumentException, NullPointerException {
+    public void blockUser(Blocked block, boolean isBlock) throws InvalidArgumentException, NullValueException {
         if (block.getUsername() == null) {
-            throw new NullPointerException("username must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
         
         User user = em.find(User.class, block.getUsername());
         if (user == null) {
-            throw new NullPointerException("user not found");
+            throw new NullValueException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(block.getUsername()));
         }
         Blocked oldBlock = getBlockOfUser(block.getUsername());
 
@@ -166,16 +170,16 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    public Gender getGenderById(BigDecimal id) throws NullPointerException {
+    public Gender getGenderById(BigDecimal id) throws NullValueException {
         Gender result = null;
         
         if (id == null) {
-            throw new NullPointerException("id must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.GENDER_NULL));
         }
         
         result = em.find(Gender.class, id);
         if (result == null) {
-            throw new NullPointerException("gender not found");
+            throw new NullValueException(new ErrorBuilder(Error.GENDER_NOT_FOUND).withParams(id));
         }
         
         return result;

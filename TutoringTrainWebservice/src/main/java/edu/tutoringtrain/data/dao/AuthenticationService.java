@@ -5,9 +5,13 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.data.exceptions.BlockedException;
+import edu.tutoringtrain.data.exceptions.ForbiddenException;
+import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Session;
 import edu.tutoringtrain.entities.User;
@@ -21,8 +25,6 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
 
 /**
  *
@@ -35,7 +37,7 @@ public class AuthenticationService extends AbstractService {
     }
     
     @Transactional(dontRollbackOn = Exception.class)
-    public void authenticate(String username, String password, Character requiredRole) throws NotAuthorizedException, ForbiddenException, BlockedException {
+    public void authenticate(String username, String password, Character requiredRole) throws UnauthorizedException, ForbiddenException, BlockedException {
         TypedQuery<User> query =
         em.createNamedQuery("User.findByUsernameAndPassword", User.class);
         query.setParameter("username", username);
@@ -43,17 +45,41 @@ public class AuthenticationService extends AbstractService {
         List<User> results = query.getResultList();
         
         if (results.isEmpty()) {
-            throw new NotAuthorizedException("authentication failed");
+            throw new UnauthorizedException(new ErrorBuilder(Error.AUTH_FAILED));
         }
 
         if (!canAuthenticate(requiredRole, results.get(0).getRole())) {
-            throw new ForbiddenException("only admins can access admin applications");
+            throw new ForbiddenException(new ErrorBuilder(Error.ADMIN_ONLY));
         }
         //check if user is blocked
         Blocked block = results.get(0).getBlock();
         if (block != null) {
-            throw new BlockedException(block);
+            throwBlockedException(block);
         }
+    }
+    
+    private void throwBlockedException(Blocked block) throws BlockedException {
+        int errCode;
+        Object[] params;
+
+        if (block.getReason() != null && block.getDuedate() != null) {
+            errCode = Error.BLOCKED;
+            params = new Object[] {block.getReason(), block.getDuedate()};
+        }
+        else if (block.getReason() == null && block.getDuedate() != null) {
+            errCode = Error.BLOCKED_NO_REASON;
+            params = new Object[] {block.getDuedate()};
+        }
+        else if (block.getReason() != null && block.getDuedate() == null) {
+            errCode = Error.BLOCKED_NO_DUEDATE;
+            params = new Object[] {block.getReason()};
+        }
+        else {
+            errCode = Error.BLOCKED_NO_PARAMS;
+            params = new Object[0];
+        }
+
+        throw new BlockedException(new ErrorBuilder(errCode).withParams(params));
     }
     
     private boolean canAuthenticate(Character requiredRole, Character role) {
@@ -83,21 +109,21 @@ public class AuthenticationService extends AbstractService {
         return token;
     }
     
-    @Transactional(dontRollbackOn = {NotAuthorizedException.class, ForbiddenException.class, BlockedException.class})
-    public void checkPermissions(String token, List<Role> roles) throws NotAuthorizedException, ForbiddenException, BlockedException {
+    @Transactional(dontRollbackOn = {UnauthorizedException.class, ForbiddenException.class, BlockedException.class})
+    public void checkPermissions(String token, List<Role> roles) throws UnauthorizedException, ForbiddenException, BlockedException {
         User user = getUserByToken(token);
         if (user == null) {
-            throw new NotAuthorizedException("token '" + token + "' not valid");
+            throw new UnauthorizedException(new ErrorBuilder(Error.TOKEN_INVALID).withParams(token));
         }
         
         //check if user is blocked
         Blocked block = user.getBlock();
         if (block != null) {
-            throw new BlockedException(block);
+            throwBlockedException(block);
         }
         
         if (!hasPermissions(user, roles)) {
-            throw new ForbiddenException("insufficient priveliges");
+            throw new ForbiddenException(new ErrorBuilder(Error.INSUFF_PRIV));
         }
     }
     
@@ -121,8 +147,8 @@ public class AuthenticationService extends AbstractService {
         return hasPerm;
     }
     
-    @Transactional(dontRollbackOn = NotAuthorizedException.class)
-    public User getUserByToken(String token) throws NotAuthorizedException {
+    @Transactional(dontRollbackOn = UnauthorizedException.class)
+    public User getUserByToken(String token) throws UnauthorizedException {
         User u = null;
         
         TypedQuery<Session> query =
@@ -133,7 +159,7 @@ public class AuthenticationService extends AbstractService {
         if (!results.isEmpty()) {
             Session session = results.get(0);
             if (session.getExpirydate() != null && session.getExpirydate().before(DateUtils.toDate(LocalDateTime.now()))) {
-                throw new NotAuthorizedException("token expired");
+                throw new UnauthorizedException(new ErrorBuilder(Error.TOKEN_EXPIRED).withParams(token));
             }
             u = session.getUser();
         }

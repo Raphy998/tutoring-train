@@ -6,15 +6,11 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.data.Credentials;
-import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.dao.AuthenticationService;
-import edu.tutoringtrain.data.exceptions.BlockedException;
-import edu.tutoringtrain.utils.Views;
+import edu.tutoringtrain.data.error.Language;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -52,10 +48,10 @@ public class AuthenticationResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
         

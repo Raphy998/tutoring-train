@@ -10,8 +10,8 @@ import edu.tutoringtrain.data.error.ErrorBuilder;
  *
  * @author Elias
  */
-public class UserNotFoundException extends WsErrorException {
-    public UserNotFoundException(ErrorBuilder err) {
+public class NullValueException extends WsErrorException {
+    public NullValueException(ErrorBuilder err) {
         super(err);
     }
 }

@@ -6,6 +6,9 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.error.Error;
+import static edu.tutoringtrain.data.error.ErrorBuilder.*;
 import javax.persistence.RollbackException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -17,6 +20,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.SubjectService;
+import edu.tutoringtrain.data.error.Language;
+import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
@@ -52,10 +57,10 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 
@@ -80,14 +85,17 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
-                response.entity("subject '" + subjectIn.getName() + "' already exists");
+                response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
+                        .withParams(subjectIn.getName())
+                        .withLang(Language.getDefault())
+                        .build());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 
@@ -109,13 +117,16 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
-            catch (NullPointerException npex) {
+            catch (NullValueException npex) {
                 response.status(Response.Status.NOT_FOUND);
+                response.entity(new ErrorBuilder(Error.USER_NOT_FOUND)
+                        .withLang(Language.getDefault())
+                        .build());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 
@@ -136,10 +147,10 @@ public class SubjectResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 

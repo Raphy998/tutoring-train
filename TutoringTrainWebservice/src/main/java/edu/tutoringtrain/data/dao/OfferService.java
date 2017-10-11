@@ -5,6 +5,9 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.error.Error;
+import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
@@ -64,7 +67,7 @@ public class OfferService extends AbstractService {
         
         User user = em.find(User.class, username);
         if (user == null) {
-            throw new UserNotFoundException("user not found");
+            throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
         }
 
         TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewestOfUser", Offer.class);
@@ -77,22 +80,22 @@ public class OfferService extends AbstractService {
     }
     
     @Transactional
-    public Offer createOffer(String username, Offer offerReq) throws NullPointerException, SubjectNotFoundException, UserNotFoundException {
+    public Offer createOffer(String username, Offer offerReq) throws NullValueException, SubjectNotFoundException, UserNotFoundException {
         if (username == null) {
-            throw new NullPointerException("name must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
         if (offerReq == null) {
-            throw new NullPointerException("offer must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
         }
         
         Subject s = subjectService.getSubject(offerReq.getSubject().getId());
         if (s == null) {
-            throw new SubjectNotFoundException("subject not found");
+            throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(offerReq.getSubject().getId()));
         }
         
         User user = userService.getUserByUsername(username);
         if (user == null) {
-            throw new UserNotFoundException("user not found");
+            throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
         }
 
         offerReq.setSubject(s);
@@ -105,9 +108,9 @@ public class OfferService extends AbstractService {
     }
     
     @Transactional
-    public void updateOffer(String username, Offer offerReq) throws NullPointerException, OfferNotFoundException, SubjectNotFoundException {
+    public void updateOffer(String username, Offer offerReq) throws NullValueException, OfferNotFoundException, SubjectNotFoundException {
         if (offerReq == null) {
-            throw new NullPointerException("offer must not be null");
+            throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
         }
         
         TypedQuery<Offer> query = em.createNamedQuery("Offer.findByIdAndUsername", Offer.class);
@@ -116,7 +119,7 @@ public class OfferService extends AbstractService {
         List<Offer> results = query.getResultList();
 
         if (results.isEmpty()) {
-            throw new OfferNotFoundException("offer not found");
+            throw new OfferNotFoundException(new ErrorBuilder(Error.OFFER_NOT_FOUND).withParams(offerReq.getId(), username));
         }
         Offer dbOffer = results.get(0);  
         if (offerReq.getDescription() != null) dbOffer.setDescription(offerReq.getDescription());

@@ -9,7 +9,7 @@ package edu.tutoringtrain.data;
  *
  * @author Elias
  */
-public class CustomHttpStatusCodes {
+public abstract class CustomHttpStatusCodes {
     public static final int BLOCKED = 450;
     public static final int MALFORMED_JSON = 451;
     public static final int SUBJECT_NOT_FOUND = 452;

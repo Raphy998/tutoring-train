@@ -5,12 +5,13 @@
  */
 package edu.tutoringtrain.data.exceptions;
 
+import edu.tutoringtrain.data.error.ErrorBuilder;
 /**
  *
  * @author Elias
  */
-public class QueryStringException extends Exception {
-    public QueryStringException(String message) {
-        super(message);
+public class QueryStringException extends WsErrorException {
+    public QueryStringException(ErrorBuilder err) {
+        super(err);
     }
 }

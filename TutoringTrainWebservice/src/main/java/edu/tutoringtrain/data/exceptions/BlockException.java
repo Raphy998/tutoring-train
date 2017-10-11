@@ -5,12 +5,13 @@
  */
 package edu.tutoringtrain.data.exceptions;
 
+import edu.tutoringtrain.data.error.ErrorBuilder;
 /**
  *
  * @author Elias
  */
-public class BlockException extends Exception {
-    public BlockException(String message) {
-        super(message);
+public class BlockException extends WsErrorException {
+    public BlockException(ErrorBuilder err) {
+        super(err);
     }
 }

@@ -5,21 +5,13 @@
  */
 package edu.tutoringtrain.data.exceptions;
 
-import edu.tutoringtrain.entities.Blocked;
-
+import edu.tutoringtrain.data.error.ErrorBuilder;
 /**
  *
  * @author Elias
  */
-public class BlockedException extends Exception {
-    private Blocked block;
-    
-    public BlockedException(Blocked block) {
-        super();
-        this.block = block;
-    }
-
-    public Blocked getBlock() {
-        return block;
+public class BlockedException extends WsErrorException {
+    public BlockedException(ErrorBuilder err) {
+        super(err);
     }
 }

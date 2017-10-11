@@ -6,6 +6,8 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.dao.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -16,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
@@ -23,7 +26,6 @@ import edu.tutoringtrain.entities.Gender;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -62,31 +64,14 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (TransactionalException rbex) {
-                String msg = "";
-                try {
-                    SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) rbex.getCause().getCause().getCause().getCause();
-                    if (innerEx.getMessage().contains("U_USER_EMAIL")) {
-                        msg = "email '" + userIn.getEmail() + "' not available";
-                    }
-                    else if (innerEx.getMessage().contains("PK_TUSER")) {
-                        msg = "username '" + userIn.getUsername() + "' not available";
-                    }
-                    else {
-                        msg = innerEx.getMessage();
-                    }
-                }
-                catch (Exception e) {
-                    msg = "unknown error happened";
-                }
-                
                 response.status(Response.Status.CONFLICT);
-                response.entity(msg);
+                response.entity(getError(rbex, userIn).withLang(Language.getDefault()).build());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
@@ -113,31 +98,14 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (TransactionalException rbex) {
-                String msg = "";
-                try {
-                    SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) rbex.getCause().getCause().getCause().getCause();
-                    if (innerEx.getMessage().contains("U_USER_EMAIL")) {
-                        msg = "email '" + userIn.getEmail() + "' not available";
-                    }
-                    else if (innerEx.getMessage().contains("PK_TUSER")) {
-                        msg = "username '" + userIn.getUsername() + "' not available";
-                    }
-                    else {
-                        msg = innerEx.getMessage();
-                    }
-                }
-                catch (Exception e) {
-                    msg = "unknown error happened";
-                }
-                
                 response.status(Response.Status.CONFLICT);
-                response.entity(msg);
+                response.entity(getError(rbex, userIn).withLang(Language.getDefault()).build());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
@@ -161,31 +129,14 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (TransactionalException rbex) {
-                String msg = "";
-                try {
-                    SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) rbex.getCause().getCause().getCause().getCause();
-                    if (innerEx.getMessage().contains("U_USER_EMAIL")) {
-                        msg = "email '" + userIn.getEmail() + "' not available";
-                    }
-                    else if (innerEx.getMessage().contains("PK_TUSER")) {
-                        msg = "username '" + userIn.getUsername() + "' not available";
-                    }
-                    else {
-                        msg = innerEx.getMessage();
-                    }
-                }
-                catch (Exception e) {
-                    msg = "unknown error happened";
-                }
-                
                 response.status(Response.Status.CONFLICT);
-                response.entity(msg);
+                response.entity(getError(rbex, userIn).withLang(Language.getDefault()).build());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
@@ -206,10 +157,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
@@ -231,10 +182,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
@@ -265,10 +216,10 @@ public class UserResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
@@ -290,25 +241,25 @@ public class UserResource extends AbstractResource {
             Blocked blockIn = getMapper().readerWithView(Views.Block.In.Create.class).withType(Blocked.class).readValue(blockStr);
             
             if (securityContext.getUserPrincipal().getName().equals(blockIn.getUsername())) {
-                throw new BlockException("cannot block own user");
+                throw new BlockException(new ErrorBuilder(Error.USER_BLOCK_OWN));
             }
             
             User user2Block = userService.getUserByUsername(blockIn.getUsername());
             if (user2Block == null) {
-                throw new UserNotFoundException("cannot find user");
+                throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(blockIn.getUsername()));
             }
             else if (user2Block.getRole().equals('A')) {
-                throw new BlockException("cannot block other admins");
+                throw new BlockException(new ErrorBuilder(Error.USER_BLOCK_ADMIN));
             }
             
             userService.blockUser(blockIn, true);
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
@@ -327,26 +278,49 @@ public class UserResource extends AbstractResource {
 
         try {
             if (securityContext.getUserPrincipal().getName().equals(user2unblock)) {
-                throw new BlockException("cannot unblock own user");
+                throw new BlockException(new ErrorBuilder(Error.USER_UNBLOCK_OWN));
             }
             
             User user = userService.getUserByUsername(user2unblock);
             if (user == null) {
-                throw new UserNotFoundException("cannot find user");
+                throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(user2unblock));
             }
             
             userService.blockUser(new Blocked(user2unblock), false);
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
  
         return response.build();
+    }
+    
+    private static ErrorBuilder getError(TransactionalException ex, User userIn) {
+        ErrorBuilder err;
+        try {
+            System.out.println("------------------- " + ex.getCause().getClass());
+            SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) ex.getCause().getCause().getCause().getCause();
+            
+            if (innerEx.getMessage().contains("U_USER_EMAIL")) {
+                err = new ErrorBuilder(Error.EMAIL_CONFLICT).withParams(userIn.getEmail());
+            }
+            else if (innerEx.getMessage().contains("PK_TUSER")) {
+                err = new ErrorBuilder(Error.USERNAME_CONFLICT).withParams(userIn.getUsername());
+            }
+            else {
+                err = new ErrorBuilder(Error.UNKNOWN).withParams(innerEx.getMessage());
+            }
+        }
+        catch (Exception e) {
+            err = new ErrorBuilder(Error.UNKNOWN).withParams(e.getMessage());
+        }
+        
+        return err;
     }
     
     //TODO: Unused in Sprint 1
@@ -378,5 +352,4 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     */
-    
 }

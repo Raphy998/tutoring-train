@@ -5,12 +5,13 @@
  */
 package edu.tutoringtrain.data.exceptions;
 
+import edu.tutoringtrain.data.error.ErrorBuilder;
 /**
  *
  * @author Elias
  */
-public class OfferNotFoundException extends Exception {
-    public OfferNotFoundException(String message) {
-        super(message);
+public class OfferNotFoundException extends WsErrorException {
+    public OfferNotFoundException(ErrorBuilder err) {
+        super(err);
     }
 }

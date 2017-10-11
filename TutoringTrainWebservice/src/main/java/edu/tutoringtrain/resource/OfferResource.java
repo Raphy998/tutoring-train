@@ -6,7 +6,10 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Secured;
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.dao.OfferService;
+import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Offer;
@@ -58,10 +61,10 @@ public class OfferResource extends AbstractResource {
         }
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 
@@ -85,10 +88,10 @@ public class OfferResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 
@@ -107,17 +110,17 @@ public class OfferResource extends AbstractResource {
 
         try {
             if (start == null || pageSize == null) {
-                throw new QueryStringException("start and pageSize must be given in query string");
+                throw new QueryStringException(new ErrorBuilder(Error.START_PAGESIZE_QUERY_MISSING));
             }
             List<Offer> newestOffers = offerService.getNewestOffers(start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 
@@ -137,11 +140,11 @@ public class OfferResource extends AbstractResource {
 
         try {
             if (username == null) {
-                throw new UserNotFoundException("username must be given");
+                throw new UserNotFoundException(new ErrorBuilder(Error.USERNAME_NULL));
             }
             
             if (start == null || pageSize == null) {
-                throw new QueryStringException("start and pageSize must be given in query string");
+                throw new QueryStringException(new ErrorBuilder(Error.START_PAGESIZE_QUERY_MISSING));
             }
             
             List<Offer> newestOffers = offerService.getNewestOffersOfUser(username, start, pageSize);
@@ -149,10 +152,10 @@ public class OfferResource extends AbstractResource {
         } 
         catch (Exception ex) {
             try {
-                handleException(ex, response);
+                handleException(ex, response, Language.getDefault());
             }
             catch (Exception e) {
-                unknownError(e, response);
+                unknownError(e, response, Language.getDefault());
             } 
         }
 

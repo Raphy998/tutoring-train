@@ -14,16 +14,19 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tutoringtrain.data.CustomHttpStatusCodes;
+import edu.tutoringtrain.data.error.ErrorBuilder;
+import edu.tutoringtrain.data.error.Error;
+import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.BlockedException;
+import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
+import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.utils.Views;
 import java.text.SimpleDateFormat;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -47,60 +50,59 @@ public abstract class AbstractResource {
         return mapper;
     }
     
-    protected void handleException(Exception exception, ResponseBuilder response) throws Exception {
+    protected void handleException(Exception exception, ResponseBuilder response, Language lang) throws Exception {
         try {
             throw exception;
         }
-        catch (NotAuthorizedException ex) {
+        catch (JsonMappingException | JsonParseException ex) {
+            response.status(CustomHttpStatusCodes.MALFORMED_JSON);
+            response.entity(new ErrorBuilder(Error.JSON_INVALID)
+                    .withParams(ex.getMessage())
+                    .withLang(lang)
+                    .build());
+        }
+        catch (UnauthorizedException ex) {
             response.status(Response.Status.UNAUTHORIZED);
-            String msg;
-            try {
-                msg = ex.getChallenges().get(0).toString();
-            }
-            catch (Exception e) {
-                msg = "";
-            }
-            response.entity(msg);
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (ForbiddenException ex) {
             response.status(Response.Status.FORBIDDEN);
-            response.entity(ex.getMessage());
-        }
-        catch (JsonMappingException | JsonParseException ex) {
-            response.status(CustomHttpStatusCodes.MALFORMED_JSON);
-            response.entity(ex.getMessage());
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (BlockedException ex) {
             response.status(CustomHttpStatusCodes.BLOCKED);
-            response.entity(getMapper().writerWithView(Views.User.Out.Private.class).writeValueAsString(ex.getBlock()));
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (SubjectNotFoundException ex) {
             response.status(CustomHttpStatusCodes.SUBJECT_NOT_FOUND);
-            response.entity(ex.getMessage());
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (UserNotFoundException ex) {
             response.status(CustomHttpStatusCodes.USER_NOT_FOUND);
-            response.entity(ex.getMessage());
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (OfferNotFoundException ex) {
             response.status(CustomHttpStatusCodes.OFFER_NOT_FOUND);
-            response.entity(ex.getMessage());
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (QueryStringException ex) {
             response.status(CustomHttpStatusCodes.INVALID_QUERY_STRING);
-            response.entity(ex.getMessage());
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (BlockException ex) {
             response.status(CustomHttpStatusCodes.BLOCK_ERROR);
-            response.entity(ex.getMessage());
+            response.entity(ex.getError().withLang(lang).build());
         }
         catch (Exception e) {
             throw e;
         }
     }
     
-    protected void unknownError(Exception ex, ResponseBuilder response) throws Exception {
+    protected void unknownError(Exception ex, ResponseBuilder response, Language lang) throws Exception {
         response.status(Response.Status.INTERNAL_SERVER_ERROR);
-        response.entity(ex.getMessage());
+        response.entity(new ErrorBuilder(Error.UNKNOWN)
+                .withParams(ex.getMessage())
+                .withLang(lang)
+                .build());
     }
 }

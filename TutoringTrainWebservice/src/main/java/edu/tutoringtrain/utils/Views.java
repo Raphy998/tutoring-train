@@ -46,4 +46,10 @@ public class Views {
             public static class Create {};
         };
     }
+    
+    public static class Error {
+        public static class Out {
+            public static class Public {};
+        };
+    }
 }

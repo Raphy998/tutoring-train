@@ -5,12 +5,13 @@
  */
 package edu.tutoringtrain.data.exceptions;
 
+import edu.tutoringtrain.data.error.ErrorBuilder;
 /**
  *
  * @author Elias
  */
-public class SubjectNotFoundException extends Exception {
-    public SubjectNotFoundException(String message) {
-        super(message);
+public class SubjectNotFoundException extends WsErrorException {
+    public SubjectNotFoundException(ErrorBuilder err) {
+        super(err);
     }
 }

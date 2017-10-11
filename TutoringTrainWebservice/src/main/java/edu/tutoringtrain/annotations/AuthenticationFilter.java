@@ -8,7 +8,10 @@ package edu.tutoringtrain.annotations;
 import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.AuthenticationService;
+import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockedException;
+import edu.tutoringtrain.data.exceptions.ForbiddenException;
+import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.entities.User;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
@@ -20,7 +23,6 @@ import java.util.List;
 import javax.annotation.Priority;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -83,25 +85,24 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 authService.checkPermissions(token, methodRoles);
             }
         } 
-        catch (NotAuthorizedException e) {
-            String msg;
-            try {
-                msg = e.getChallenges().get(0).toString();
-            }
-            catch (Exception ex) {
-                msg = "";
-            }
-            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode(), msg);
+        catch (UnauthorizedException e) {
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode(), e.getError().withLang(Language.getDefault()).build());
         }
         catch (ForbiddenException e) {
-            abortWithStatus(requestContext, Response.Status.FORBIDDEN.getStatusCode(), e.getMessage());
+            abortWithStatus(requestContext, Response.Status.FORBIDDEN.getStatusCode(), e.getError().withLang(Language.getDefault()).build());
         }
         catch (BlockedException e) {
-            abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getBlock());
+            abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getError().withLang(Language.getDefault()).build());
         }
         
         //set user principal
-        User user = authService.getUserByToken(token);
+        User user;
+        try {
+            user = authService.getUserByToken(token);
+        }
+        catch (Exception ex) {
+            throw new NotAuthorizedException(ex.getMessage());
+        }
         final String username = user != null ? user.getUsername() : null;
         
         final SecurityContext currentSecurityContext = requestContext.getSecurityContext();

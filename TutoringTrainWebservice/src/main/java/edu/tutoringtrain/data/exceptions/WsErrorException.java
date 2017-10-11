@@ -6,12 +6,21 @@
 package edu.tutoringtrain.data.exceptions;
 
 import edu.tutoringtrain.data.error.ErrorBuilder;
+
 /**
  *
  * @author Elias
  */
-public class UserNotFoundException extends WsErrorException {
-    public UserNotFoundException(ErrorBuilder err) {
-        super(err);
+public abstract class WsErrorException extends Exception {
+    private ErrorBuilder error;
+
+    public WsErrorException(ErrorBuilder error) {
+        this.error = error;
     }
+
+    public ErrorBuilder getError() {
+        return error;
+    }
+    
+    
 }

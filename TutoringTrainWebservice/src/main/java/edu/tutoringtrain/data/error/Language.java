@@ -3,15 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.exceptions;
+package edu.tutoringtrain.data.error;
 
-import edu.tutoringtrain.data.error.ErrorBuilder;
 /**
  *
  * @author Elias
  */
-public class UserNotFoundException extends WsErrorException {
-    public UserNotFoundException(ErrorBuilder err) {
-        super(err);
+public enum Language {
+    EN,
+    DE;
+    
+    public static Language getDefault() {
+        return EN;
     }
 }
