@@ -109,7 +109,7 @@ public class AuthenticationService extends AbstractService {
         return token;
     }
     
-    @Transactional(dontRollbackOn = {UnauthorizedException.class, ForbiddenException.class, BlockedException.class})
+    @Transactional
     public void checkPermissions(String token, List<Role> roles) throws UnauthorizedException, ForbiddenException, BlockedException {
         User user = getUserByToken(token);
         if (user == null) {

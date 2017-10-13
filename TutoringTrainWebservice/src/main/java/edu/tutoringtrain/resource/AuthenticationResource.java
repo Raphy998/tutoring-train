@@ -6,6 +6,7 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Localized;
+import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.Credentials;
 import edu.tutoringtrain.data.dao.AuthenticationService;
 import edu.tutoringtrain.data.error.Language;
@@ -13,12 +14,14 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * REST Web Service
@@ -63,5 +66,13 @@ public class AuthenticationResource extends AbstractResource {
         }
         
         return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/check")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkAuthKey(@Context HttpServletRequest httpServletRequest) throws Exception {
+        return Response.status(Response.Status.OK).build();
     }
 }

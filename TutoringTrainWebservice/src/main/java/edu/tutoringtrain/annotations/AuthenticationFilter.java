@@ -95,6 +95,47 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             } else {
                 authService.checkPermissions(token, methodRoles);
             }
+            
+            //set user principal
+            User user;
+            try {
+                user = authService.getUserByToken(token);
+            }
+            catch (Exception ex) {
+                throw new NotAuthorizedException(ex.getMessage());
+            }
+            final String username = user != null ? user.getUsername() : null;
+
+            final SecurityContext currentSecurityContext = requestContext.getSecurityContext();
+                requestContext.setSecurityContext(new SecurityContext() {
+
+                    @Override
+                    public Principal getUserPrincipal() {
+
+                        return new Principal() {
+
+                            @Override
+                            public String getName() {
+                                return username;
+                            }
+                        };
+                    }
+
+                    @Override
+                    public boolean isUserInRole(String role) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isSecure() {
+                        return currentSecurityContext.isSecure();
+                    }
+
+                    @Override
+                    public String getAuthenticationScheme() {
+                        return AUTHENTICATION_SCHEME;
+                    }
+                });
         } 
         catch (UnauthorizedException e) {
             abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode(), e.getError().withLang(lang).build());
@@ -105,47 +146,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         catch (BlockedException e) {
             abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getError().withLang(lang).build());
         }
-        
-        //set user principal
-        User user;
-        try {
-            user = authService.getUserByToken(token);
-        }
-        catch (Exception ex) {
-            throw new NotAuthorizedException(ex.getMessage());
-        }
-        final String username = user != null ? user.getUsername() : null;
-        
-        final SecurityContext currentSecurityContext = requestContext.getSecurityContext();
-            requestContext.setSecurityContext(new SecurityContext() {
-
-                @Override
-                public Principal getUserPrincipal() {
-
-                    return new Principal() {
-
-                        @Override
-                        public String getName() {
-                            return username;
-                        }
-                    };
-                }
-
-                @Override
-                public boolean isUserInRole(String role) {
-                    return true;
-                }
-
-                @Override
-                public boolean isSecure() {
-                    return currentSecurityContext.isSecure();
-                }
-
-                @Override
-                public String getAuthenticationScheme() {
-                    return AUTHENTICATION_SCHEME;
-                }
-            });
     }
     
     // Extract the roles from the annotated element
