@@ -17,4 +17,6 @@ import javax.persistence.PersistenceContext;
 public class AbstractService {
     @PersistenceContext(unitName = "aphrodite4")
     protected EntityManager em;
+    
+    
 }

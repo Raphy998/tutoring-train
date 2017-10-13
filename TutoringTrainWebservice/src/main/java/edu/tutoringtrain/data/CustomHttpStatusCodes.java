@@ -17,4 +17,5 @@ public abstract class CustomHttpStatusCodes {
     public static final int OFFER_NOT_FOUND = 454;
     public static final int INVALID_QUERY_STRING = 455;
     public static final int BLOCK_ERROR = 456;
+    public static final int UNPROCESSABLE_ENTITY = 422;
 }

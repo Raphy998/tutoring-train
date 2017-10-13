@@ -27,5 +27,6 @@
     "26": "user is blocked",
     "27": "user is blocked for reason '%s'",
     "28": "user is blocked until %s",
-    "29": "json parsing error: '%s'"
+    "29": "json parsing error: '%s'",
+    "30": "constraint violation: '%s'"
 }

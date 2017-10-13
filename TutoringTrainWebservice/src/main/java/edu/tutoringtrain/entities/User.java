@@ -66,8 +66,8 @@ public class User implements Serializable {
     @JsonView({Views.User.Out.Public.class})
     private Character role;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
-    @Size(max = 30)
-    @Column(name = "EMAIL", length = 30)
+    @Size(max = 50)
+    @Column(name = "EMAIL", length = 50)
     @JsonView({Views.User.In.Register.class, Views.User.Out.Private.class})
     private String email;
     @Size(max = 30)

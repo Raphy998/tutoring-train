@@ -19,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.dao.EmailService;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
@@ -31,6 +32,7 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.TransactionalException;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
@@ -48,6 +50,8 @@ import javax.ws.rs.core.SecurityContext;
 public class UserResource extends AbstractResource {
     @Inject
     UserService userService;
+    @Inject
+    EmailService emailService;
     
     @POST
     @Path("/register")
@@ -62,10 +66,12 @@ public class UserResource extends AbstractResource {
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Register.class).withType(User.class).readValue(userStr);
+            checkConstraints(userIn);
             User userOut = userService.registerUser(userIn);
+            emailService.sendWelcomeEmail(userIn, false);
             
             response.entity(getMapper().writerWithView(Views.User.Out.Private.class).writeValueAsString(userOut));
-        } 
+        }
         catch (Exception ex) {
             try {
                 handleException(ex, response, lang);
@@ -97,6 +103,7 @@ public class UserResource extends AbstractResource {
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
+            checkConstraints(userIn);
             userIn.setUsername(securityContext.getUserPrincipal().getName());       //set user to logged in user (to avoid making another json view)
             
             userService.updateUser(userIn);
@@ -131,6 +138,7 @@ public class UserResource extends AbstractResource {
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
+            checkConstraints(userIn);
             userService.updateUser(userIn);
         } 
         catch (Exception ex) {
@@ -249,6 +257,7 @@ public class UserResource extends AbstractResource {
 
         try {
             Blocked blockIn = getMapper().readerWithView(Views.Block.In.Create.class).withType(Blocked.class).readValue(blockStr);
+            checkConstraints(blockIn);
             
             if (securityContext.getUserPrincipal().getName().equals(blockIn.getUsername())) {
                 throw new BlockException(new ErrorBuilder(Error.USER_BLOCK_OWN));
@@ -314,7 +323,6 @@ public class UserResource extends AbstractResource {
     private static ErrorBuilder getError(TransactionalException ex, User userIn) {
         ErrorBuilder err;
         try {
-            System.out.println("------------------- " + ex.getCause().getClass());
             SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) ex.getCause().getCause().getCause().getCause();
             
             if (innerEx.getMessage().contains("U_USER_EMAIL")) {

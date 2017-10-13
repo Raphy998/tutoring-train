@@ -5,12 +5,8 @@
  */
 package edu.tutoringtrain.data.error;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import edu.tutoringtrain.utils.Views;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  *
@@ -46,6 +42,7 @@ public class Error {
     public static final int BLOCKED_NO_DUEDATE = 27;
     public static final int BLOCKED_NO_REASON = 28;
     public static final int JSON_INVALID = 29;
+    public static final int CONSTRAINT_VIOLATION = 30;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -59,7 +56,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return JSON_INVALID;
+        return CONSTRAINT_VIOLATION;
     }
 
     public Error() {

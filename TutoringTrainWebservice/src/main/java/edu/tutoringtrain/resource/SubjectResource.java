@@ -81,6 +81,7 @@ public class SubjectResource extends AbstractResource {
         
         try {
             subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).withType(Subject.class).readValue(subjectStr);
+            checkConstraints(subjectIn);
             Subject subjectOut = subjectService.createSubject(subjectIn);
             
             response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).writeValueAsString(subjectOut));
@@ -116,6 +117,7 @@ public class SubjectResource extends AbstractResource {
 
         try {
             Subject subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).withType(Subject.class).readValue(subjectStr);
+            checkConstraints(subjectIn);
             subjectService.updateSubject(subjectIn);
         } 
         catch (Exception ex) {

@@ -11,7 +11,8 @@ package edu.tutoringtrain.data.error;
  */
 public enum Language {
     EN,
-    DE;
+    DE,
+    STAHL;
     
     public static Language getDefault() {
         return EN;

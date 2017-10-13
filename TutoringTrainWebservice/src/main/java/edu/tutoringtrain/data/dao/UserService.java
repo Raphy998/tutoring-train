@@ -18,8 +18,10 @@ import edu.tutoringtrain.utils.EmailUtils;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 /**
  *
  * @author Elias
@@ -32,8 +34,8 @@ public class UserService extends AbstractService {
         
     }
     
-    @Transactional(dontRollbackOn = {Exception.class})
-    public User registerUser(User userReq) throws InvalidArgumentException, NullValueException {
+    @Transactional
+    public User registerUser(User userReq) throws InvalidArgumentException, NullValueException, ConstraintViolationException {
         if (userReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
         }
@@ -42,9 +44,9 @@ public class UserService extends AbstractService {
         }
         
         Gender gender = getGenderOrDefault(userReq.getGender());
-        
         userReq.setGender(gender);
         userReq.setRole(UserRoles.USER);
+        
         em.persist(userReq);
         
         return userReq;

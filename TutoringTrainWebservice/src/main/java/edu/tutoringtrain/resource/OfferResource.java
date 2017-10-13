@@ -59,6 +59,7 @@ public class OfferResource extends AbstractResource {
 
         try {
             Offer offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Offer.class).readValue(offerStr);
+            checkConstraints(offerIn);
             Offer offerOut = offerService.createOffer(username, offerIn);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(offerOut));
         }
@@ -88,6 +89,7 @@ public class OfferResource extends AbstractResource {
 
         try {
             Offer offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).withType(Offer.class).readValue(offerStr);
+            checkConstraints(offerIn);
             offerService.updateOffer(username, offerIn);
         } 
         catch (Exception ex) {
