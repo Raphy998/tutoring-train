@@ -74,9 +74,9 @@ Create Table Entry (
     description VARCHAR2(500),
     username VARCHAR2(20),
 	flag CHAR(1),
-    CONSTRAINT pk_request PRIMARY KEY (id),
-    CONSTRAINT fk_request_user FOREIGN KEY (username) references TUser (username),
-    CONSTRAINT fk_request_subject FOREIGN KEY (subject) references Subject (id)
+    CONSTRAINT pk_entry PRIMARY KEY (id),
+    CONSTRAINT fk_entry_user FOREIGN KEY (username) references TUser (username),
+    CONSTRAINT fk_entry_subject FOREIGN KEY (subject) references Subject (id)
 );
 
 
