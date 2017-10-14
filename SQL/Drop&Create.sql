@@ -1,47 +1,38 @@
 DROP TABLE Tsession CASCADE CONSTRAINTS;
 DROP TABLE TUSER CASCADE CONSTRAINTS;
-DROP TABLE GENDER CASCADE CONSTRAINTS;
 DROP TABLE Subject CASCADE CONSTRAINTS;
 DROP TABLE Blocked CASCADE CONSTRAINTS;
 DROP TABLE Rating CASCADE CONSTRAINTS;
-DROP TABLE Offer CASCADE CONSTRAINTS;
-DROP TABLE Request CASCADE CONSTRAINTS;
+DROP TABLE Entry CASCADE CONSTRAINTS;
 
-DROP SEQUENCE seq_gender;
 DROP SEQUENCE seq_subject;
-DROP SEQUENCE seq_request;
-DROP SEQUENCE seq_offer;
+DROP SEQUENCE seq_entry;
 
-CREATE SEQUENCE seq_gender;
+CREATE SEQUENCE seq_entry;
 CREATE SEQUENCE seq_subject;
-CREATE SEQUENCE seq_request;
-CREATE SEQUENCE seq_offer;
 
-CREATE TABLE GENDER(
-    id Number,
-    name VARCHAR2(20),
-    CONSTRAINT pk_gender PRIMARY KEY (id)
-);
 
 Create Table Subject(
     id number,
-    name VARCHAR2(25),
-    CONSTRAINT pk_subject PRIMARY KEY (id),
-    CONSTRAINT u_subject_name UNIQUE (name)
+    dename VARCHAR2(25),
+	enname VARCHAR2(25),
+	isActive CHAR(1),
+    CONSTRAINT pk_tsubject PRIMARY KEY (id),
+    CONSTRAINT u_subject_de_name UNIQUE (dename),
+	CONSTRAINT u_subject_en_name UNIQUE (enname)
     );
 
 CREATE TABLE TUSER(
     username VARCHAR(20),
-    password VARCHAR2(32),
+    password VARCHAR2(64),
     role CHAR(1),
-    email VARCHAR2(30),
+    email VARCHAR2(50),
     name VARCHAR2 (30),
     avatar BLOB,
     averageRating NUMBER(2,1),
     education VARCHAR2(20),
-    gender NUMBER,
+    gender char(1),
     CONSTRAINT pk_tuser PRIMARY KEY (username),
-    CONSTRAINT fk_user_gender FOREIGN KEY (gender) references GENDER (id),
     CONSTRAINT u_user_email UNIQUE (email)
 );
 
@@ -49,7 +40,7 @@ CREATE TABLE TSESSION(
 	username VARCHAR(20),
 	authkey VARCHAR(32),
 	expirydate TIMESTAMP,
-	CONSTRAINT pk_session PRIMARY KEY (username, authkey),
+	CONSTRAINT pk_session PRIMARY KEY (authkey),
     CONSTRAINT fk_session_username FOREIGN KEY (username) references TUSER (username)
 );
 
@@ -73,20 +64,8 @@ Create Table Rating (
     CONSTRAINT fk_rating_user FOREIGN KEY (ratingUser) references TUser (username)
 );
 
-Create Table Offer (
-    id NUMBER,
-    postedOn TIMESTAMP,
-    dueDate Date,
-    Subject Number,
-    isActive CHAR(1),
-    description VARCHAR2(500),
-    username VARCHAR2(20),
-    CONSTRAINT pk_offer PRIMARY KEY (id),
-    CONSTRAINT fk_offer_user FOREIGN KEY (username) references TUser (username),
-    CONSTRAINT fk_offer_subject FOREIGN KEY (subject) references Subject (id)
-);
 
-Create Table Request (
+Create Table Entry (
     id NUMBER,
     postedOn Date,
     dueDate Date,
@@ -94,14 +73,13 @@ Create Table Request (
     isActive CHAR(1),
     description VARCHAR2(500),
     username VARCHAR2(20),
+	flag CHAR(1),
     CONSTRAINT pk_request PRIMARY KEY (id),
     CONSTRAINT fk_request_user FOREIGN KEY (username) references TUser (username),
     CONSTRAINT fk_request_subject FOREIGN KEY (subject) references Subject (id)
 );
 
-INSERT INTO Gender VALUES (1, 'Unspecified');
-INSERT INTO Gender VALUES (2, 'Male');
-INSERT INTO Gender VALUES (3, 'Female');
 
-INSERT INTO TUser VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'A', 'admin@tutoringtrain.com', 'Admin', null, null, 'HTL', 1);
+
+INSERT INTO TUser VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'A', 'admin@tutoringtrain.com', 'Admin', null, null, 'HTL', 'N');
 commit;
