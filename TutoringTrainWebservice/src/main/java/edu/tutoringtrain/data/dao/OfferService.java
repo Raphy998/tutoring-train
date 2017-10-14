@@ -7,11 +7,12 @@ package edu.tutoringtrain.data.dao;
 
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
+import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
-import edu.tutoringtrain.entities.Offer;
+import edu.tutoringtrain.entities.Entry;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.DateUtils;
@@ -43,10 +44,10 @@ public class OfferService extends AbstractService {
      * @return 
      */
     @Transactional
-    public List<Offer> getNewestOffers(int start, int pageSize) {
-        List<Offer> results;
+    public List<Entry> getNewestOffers(int start, int pageSize) {
+        List<Entry> results;
 
-        TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewest", Offer.class);
+        TypedQuery<Entry> query = em.createNamedQuery("Entry.findOfferNewest", Entry.class);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
         results = query.getResultList();
@@ -62,15 +63,15 @@ public class OfferService extends AbstractService {
      * @return 
      */
     @Transactional
-    public List<Offer> getNewestOffersOfUser(String username, int start, int pageSize) throws UserNotFoundException {
-        List<Offer> results;
-        
+    public List<Entry> getNewestOffersOfUser(String username, int start, int pageSize) throws UserNotFoundException {
+        List<Entry> results = null;
+
         User user = em.find(User.class, username);
         if (user == null) {
             throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
         }
 
-        TypedQuery<Offer> query = em.createNamedQuery("Offer.findNewestOfUser", Offer.class);
+        TypedQuery<Entry> query = em.createNamedQuery("Entry.findOfferNewestOfUser", Entry.class);
         query.setParameter("username", username);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
@@ -80,7 +81,7 @@ public class OfferService extends AbstractService {
     }
     
     @Transactional
-    public Offer createOffer(String username, Offer offerReq) throws NullValueException, SubjectNotFoundException, UserNotFoundException {
+    public Entry createOffer(String username, Entry offerReq) throws NullValueException, SubjectNotFoundException, UserNotFoundException {
         if (username == null) {
             throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
@@ -101,6 +102,7 @@ public class OfferService extends AbstractService {
         offerReq.setSubject(s);
         offerReq.setUser(user);
         offerReq.setIsactive('1');
+        offerReq.setFlag(Entry.FLAG_OFFER);
         offerReq.setPostedon(DateUtils.toDate(LocalDateTime.now()));
         em.persist(offerReq);
         
@@ -108,20 +110,23 @@ public class OfferService extends AbstractService {
     }
     
     @Transactional
-    public void updateOffer(String username, Offer offerReq) throws NullValueException, OfferNotFoundException, SubjectNotFoundException {
+    public void updateOffer(String username, Entry offerReq) throws NullValueException, OfferNotFoundException, SubjectNotFoundException, InvalidArgumentException {
         if (offerReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
         }
+        if (offerReq.getIsactive() != '0' && offerReq.getIsactive() != '1') {
+            throw new InvalidArgumentException(new ErrorBuilder(Error.CONSTRAINT_VIOLATION).withParams("isActive must be 0 or 1"));
+        }
         
-        TypedQuery<Offer> query = em.createNamedQuery("Offer.findByIdAndUsername", Offer.class);
+        TypedQuery<Entry> query = em.createNamedQuery("Entry.findOfferByIdAndUsername", Entry.class);
         query.setParameter("id", offerReq.getId());
         query.setParameter("username", username);
-        List<Offer> results = query.getResultList();
+        List<Entry> results = query.getResultList();
 
         if (results.isEmpty()) {
             throw new OfferNotFoundException(new ErrorBuilder(Error.OFFER_NOT_FOUND).withParams(offerReq.getId(), username));
         }
-        Offer dbOffer = results.get(0);  
+        Entry dbOffer = results.get(0);  
         if (offerReq.getDescription() != null) dbOffer.setDescription(offerReq.getDescription());
         if (offerReq.getDuedate() != null) dbOffer.setDuedate(offerReq.getDuedate());
         if (offerReq.getPostedon() != null) dbOffer.setPostedon(offerReq.getPostedon());

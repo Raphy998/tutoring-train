@@ -5,8 +5,11 @@
  */
 package edu.tutoringtrain.resource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
+import edu.tutoringtrain.data.Gender;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.dao.UserService;
@@ -24,9 +27,9 @@ import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
-import edu.tutoringtrain.entities.Gender;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
+import java.math.BigDecimal;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
@@ -102,8 +105,8 @@ public class UserResource extends AbstractResource {
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
-            checkConstraints(userIn);
             userIn.setUsername(securityContext.getUserPrincipal().getName());       //set user to logged in user (to avoid making another json view)
+            checkConstraints(userIn);
             
             userService.updateUser(userIn);
         } 
@@ -166,8 +169,8 @@ public class UserResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            List<Gender> genders = userService.getAllGenders();
-            response.entity(getMapper().writerWithView(Views.User.Out.Public.class).writeValueAsString(genders.toArray()));
+            List<Gender> genders = userService.getAllGenders(lang);
+            response.entity(getMapper().writeValueAsString(genders.toArray()));
         } 
         catch (Exception ex) {
             try {

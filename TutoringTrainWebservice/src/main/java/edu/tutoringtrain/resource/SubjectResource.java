@@ -93,7 +93,7 @@ public class SubjectResource extends AbstractResource {
             catch (TransactionalException rbex) {
                 response.status(Response.Status.CONFLICT);
                 response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
-                        .withParams(subjectIn.getName())
+                        .withParams(subjectIn.getEnname() + "/" + subjectIn.getDename())
                         .withLang(lang)
                         .build());
             }
@@ -114,15 +114,23 @@ public class SubjectResource extends AbstractResource {
         
         Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
-
+        Subject subjectIn = null;
+        
         try {
-            Subject subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).withType(Subject.class).readValue(subjectStr);
+            subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).withType(Subject.class).readValue(subjectStr);
             checkConstraints(subjectIn);
             subjectService.updateSubject(subjectIn);
         } 
         catch (Exception ex) {
             try {
                 handleException(ex, response, lang);
+            }
+            catch (TransactionalException rbex) {
+                response.status(Response.Status.CONFLICT);
+                response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
+                        .withParams(subjectIn.getEnname() + "/" + subjectIn.getDename())
+                        .withLang(lang)
+                        .build());
             }
             catch (NullValueException npex) {
                 response.status(Response.Status.NOT_FOUND);

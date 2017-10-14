@@ -13,7 +13,7 @@
     "12": "Benutzer '%s' nicht gefunden",
     "13": "Gegenstand (id=%s) nicht gefunden",
     "14": "Angebot (id=%s) von Benutzer '%s' nicht gefunden",
-    "15": "Gegenstand (id=%s) nicht gefunden",
+    "15": "Geschlecht (id=%s) nicht gefunden",
     "16": "E-Mail '%s' hat ungültiges Format",
     "17": "start and pageSize müssen im Query-String angegeben sein",
     "18": "Gegenstand '%s' existiert bereits",

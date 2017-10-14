@@ -11,7 +11,9 @@ import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
+import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
+import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.Session;
 import edu.tutoringtrain.entities.User;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
@@ -32,6 +35,8 @@ import javax.transaction.Transactional;
  */
 @ApplicationScoped
 public class AuthenticationService extends AbstractService {
+    @Inject
+    UserService userService;
     
     public AuthenticationService() {
     }
@@ -99,14 +104,32 @@ public class AuthenticationService extends AbstractService {
      * @return authentication token
      */
     @Transactional
-    public String issueToken(String username) {
+    public String issueToken(String username) throws UserNotFoundException, NullValueException {
         String token = getRandomToken();
-
-        Session session = new Session(username, token);
-        session.setExpirydate(DateUtils.toDate(LocalDateTime.now().plusDays(1)));
-        em.persist(session);
+        boolean persisted = false;
+        
+        while (!persisted) {
+            try {
+                insertToken(username, token);
+                persisted = true;
+            }
+            catch (Exception ex) {
+                //continue loop
+            }
+        }
+        
             
         return token;
+    }
+    
+    @Transactional
+    private void insertToken(String username, String token) throws NullValueException, UserNotFoundException {
+        User user = userService.getUserByUsername(username);
+
+        Session session = new Session(token);
+        session.setUser(user);
+        session.setExpirydate(DateUtils.toDate(LocalDateTime.now().plusDays(1)));
+        em.persist(session);
     }
     
     @Transactional

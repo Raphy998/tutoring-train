@@ -7,9 +7,10 @@ package edu.tutoringtrain.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -17,6 +18,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -24,42 +27,41 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Elias
  */
 @Entity
-@Table(name = "TSESSION", catalog = "", schema = "D5B15")
+@Table(name = "TSESSION", catalog = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Session.findAll", query = "SELECT s FROM Session s")
-    , @NamedQuery(name = "Session.findByUsername", query = "SELECT s FROM Session s WHERE s.sessionPK.username = :username")
-    , @NamedQuery(name = "Session.findByAuthkey", query = "SELECT s FROM Session s WHERE s.sessionPK.authkey = :authkey")
+    , @NamedQuery(name = "Session.findByAuthkey", query = "SELECT s FROM Session s WHERE s.authkey = :authkey")
     , @NamedQuery(name = "Session.findByExpirydate", query = "SELECT s FROM Session s WHERE s.expirydate = :expirydate")})
 public class Session implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected SessionPK sessionPK;
+    @Id
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "AUTHKEY", nullable = false, length = 32)
+    private String authkey;
     @Column(name = "EXPIRYDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date expirydate;
-    @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")
+    @ManyToOne
     private User user;
 
     public Session() {
     }
 
-    public Session(SessionPK sessionPK) {
-        this.sessionPK = sessionPK;
+    public Session(String authkey) {
+        this.authkey = authkey;
     }
 
-    public Session(String username, String authkey) {
-        this.sessionPK = new SessionPK(username, authkey);
+    public String getAuthkey() {
+        return authkey;
     }
 
-    public SessionPK getSessionPK() {
-        return sessionPK;
-    }
-
-    public void setSessionPK(SessionPK sessionPK) {
-        this.sessionPK = sessionPK;
+    public void setAuthkey(String authkey) {
+        this.authkey = authkey;
     }
 
     public Date getExpirydate() {
@@ -81,7 +83,7 @@ public class Session implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (sessionPK != null ? sessionPK.hashCode() : 0);
+        hash += (authkey != null ? authkey.hashCode() : 0);
         return hash;
     }
 
@@ -92,7 +94,7 @@ public class Session implements Serializable {
             return false;
         }
         Session other = (Session) object;
-        if ((this.sessionPK == null && other.sessionPK != null) || (this.sessionPK != null && !this.sessionPK.equals(other.sessionPK))) {
+        if ((this.authkey == null && other.authkey != null) || (this.authkey != null && !this.authkey.equals(other.authkey))) {
             return false;
         }
         return true;
@@ -100,7 +102,7 @@ public class Session implements Serializable {
 
     @Override
     public String toString() {
-        return "edu.tutoringtrain.entities.Session[ sessionPK=" + sessionPK + " ]";
+        return "edu.tutoringtrain.entities.Session[ authkey=" + authkey + " ]";
     }
     
 }

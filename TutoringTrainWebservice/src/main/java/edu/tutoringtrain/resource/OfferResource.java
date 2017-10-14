@@ -13,7 +13,7 @@ import edu.tutoringtrain.data.dao.OfferService;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
-import edu.tutoringtrain.entities.Offer;
+import edu.tutoringtrain.entities.Entry;
 import edu.tutoringtrain.utils.Views;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
@@ -58,9 +58,9 @@ public class OfferResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Offer offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Offer.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn);
-            Offer offerOut = offerService.createOffer(username, offerIn);
+            Entry offerOut = offerService.createOffer(username, offerIn);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(offerOut));
         }
         catch (Exception ex) {
@@ -88,7 +88,7 @@ public class OfferResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Offer offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).withType(Offer.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).withType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn);
             offerService.updateOffer(username, offerIn);
         } 
@@ -119,7 +119,7 @@ public class OfferResource extends AbstractResource {
             if (start == null || pageSize == null) {
                 throw new QueryStringException(new ErrorBuilder(Error.START_PAGESIZE_QUERY_MISSING));
             }
-            List<Offer> newestOffers = offerService.getNewestOffers(start, pageSize);
+            List<Entry> newestOffers = offerService.getNewestOffers(start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
         } 
         catch (Exception ex) {
@@ -155,7 +155,7 @@ public class OfferResource extends AbstractResource {
                 throw new QueryStringException(new ErrorBuilder(Error.START_PAGESIZE_QUERY_MISSING));
             }
             
-            List<Offer> newestOffers = offerService.getNewestOffersOfUser(username, start, pageSize);
+            List<Entry> newestOffers = offerService.getNewestOffersOfUser(username, start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).writeValueAsString(newestOffers.toArray()));
         } 
         catch (Exception ex) {

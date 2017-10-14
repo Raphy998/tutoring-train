@@ -131,6 +131,7 @@ public abstract class AbstractResource {
     }
     
     protected void unknownError(Exception ex, ResponseBuilder response, Language lang) throws Exception {
+        ex.printStackTrace();
         response.status(Response.Status.INTERNAL_SERVER_ERROR);
         response.entity(new ErrorBuilder(Error.UNKNOWN)
                 .withParams(ex.getMessage())

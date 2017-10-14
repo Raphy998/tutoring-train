@@ -8,17 +8,16 @@ package edu.tutoringtrain.data.dao;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
-import edu.tutoringtrain.entities.Gender;
+import edu.tutoringtrain.data.Gender;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
-import java.math.BigDecimal;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
@@ -28,7 +27,7 @@ import javax.validation.ConstraintViolationException;
  */
 @ApplicationScoped
 public class UserService extends AbstractService {
-    private static final BigDecimal DEFAULT_GENDER = new BigDecimal(1);
+    private static final Character DEFAULT_GENDER = Gender.OTHER;
     
     public UserService() {
         
@@ -43,7 +42,7 @@ public class UserService extends AbstractService {
             throw new InvalidArgumentException(new ErrorBuilder(Error.INVALID_EMAIL).withParams(userReq.getEmail()));
         }
         
-        Gender gender = getGenderOrDefault(userReq.getGender());
+        Character gender = getGenderOrDefault(userReq.getGender());
         userReq.setGender(gender);
         userReq.setRole(UserRoles.USER);
         
@@ -62,9 +61,6 @@ public class UserService extends AbstractService {
             throw new InvalidArgumentException(new ErrorBuilder(Error.INVALID_EMAIL).withParams(userReq.getEmail()));
         }
         
-        //get gender for user
-        Gender gender = getGenderOrDefault(userReq.getGender());
-        
         User currentUser = em.find(User.class, userReq.getUsername());
         if (currentUser == null) {
             throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(userReq.getUsername()));
@@ -72,7 +68,7 @@ public class UserService extends AbstractService {
 
         if (userReq.getEducation() != null) currentUser.setEducation(userReq.getEducation());
         if (userReq.getEmail() != null) currentUser.setEmail(userReq.getEmail());
-        if (gender != null) currentUser.setGender(gender);
+        if (userReq.getGender() != null) currentUser.setGender(getGenderOrDefault(userReq.getGender()));
         if (userReq.getName() != null) currentUser.setName(userReq.getName());
         if (userReq.getPassword()!= null) currentUser.setPassword(userReq.getPassword());
 
@@ -80,16 +76,13 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    private Gender getGenderOrDefault(Gender g)  {
-        try {
-            g = getGenderById(g.getId());
+    private Character getGenderOrDefault(Character g) throws InvalidArgumentException  {
+        if (g != null && !Gender.isValidGender(g)) {
+            throw new InvalidArgumentException(new ErrorBuilder(Error.GENDER_NOT_FOUND).withParams(g));
         }
-        catch (NullPointerException | NullValueException ex) {
-            try {
-                g = getGenderById(DEFAULT_GENDER);
-            }
-            catch (NullPointerException | NullValueException npex) {
-                g = null;
+        else {
+            if (g == null) {
+                g = DEFAULT_GENDER;
             }
         }
         
@@ -161,30 +154,8 @@ public class UserService extends AbstractService {
         }
     }
     
-    @Transactional
-    public List<Gender> getAllGenders() {
-        List<Gender> results;
-        
-        TypedQuery<Gender> query = em.createNamedQuery("Gender.findAll", Gender.class);
-        results = query.getResultList();
-        
-        return results;
-    }
-    
-    @Transactional
-    public Gender getGenderById(BigDecimal id) throws NullValueException {
-        Gender result = null;
-        
-        if (id == null) {
-            throw new NullValueException(new ErrorBuilder(Error.GENDER_NULL));
-        }
-        
-        result = em.find(Gender.class, id);
-        if (result == null) {
-            throw new NullValueException(new ErrorBuilder(Error.GENDER_NOT_FOUND).withParams(id));
-        }
-        
-        return result;
+    public List<Gender> getAllGenders(Language lang) {
+        return Gender.getAll(lang);
     }
     
     /*

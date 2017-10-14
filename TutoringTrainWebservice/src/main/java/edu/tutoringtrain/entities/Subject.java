@@ -20,7 +20,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -30,43 +30,46 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Elias
  */
 @Entity
-@Table(name = "SUBJECT", catalog = "")
+@Table(name = "SUBJECT", catalog = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"DENAME"})
+    , @UniqueConstraint(columnNames = {"ENNAME"})})
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Subject.findAll", query = "SELECT s FROM Subject s ORDER BY s.name ASC")
+    @NamedQuery(name = "Subject.findAll", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC")
     , @NamedQuery(name = "Subject.findById", query = "SELECT s FROM Subject s WHERE s.id = :id")
-    , @NamedQuery(name = "Subject.findByName", query = "SELECT s FROM Subject s WHERE s.name = :name")})
+    , @NamedQuery(name = "Subject.findByDename", query = "SELECT s FROM Subject s WHERE s.dename = :dename")
+    , @NamedQuery(name = "Subject.findByEnname", query = "SELECT s FROM Subject s WHERE s.enname = :enname")
+    , @NamedQuery(name = "Subject.findByIsactive", query = "SELECT s FROM Subject s WHERE s.isactive = :isactive")})
 public class Subject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Id 
+    @Id
     @GeneratedValue(generator="seq_subject")
     @SequenceGenerator(name="seq_subject",sequenceName="seq_subject", allocationSize=1)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
     @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class, Views.Subject.Out.Public.class, 
         Views.Subject.In.Update.class})
     private BigDecimal id;
     @Size(max = 25)
-    @Column(name = "NAME", length = 25)
+    @Column(name = "DENAME", length = 25)
     @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
-    private String name;
+    private String dename;
+    @Size(max = 25)
+    @Column(name = "ENNAME", length = 25)
+    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
+    private String enname;
+    @Column(name = "ISACTIVE")
+    private Character isactive;
     @OneToMany(mappedBy = "subject")
-    private Collection<Request> requestCollection;
-    @OneToMany(mappedBy = "subject")
-    private Collection<Offer> offerCollection;
+    private Collection<Entry> entryCollection;
 
     public Subject() {
     }
 
     public Subject(BigDecimal id) {
         this.id = id;
-    }
-    
-    public Subject(String name) {
-        this.name = name;
     }
 
     public BigDecimal getId() {
@@ -77,30 +80,37 @@ public class Subject implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getDename() {
+        return dename;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDename(String dename) {
+        this.dename = dename;
+    }
+
+    public String getEnname() {
+        return enname;
+    }
+
+    public void setEnname(String enname) {
+        this.enname = enname;
+    }
+
+    public Character getIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(Character isactive) {
+        this.isactive = isactive;
     }
 
     @XmlTransient
-    public Collection<Request> getRequestCollection() {
-        return requestCollection;
+    public Collection<Entry> getEntryCollection() {
+        return entryCollection;
     }
 
-    public void setRequestCollection(Collection<Request> requestCollection) {
-        this.requestCollection = requestCollection;
-    }
-
-    @XmlTransient
-    public Collection<Offer> getOfferCollection() {
-        return offerCollection;
-    }
-
-    public void setOfferCollection(Collection<Offer> offerCollection) {
-        this.offerCollection = offerCollection;
+    public void setEntryCollection(Collection<Entry> entryCollection) {
+        this.entryCollection = entryCollection;
     }
 
     @Override

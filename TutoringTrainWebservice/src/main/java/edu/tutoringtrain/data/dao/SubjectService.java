@@ -11,7 +11,6 @@ import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.entities.Subject;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
@@ -50,9 +49,10 @@ public class SubjectService extends AbstractService {
     
     @Transactional
     public Subject createSubject(Subject s) throws NullValueException {
-        if (s.getName() == null) {
+        if (s.getEnname() == null || s.getDename() == null) {
             throw new NullValueException(new ErrorBuilder(Error.NAME_NULL));
         }
+        s.setIsactive('1');
         em.persist(s);
         
         return s;
@@ -63,12 +63,16 @@ public class SubjectService extends AbstractService {
         if (subject == null) {
             throw new NullValueException(new ErrorBuilder(Error.SUBJECT_NULL));
         }
+        if (subject.getEnname() == null || subject.getDename() == null) {
+            throw new NullValueException(new ErrorBuilder(Error.NAME_NULL));
+        }
         
         Subject dbSubject = em.find(Subject.class, subject.getId());
         if (subject == null) {
             throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(subject.getId()));
         }
-        dbSubject.setName(subject.getName());
+        if (subject.getEnname() != null) dbSubject.setEnname(subject.getEnname());
+        if (subject.getDename() != null) dbSubject.setDename(subject.getDename());
     }
     
     @Transactional

@@ -15,14 +15,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,7 +32,8 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Elias
  */
 @Entity
-@Table(name = "TUSER", catalog = "")
+@Table(name = "TUSER", catalog = "", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"EMAIL"})})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u ORDER BY u.username ASC")
@@ -44,11 +44,9 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name")
     , @NamedQuery(name = "User.findByAveragerating", query = "SELECT u FROM User u WHERE u.averagerating = :averagerating")
     , @NamedQuery(name = "User.findByEducation", query = "SELECT u FROM User u WHERE u.education = :education")
+    , @NamedQuery(name = "User.findByGender", query = "SELECT u FROM User u WHERE u.gender = :gender")
     , @NamedQuery(name = "User.findByUsernameAndPassword", query = "SELECT u FROM User u WHERE u.username = :username AND u.password = :password")})
 public class User implements Serializable {
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Collection<Session> sessionCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -58,8 +56,8 @@ public class User implements Serializable {
     @Column(name = "USERNAME", nullable = false, length = 20)
     @JsonView({Views.Offer.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class})
     private String username;
-    @Size(max = 32)
-    @Column(name = "PASSWORD", length = 32)
+    @Size(max = 64)
+    @Column(name = "PASSWORD", length = 64)
     @JsonView({Views.User.In.Register.class})
     private String password;
     @Column(name = "ROLE")
@@ -85,28 +83,24 @@ public class User implements Serializable {
     @Column(name = "EDUCATION", length = 20)
     @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private String education;
-    @JoinColumn(name = "GENDER", referencedColumnName = "ID")
-    @ManyToOne
+    @Column(name = "GENDER")
     @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
-    private Gender gender;
-    @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
-    @OneToOne(optional = false)
+    private Character gender;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Collection<Rating> ratingCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user1")
+    private Collection<Rating> ratingCollection1;
+    @OneToMany(mappedBy = "user")
+    private Collection<Session> sessionCollection;
+    @OneToMany(mappedBy = "user")
+    private Collection<Entry> entryCollection;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @JsonView({Views.User.Out.Private.class})
-    private Blocked block;
+    private Blocked blocked;
 
     public User() {
     }
 
-    public Blocked getBlock() {
-        return block;
-    }
-
-    public void setBlock(Blocked block) {
-        this.block = block;
-    }
-
-    
-    
     public User(String username) {
         this.username = username;
     }
@@ -175,12 +169,56 @@ public class User implements Serializable {
         this.education = education;
     }
 
-    public Gender getGender() {
+    public Character getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(Character gender) {
         this.gender = gender;
+    }
+
+    @XmlTransient
+    public Collection<Rating> getRatingCollection() {
+        return ratingCollection;
+    }
+
+    public void setRatingCollection(Collection<Rating> ratingCollection) {
+        this.ratingCollection = ratingCollection;
+    }
+
+    @XmlTransient
+    public Collection<Rating> getRatingCollection1() {
+        return ratingCollection1;
+    }
+
+    public void setRatingCollection1(Collection<Rating> ratingCollection1) {
+        this.ratingCollection1 = ratingCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Session> getSessionCollection() {
+        return sessionCollection;
+    }
+
+    public void setSessionCollection(Collection<Session> sessionCollection) {
+        this.sessionCollection = sessionCollection;
+    }
+
+    @XmlTransient
+    public Collection<Entry> getEntryCollection() {
+        return entryCollection;
+    }
+
+    public void setEntryCollection(Collection<Entry> entryCollection) {
+        this.entryCollection = entryCollection;
+    }
+
+    public Blocked getBlock() {
+        return blocked;
+    }
+
+    public void setBlock(Blocked blocked) {
+        this.blocked = blocked;
     }
 
     @Override
@@ -206,15 +244,6 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "edu.tutoringtrain.entities.User[ username=" + username + " ]";
-    }
-
-    @XmlTransient
-    public Collection<Session> getSessionCollection() {
-        return sessionCollection;
-    }
-
-    public void setSessionCollection(Collection<Session> sessionCollection) {
-        this.sessionCollection = sessionCollection;
     }
     
 }
