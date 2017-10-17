@@ -158,6 +158,11 @@ public class UserService extends AbstractService {
         return Gender.getAll(lang);
     }
     
+    @Transactional
+    public int getCountAll() {
+        return ((Number)em.createNamedQuery("User.countAll").getSingleResult()).intValue();
+    }
+    
     /*
     public boolean sendRegisterVerificationEmail(User user) {
         boolean success = true;

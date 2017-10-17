@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Subject.findById", query = "SELECT s FROM Subject s WHERE s.id = :id")
     , @NamedQuery(name = "Subject.findByDename", query = "SELECT s FROM Subject s WHERE s.dename = :dename")
     , @NamedQuery(name = "Subject.findByEnname", query = "SELECT s FROM Subject s WHERE s.enname = :enname")
-    , @NamedQuery(name = "Subject.findByIsactive", query = "SELECT s FROM Subject s WHERE s.isactive = :isactive")})
+    , @NamedQuery(name = "Subject.findByIsactive", query = "SELECT s FROM Subject s WHERE s.isactive = :isactive")
+    , @NamedQuery(name = "Subject.countAll", query = "SELECT count(s) FROM Subject s")})
 public class Subject implements Serializable {
 
     private static final long serialVersionUID = 1L;

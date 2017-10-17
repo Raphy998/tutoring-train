@@ -85,4 +85,9 @@ public class SubjectService extends AbstractService {
 
         em.remove(subject);
     }
+    
+    @Transactional
+    public int getCountAll() {
+        return ((Number)em.createNamedQuery("Subject.countAll").getSingleResult()).intValue();
+    }
 }

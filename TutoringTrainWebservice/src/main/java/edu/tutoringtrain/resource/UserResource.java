@@ -5,8 +5,6 @@
  */
 package edu.tutoringtrain.resource;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.Gender;
@@ -29,7 +27,6 @@ import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
-import java.math.BigDecimal;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
@@ -309,6 +306,30 @@ public class UserResource extends AbstractResource {
             }
             
             userService.blockUser(new Blocked(user2unblock), false);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/count")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getCountAll(@Context HttpServletRequest httpServletRequest) throws Exception {
+        
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            response.entity(userService.getCountAll());
         } 
         catch (Exception ex) {
             try {

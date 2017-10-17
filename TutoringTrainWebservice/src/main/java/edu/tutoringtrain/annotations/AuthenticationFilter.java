@@ -8,6 +8,8 @@ package edu.tutoringtrain.annotations;
 import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.AuthenticationService;
+import edu.tutoringtrain.data.error.Error;
+import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
@@ -70,7 +72,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         // Validate the Authorization header
         if (!isTokenBasedAuthentication(authorizationHeader)) {
-            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode());
+            abortWithStatus(requestContext, Response.Status.UNAUTHORIZED.getStatusCode(),
+                    new ErrorBuilder(Error.AUTH_FAILED).withLang(lang).build());
             return;
         }
 

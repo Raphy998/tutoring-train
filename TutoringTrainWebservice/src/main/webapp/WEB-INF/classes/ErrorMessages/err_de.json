@@ -28,5 +28,5 @@
     "27": "Benutzer ist mit der Begründung '%s' gesperrt",
     "28": "Benutzer ist bis %s gesperrt",
     "29": "Json parsing error: '%s'",
-    "30": "constraint violation: '%s'"
+    "30": "Constraint violation: '%s'"
 }

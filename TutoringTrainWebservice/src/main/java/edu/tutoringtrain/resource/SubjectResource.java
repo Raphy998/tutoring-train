@@ -170,4 +170,28 @@ public class SubjectResource extends AbstractResource {
 
         return response.build();
     }
+    
+    @Secured
+    @GET
+    @Path("/count")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getCountAll(@Context HttpServletRequest httpServletRequest) throws Exception {
+        
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            response.entity(subjectService.getCountAll());
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
 }

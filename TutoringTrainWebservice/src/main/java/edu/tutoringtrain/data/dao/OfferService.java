@@ -133,4 +133,9 @@ public class OfferService extends AbstractService {
         if (offerReq.getIsactive() != null) dbOffer.setIsactive(offerReq.getIsactive());
         if (offerReq.getSubject() != null) dbOffer.setSubject(subjectService.getSubject(offerReq.getSubject().getId()));
     }
+    
+    @Transactional
+    public int getCountAll() {
+        return ((Number)em.createNamedQuery("Entry.countOfferAll").getSingleResult()).intValue();
+    }
 }

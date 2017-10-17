@@ -44,7 +44,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Entry.findByFlag", query = "SELECT e FROM Entry e WHERE e.flag = :flag")
     , @NamedQuery(name = "Entry.findOfferByIdAndUsername", query = "SELECT e FROM Entry e WHERE e.flag = 'O' AND e.id = :id AND e.user.username = :username")
     , @NamedQuery(name = "Entry.findOfferNewest", query = "SELECT e FROM Entry e WHERE e.flag = 'O' ORDER BY e.postedon DESC")
-    , @NamedQuery(name = "Entry.findOfferNewestOfUser", query = "SELECT e FROM Entry e WHERE e.flag = 'O' AND e.user.username = :username ORDER BY e.postedon DESC")})
+    , @NamedQuery(name = "Entry.findOfferNewestOfUser", query = "SELECT e FROM Entry e WHERE e.flag = 'O' AND e.user.username = :username ORDER BY e.postedon DESC")
+    , @NamedQuery(name = "Entry.countOfferAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'O'")})
 public class Entry implements Serializable {
     public static final Character FLAG_OFFER = 'O';
     public static final Character FLAG_REQUEST = 'R';
