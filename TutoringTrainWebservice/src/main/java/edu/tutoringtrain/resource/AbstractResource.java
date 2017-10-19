@@ -17,6 +17,7 @@ import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.error.Language;
+import edu.tutoringtrain.data.error.LocaleSpecificMessageInterpolator;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
@@ -27,9 +28,11 @@ import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.MessageInterpolator;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -56,10 +59,27 @@ public abstract class AbstractResource {
         return mapper;
     }
     
-    protected void checkConstraints(Object o) throws ConstraintViolationException {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(o);
+    protected void checkConstraints(Object o, Language lang) throws ConstraintViolationException {
+        checkConstraints(o, lang, null);
+    }
+    
+    protected void checkConstraints(Object o, Language lang, Class group) throws ConstraintViolationException {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();   
+        MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(
+                                       factory.getMessageInterpolator(),
+                                       lang.getLocale());
+
+        Validator validator = factory.usingContext()
+                                      .messageInterpolator(interpolator)
+                                      .getValidator();
+
+        Set<ConstraintViolation<Object>> constraintViolations;
+        if (group != null) {
+            constraintViolations = validator.validate(o, group);
+        }
+        else {
+            constraintViolations = validator.validate(o);
+        }
         
         if (!constraintViolations.isEmpty()) {
             throw new ConstraintViolationException(constraintViolations);

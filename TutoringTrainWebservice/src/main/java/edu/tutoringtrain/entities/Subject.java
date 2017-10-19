@@ -6,6 +6,9 @@
 package edu.tutoringtrain.entities;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.misc.SubjectLocalizeSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -21,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -34,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @UniqueConstraint(columnNames = {"DENAME"})
     , @UniqueConstraint(columnNames = {"ENNAME"})})
 @XmlRootElement
+@JsonSerialize(using = SubjectLocalizeSerializer.class)
 @NamedQueries({
     @NamedQuery(name = "Subject.findAll", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC")
     , @NamedQuery(name = "Subject.findById", query = "SELECT s FROM Subject s WHERE s.id = :id")
@@ -48,16 +53,19 @@ public class Subject implements Serializable {
     @Id
     @GeneratedValue(generator="seq_subject")
     @SequenceGenerator(name="seq_subject",sequenceName="seq_subject", allocationSize=1)
+    @NotNull(groups = ConstraintGroups.Update.class)
     @Basic(optional = false)
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
     @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class, Views.Subject.Out.Public.class, 
         Views.Subject.In.Update.class})
     private BigDecimal id;
     @Size(max = 25)
+    @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "DENAME", length = 25)
     @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String dename;
     @Size(max = 25)
+    @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "ENNAME", length = 25)
     @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String enname;

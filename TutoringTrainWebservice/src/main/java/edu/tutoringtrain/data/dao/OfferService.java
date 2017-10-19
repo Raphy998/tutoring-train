@@ -114,7 +114,7 @@ public class OfferService extends AbstractService {
         if (offerReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
         }
-        if (offerReq.getIsactive() != '0' && offerReq.getIsactive() != '1') {
+        if (offerReq.getIsactive() != null && offerReq.getIsactive() != '0' && offerReq.getIsactive() != '1') {
             throw new InvalidArgumentException(new ErrorBuilder(Error.CONSTRAINT_VIOLATION).withParams("isActive must be 0 or 1"));
         }
         

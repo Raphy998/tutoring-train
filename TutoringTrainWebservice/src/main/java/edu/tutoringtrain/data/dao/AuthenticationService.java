@@ -87,7 +87,7 @@ public class AuthenticationService extends AbstractService {
         throw new BlockedException(new ErrorBuilder(errCode).withParams(params));
     }
     
-    private boolean canAuthenticate(Character requiredRole, Character role) {
+    public boolean canAuthenticate(Character requiredRole, Character role) {
         boolean canAuth = true;
         
         //if non-admin logges in via admin application

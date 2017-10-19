@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.SubjectService;
+import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.entities.Subject;
@@ -54,7 +55,7 @@ public class SubjectResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
             List<Subject> subjects = subjectService.getAllSubjects();
-            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).writeValueAsString(subjects.toArray()));
+            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).with(lang.getLocale()).writeValueAsString(subjects.toArray()));
         } 
         catch (Exception ex) {
             try {
@@ -81,10 +82,10 @@ public class SubjectResource extends AbstractResource {
         
         try {
             subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).withType(Subject.class).readValue(subjectStr);
-            checkConstraints(subjectIn);
+            checkConstraints(subjectIn, lang, ConstraintGroups.Create.class);
             Subject subjectOut = subjectService.createSubject(subjectIn);
             
-            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).writeValueAsString(subjectOut));
+            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).with(lang.getLocale()).writeValueAsString(subjectOut));
         } 
         catch (Exception ex) {
             try {
@@ -118,7 +119,7 @@ public class SubjectResource extends AbstractResource {
         
         try {
             subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).withType(Subject.class).readValue(subjectStr);
-            checkConstraints(subjectIn);
+            checkConstraints(subjectIn, lang, ConstraintGroups.Update.class);
             subjectService.updateSubject(subjectIn);
         } 
         catch (Exception ex) {
@@ -134,7 +135,7 @@ public class SubjectResource extends AbstractResource {
             }
             catch (NullValueException npex) {
                 response.status(Response.Status.NOT_FOUND);
-                response.entity(new ErrorBuilder(Error.USER_NOT_FOUND)
+                response.entity(new ErrorBuilder(Error.SUBJECT_NOT_FOUND)
                         .withLang(lang)
                         .build());
             }

@@ -5,6 +5,8 @@
  */
 package edu.tutoringtrain.data.error;
 
+import java.util.Locale;
+
 /**
  *
  * @author Elias
@@ -16,5 +18,26 @@ public enum Language {
     
     public static Language getDefault() {
         return EN;
+    }
+    
+    public Locale getLocale() {
+        Locale loc;
+        
+        switch (this) {
+            case EN:
+                loc = Locale.ENGLISH;
+                break;
+            case DE:
+                loc = Locale.GERMAN;
+                break;
+            case STAHL:
+                loc = Locale.GERMAN;
+                break;
+            default:
+                loc = Locale.ENGLISH;
+                break;
+        }
+        
+        return loc;
     }
 }

@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.EmailService;
+import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
@@ -65,7 +66,7 @@ public class UserResource extends AbstractResource {
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Register.class).withType(User.class).readValue(userStr);
-            checkConstraints(userIn);
+            checkConstraints(userIn, lang, ConstraintGroups.Create.class);
             User userOut = userService.registerUser(userIn);
             emailService.sendWelcomeEmail(userIn, false);
             
@@ -103,7 +104,7 @@ public class UserResource extends AbstractResource {
         try {
             userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
             userIn.setUsername(securityContext.getUserPrincipal().getName());       //set user to logged in user (to avoid making another json view)
-            checkConstraints(userIn);
+            checkConstraints(userIn, lang);
             
             userService.updateUser(userIn);
         } 
@@ -137,7 +138,7 @@ public class UserResource extends AbstractResource {
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
-            checkConstraints(userIn);
+            checkConstraints(userIn, lang);
             userService.updateUser(userIn);
         } 
         catch (Exception ex) {
@@ -256,7 +257,7 @@ public class UserResource extends AbstractResource {
 
         try {
             Blocked blockIn = getMapper().readerWithView(Views.Block.In.Create.class).withType(Blocked.class).readValue(blockStr);
-            checkConstraints(blockIn);
+            checkConstraints(blockIn, lang);
             
             if (securityContext.getUserPrincipal().getName().equals(blockIn.getUsername())) {
                 throw new BlockException(new ErrorBuilder(Error.USER_BLOCK_OWN));

@@ -6,6 +6,11 @@
 package edu.tutoringtrain.entities;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.misc.NumericBooleanDeserializer;
+import edu.tutoringtrain.misc.NumericBooleanSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -23,6 +28,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -55,6 +61,7 @@ public class Entry implements Serializable {
     @Id
     @GeneratedValue(generator="seq_entry")
     @SequenceGenerator(name="seq_entry",sequenceName="seq_entry", allocationSize=1)
+    @NotNull(groups = ConstraintGroups.Update.class)
     @Basic(optional = false)
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
     @JsonView({Views.Offer.In.Update.class, Views.Offer.Out.Public.class})
@@ -69,13 +76,17 @@ public class Entry implements Serializable {
     private Date duedate;
     @Column(name = "ISACTIVE")
     @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Update.class})
+    @JsonSerialize(using=NumericBooleanSerializer.class)
+    @JsonDeserialize(using=NumericBooleanDeserializer.class)
     private Character isactive;
     @Size(max = 500)
+    @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "DESCRIPTION", length = 500)
     @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
     private String description;
     @Column(name = "FLAG")
     private Character flag;
+    @NotNull(groups = ConstraintGroups.Create.class)
     @JoinColumn(name = "SUBJECT", referencedColumnName = "ID")
     @ManyToOne
     @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})

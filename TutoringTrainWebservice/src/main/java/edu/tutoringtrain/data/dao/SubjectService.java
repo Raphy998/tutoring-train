@@ -63,9 +63,6 @@ public class SubjectService extends AbstractService {
         if (subject == null) {
             throw new NullValueException(new ErrorBuilder(Error.SUBJECT_NULL));
         }
-        if (subject.getEnname() == null || subject.getDename() == null) {
-            throw new NullValueException(new ErrorBuilder(Error.NAME_NULL));
-        }
         
         Subject dbSubject = em.find(Subject.class, subject.getId());
         if (subject == null) {

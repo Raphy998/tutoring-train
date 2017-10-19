@@ -5,6 +5,8 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
         <property name="eclipselink.cache.shared.default" value="false"/>
+        <property name="javax.persistence.validation.group.pre-persist" value="javax.validation.groups.Default"/>
+        <property name="javax.persistence.validation.group.pre-update" value="javax.validation.groups.Default,edu.tutoringtrain.utils.ConstraintGroups.Update"/>
     </properties>
   </persistence-unit>
 </persistence>

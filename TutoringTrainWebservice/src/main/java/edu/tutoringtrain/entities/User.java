@@ -6,6 +6,7 @@
 package edu.tutoringtrain.entities;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -58,6 +59,7 @@ public class User implements Serializable {
     @JsonView({Views.Offer.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class})
     private String username;
     @Size(max = 64)
+    @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "PASSWORD", length = 64)
     @JsonView({Views.User.In.Register.class})
     private String password;
