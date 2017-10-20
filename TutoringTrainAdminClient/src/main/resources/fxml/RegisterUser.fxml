@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="700.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.bsd.tutoringtrain.controller.user.RegisterUserController">
+    <stylesheets>
+        <URL value="@/styles/Styles.css" />
+    </stylesheets>
+   <children>
+      <Label fx:id="lblTitel" alignment="CENTER" layoutX="238.0" layoutY="27.0" text="Register User" textAlignment="CENTER" AnchorPane.leftAnchor="238.0" AnchorPane.topAnchor="30.0">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="txtUsername" focusColor="#084c61" labelFloat="true" layoutX="125.0" layoutY="161.0" prefHeight="25.0" prefWidth="400.0" promptText="Username" unFocusColor="#86bab8" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="130.0" />
+      <JFXTextField fx:id="txtName" focusColor="#084c61" labelFloat="true" layoutX="96.0" layoutY="278.0" promptText="Name" unFocusColor="#86bab8" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="200.0" />
+      <JFXTextField fx:id="txtEmail" focusColor="#084c61" labelFloat="true" layoutX="163.0" layoutY="360.0" promptText="E-Mail" unFocusColor="#86bab8" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="270.0" />
+      <JFXTextField fx:id="txtEducation" focusColor="#084c61" labelFloat="true" layoutX="179.0" layoutY="407.0" promptText="Education" unFocusColor="#86bab8" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="340.0" />
+      <JFXPasswordField fx:id="txtPassword" focusColor="#084c61" labelFloat="true" layoutX="277.0" layoutY="480.0" promptText="Password" unFocusColor="#86bab8" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="410.0" />
+      <JFXButton fx:id="btnGeneratePassword" buttonType="RAISED" layoutX="395.0" layoutY="414.0" onAction="#onBtnGeneratePassword" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="Generate Password" AnchorPane.leftAnchor="410.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="410.0">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </JFXButton>
+      <JFXComboBox fx:id="comboGender" focusColor="#084c61" labelFloat="true" layoutX="164.0" layoutY="534.0" promptText="Gender" unFocusColor="#86bab8" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="480.0" />
+      <JFXButton fx:id="btnRegister" buttonType="RAISED" layoutX="393.0" layoutY="569.0" onAction="#onBtnRegister" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="Register" AnchorPane.leftAnchor="410.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="550.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <JFXButton fx:id="btnClose" buttonType="RAISED" layoutX="152.0" layoutY="569.0" onAction="#onBtnClose" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="Close" AnchorPane.leftAnchor="410.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="600.0">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </JFXButton>
+      <ImageView fx:id="ivAvatar" fitHeight="150.0" fitWidth="200.0" layoutX="393.0" layoutY="125.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="410.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="130.0">
+         <image>
+            <Image url="@../images/default_avatar.png" />
+         </image>
+      </ImageView>
+      <JFXButton fx:id="btnSelectAvatar" buttonType="RAISED" layoutX="418.0" layoutY="295.0" onAction="#onBtnSelectAvatar" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="Select Avatar" AnchorPane.leftAnchor="410.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </JFXButton>
+      <JFXSpinner fx:id="spinner" layoutX="520.0" layoutY="40.0" radius="25.0" startingAngle="0.0" visible="false" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <Label fx:id="lblGeneratedPassword" alignment="CENTER" layoutX="471.0" layoutY="457.0" textAlignment="CENTER" AnchorPane.leftAnchor="410.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="445.0">
+         <font>
+            <Font name="System Italic" size="12.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="btnRemoveAvatar" buttonType="RAISED" layoutX="438.0" layoutY="315.0" onAction="#onBtnRemoveAvatar" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="Remove Avatar" AnchorPane.leftAnchor="410.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="335.0">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </JFXButton>
+   </children>
+</AnchorPane>

@@ -1,6 +1,9 @@
 package at.bsd.tutoringtrain.data.entities;
 
+import at.bsd.tutoringtrain.data.Entity;
+import at.bsd.tutoringtrain.data.mapper.views.JsonUserViews;
 import at.bsd.tutoringtrain.security.PasswordHash;
+import com.fasterxml.jackson.annotation.JsonView;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -8,37 +11,88 @@ import java.math.BigDecimal;
  *
  * @author Marco Wilscher <marco.wilscher@edu.htl-villach.at>
  */
-public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
+public final class User extends Entity implements Cloneable {
+    private static final long serialVersionUID = 1830655504546896238L;
     
+    @JsonView ({
+        JsonUserViews.Out.Register.class, 
+        JsonUserViews.In.Register.class, 
+        JsonUserViews.In.Get.class, 
+        JsonUserViews.Out.Update.class,
+        JsonUserViews.Out.UpdatePassowrd.class
+    })
     private String username;
-    private String password;
-    private Character role;
-    private String email;
+    
+    @JsonView ({
+        JsonUserViews.Out.Register.class,
+        JsonUserViews.In.Register.class,
+        JsonUserViews.In.Get.class,
+        JsonUserViews.Out.Update.class,
+        JsonUserViews.Out.UpdateOwn.class
+    })
     private String name;
+    
+    @JsonView ({
+        JsonUserViews.Out.Register.class,
+        JsonUserViews.In.Register.class,
+        JsonUserViews.In.Get.class,
+        JsonUserViews.Out.Update.class,
+        JsonUserViews.Out.UpdateOwn.class
+    })
+    private Character gender;
+    
+    @JsonView ({
+        JsonUserViews.Out.Register.class,
+        JsonUserViews.Out.Update.class,
+        JsonUserViews.Out.UpdateOwn.class,
+        JsonUserViews.Out.UpdatePassowrd.class
+    })
+    private String password;
+    
+    @JsonView ({
+        JsonUserViews.Out.Register.class,
+        JsonUserViews.In.Register.class,
+        JsonUserViews.In.Get.class,
+        JsonUserViews.Out.Update.class,
+        JsonUserViews.Out.UpdateOwn.class
+    })
+    private String email;
+    
+    @JsonView ({
+        JsonUserViews.In.Register.class,
+        JsonUserViews.In.Get.class
+    })
+    private Character role;
+    
+    @JsonView ({
+       JsonUserViews.Out.Register.class,
+       JsonUserViews.In.Register.class,
+       JsonUserViews.In.Get.class,
+       JsonUserViews.Out.Update.class,
+       JsonUserViews.Out.UpdateOwn.class
+    })
+    private String education;
+    
+    @JsonView ({
+        JsonUserViews.In.Get.class
+    })
+    private Blocked block;
     private Serializable avatar;
     private BigDecimal averagerating;
-    private String education;
-    private Gender gender;
-    private Blocked block;
-
+    
     public User() {
+        
     }
 
-    public Blocked getBlock() {
-        return block;
-    }
-
-    public void setBlock(Blocked block) {
-        this.block = block;
-    }
-
-    
-    
-    public User(String username) {
+    public User(String username, String name, Character gender, String password, String email, String education) {
         this.username = username;
+        this.name = name;
+        this.gender = gender;
+        this.email = email;
+        this.education = education;
+        setPassword(password);
     }
-
+    
     public String getUsername() {
         return username;
     }
@@ -103,38 +157,24 @@ public class User implements Serializable {
         this.education = education;
     }
 
-    public Gender getGender() {
+    public Character getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(Character gender) {
         this.gender = gender;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (username != null ? username.hashCode() : 0);
-        return hash;
+    public Blocked getBlock() {
+        return block;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
-            return false;
-        }
-        User other = (User) object;
-        if ((this.username == null && other.username != null) || (this.username != null && !this.username.equals(other.username))) {
-            return false;
-        }
-        return true;
+    public void setBlock(Blocked block) {
+        this.block = block;
     }
 
     @Override
     public String toString() {
-        return username + " - " + name + " (" + email + ")";
-    }
-    
-    
+        return super.toString() + ": " + username + ", " + name + ", " + gender + ", " + education + ", " + email;
+    }    
 }

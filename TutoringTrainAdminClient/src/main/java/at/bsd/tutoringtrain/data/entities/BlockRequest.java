@@ -1,21 +1,23 @@
 package at.bsd.tutoringtrain.data.entities;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.ZonedDateTime;
 
 /**
  *
- * @author Marco Wilscher <marco.wilscher@edu.htl-villach.at>
+ * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
 public class BlockRequest {
     private String username;
     private String reason;
-    private Date duedate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'hh:mm:ssZ")
+    private ZonedDateTime duedate;
     
     public BlockRequest() {
         this(null, null, null);
     }
     
-    public BlockRequest(String username, String reason, Date duedate) {
+    public BlockRequest(String username, String reason, ZonedDateTime duedate) {
         this.username = username;
         this.reason = reason;
         this.duedate = duedate;
@@ -37,11 +39,11 @@ public class BlockRequest {
         this.reason = reason;
     }
 
-    public Date getDuedate() {
+    public ZonedDateTime getDuedate() {
         return duedate;
     }
 
-    public void setDuedate(Date duedate) {
+    public void setDuedate(ZonedDateTime duedate) {
         this.duedate = duedate;
     }
 }

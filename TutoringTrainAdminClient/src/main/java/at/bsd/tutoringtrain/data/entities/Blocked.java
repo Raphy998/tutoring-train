@@ -1,29 +1,20 @@
 package at.bsd.tutoringtrain.data.entities;
 
+import at.bsd.tutoringtrain.data.mapper.views.JsonUserViews;
+import com.fasterxml.jackson.annotation.JsonView;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 public class Blocked implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String username;
+    @JsonView({
+        JsonUserViews.In.Get.class
+    })
     private String reason;
-    private Date duedate;
-    private User user;
+    private ZonedDateTime duedate;
 
     public Blocked() {
-    }
-
-    public Blocked(String username) {
-        this.username = username;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    }  
 
     public String getReason() {
         return reason;
@@ -33,39 +24,11 @@ public class Blocked implements Serializable {
         this.reason = reason;
     }
 
-    public Date getDuedate() {
+    public ZonedDateTime getDuedate() {
         return duedate;
     }
 
-    public void setDuedate(Date duedate) {
+    public void setDuedate(ZonedDateTime duedate) {
         this.duedate = duedate;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (username != null ? username.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Blocked)) {
-            return false;
-        }
-        Blocked other = (Blocked) object;
-        if ((this.username == null && other.username != null) || (this.username != null && !this.username.equals(other.username))) {
-            return false;
-        }
-        return true;
     }
 }

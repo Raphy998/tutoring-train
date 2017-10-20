@@ -1,29 +1,92 @@
 package at.bsd.tutoringtrain.controller;
 
+import at.bsd.tutoringtrain.controller.user.UpdateUserController;
 import at.bsd.tutoringtrain.data.Database;
 import at.bsd.tutoringtrain.data.entities.User;
-import at.bsd.tutoringtrain.data.mapper.EntityMapper;
+import at.bsd.tutoringtrain.data.mapper.DataMapper;
+import at.bsd.tutoringtrain.data.mapper.views.JsonUserViews;
 import at.bsd.tutoringtrain.debugging.MessageLogger;
-import at.bsd.tutoringtrain.network.Communicator;
-import at.bsd.tutoringtrain.network.Result;
-import at.bsd.tutoringtrain.network.listener.user.RequestAllUsersListener;
-import at.bsd.tutoringtrain.network.listener.user.RequestBlockUserListener;
-import at.bsd.tutoringtrain.network.listener.user.RequestOwnUserListener;
-import at.bsd.tutoringtrain.network.listener.user.RequestRegisterUserListener;
-import at.bsd.tutoringtrain.network.listener.user.RequestUnblockUserListener;
-import at.bsd.tutoringtrain.network.listener.user.RequestUpdateOwnUserListener;
+import at.bsd.tutoringtrain.io.network.Communicator;
+import at.bsd.tutoringtrain.io.network.RequestResult;
+import at.bsd.tutoringtrain.io.network.listener.user.RequestOwnUserListener;
+import at.bsd.tutoringtrain.ui.listener.ReauthenticateListener;
+import at.bsd.tutoringtrain.ui.listener.UserDataChangedListner;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextField;
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
  *
- * @author Marco Wilscher <marco.wilscher@edu.htl-villach.at>
+ * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class MainController implements Initializable, RequestAllUsersListener, RequestOwnUserListener, RequestUpdateOwnUserListener, RequestBlockUserListener, RequestUnblockUserListener, RequestRegisterUserListener {
+public class MainController implements Initializable, RequestOwnUserListener, UserDataChangedListner, ReauthenticateListener {
+    @FXML
+    private AnchorPane pane;
 
+    @FXML
+    private JFXButton btnOwnAccount;
+
+    @FXML
+    private JFXButton btnNewAccount;
+
+    @FXML
+    private JFXButton btnNewSubject;
+
+    @FXML
+    private JFXButton btnAllAccounts;
+
+    @FXML
+    private JFXButton btnAllSubjects;
+
+    @FXML
+    private JFXButton btnAllOffers;
+
+    @FXML
+    private JFXButton btnSettings;
+
+    @FXML
+    private JFXButton btnLogout;
+
+    @FXML
+    private JFXButton btnExit;
+
+    @FXML
+    private Label lblWelcome;
+
+    @FXML
+    private JFXListView<Void> lvResult;
+
+    @FXML
+    private JFXTextField txtSearch;
+
+    @FXML
+    private JFXButton btnSearch;
+
+    @FXML
+    private JFXComboBox<Void> comboCategorie;
+
+    @FXML
+    private JFXSpinner spinner;
+    
+    private JFXSnackbar snackbar; 
+    
     private Communicator communicator;
     private Database db;
     private MessageLogger logger;
@@ -33,36 +96,80 @@ public class MainController implements Initializable, RequestAllUsersListener, R
         logger = MessageLogger.getINSTANCE();
         communicator = Communicator.getInstance();
         db = Database.getInstance();
-        try {
-            if (!communicator.requestOwnUser(this)) {
-                //TODO aquire a new token
+        db.addUserChangedListener(this);
+        snackbar = new JFXSnackbar(pane);
+        
+        try {          
+            if (communicator.requestOwnUser(this)) {
+                
+            } else {
+                displayMessage("token expired");
             }
-            
-            //communicator.requestBlockUser(this, new BlockRequest("elias", "admin client", new Date(2017, 11, 11)));
-            
-            //communicator.requestUnblockUser(this, "elias");
-            
-            //User u = new User("cdefgh1");
-            //u.setName("ABC DEFG");
-            //u.setEmail("cde1@def.g");
-            //u.setGender(new Gender(BigDecimal.ONE));
-            //u.setEducation("HTL");
-            //u.setPassword("abcdefg");
-            
-            //logger.info(u.toString(), getClass());
-            
-            //communicator.requestRegisterUser(this, u);
-            
         } catch (Exception ex) {
             logger.error(ex.getMessage(), getClass());
         }
     }
+    
+    @FXML
+    void onBtnAllAccounts(ActionEvent event) {
+        openWindow("/fxml/AllUsers.fxml", "TutoringTrain - Admin Client");
+    }
 
+    @FXML
+    void onBtnAllOffers(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onBtnAllSubjects(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onBtnExit(ActionEvent event) {
+        closeWindow();
+        Platform.exit();
+    }
+
+    @FXML
+    void onBtnLogout(ActionEvent event) {
+        communicator.closeSession();
+        closeWindow();
+        openWindow("/fxml/Authentification.fxml", "TutoringTrain - Admin Client");
+    }
+
+    @FXML
+    void onBtnNewAccount(ActionEvent event) {
+        openWindow("/fxml/RegisterUser.fxml", "TutoringTrain - Admin Client");
+    }
+
+    @FXML
+    void onBtnNewSubject(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onBtnOwnAccount(ActionEvent event) {
+        if (db.getCurrentUser() != null) {
+            openUpdateUserWindow(db.getCurrentUser(), true);
+        }
+    }
+
+    @FXML
+    void onBtnSearch(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onBtnSettings(ActionEvent event) {
+        
+    }
+    
     @Override
-    public void requestOwnUserFinished(Result result) {
+    public void requestOwnUserFinished(RequestResult result) {
         try {
-            if (!result.isError()) {
-                db.setUser(EntityMapper.toUser(result.getResultValue()));
+            if (result.isSuccessful()) {
+                db.setCurrentUser(DataMapper.toUser(result.getData(), JsonUserViews.In.Get.class));
             }
             else {
                 //TODO 
@@ -73,41 +180,77 @@ public class MainController implements Initializable, RequestAllUsersListener, R
     }
 
     @Override
-    public void requestAllUsersFinished(Result result) {
-        try {
-            if (!result.isError()) {
-                ArrayList<User> users = EntityMapper.toUsers(result.getResultValue());
-                System.out.println(users.size());
-            } else {
-                
-            }            
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), getClass());
-        }
-    }
-
-    @Override
-    public void requestFailed(Result result) {
+    public void requestFailed(RequestResult result) {
         logger.error(result.toString(), getClass());
     }
+    
+    private void setWelcomeMessage(User user) {
+        Platform.runLater(() -> lblWelcome.setText("Welcome " + user.getName() + "!"));
+    }
+    
+    private void displayMessage(String message) {
+        Platform.runLater(() -> snackbar.show(message, 5000));
+    }
+    
+    private <T> T openWindow(String fxml, String title) { 
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        T controller;
+        controller = null;
+        try {
+            loader = new FXMLLoader(getClass().getResource(fxml));
+            root = loader.load();
+            controller = (T)loader.getController();
+            stage = new Stage();
+            stage.setTitle(title);
+            stage.setResizable(false);
+            stage.setScene(new Scene(root));
 
-    @Override
-    public void requestUpdateOwnUserFinished(Result result) {
-        logger.info(result.toString(), getClass());
+            stage.show();
+        } catch (IOException ioex) {
+            logger.exception(ioex, getClass());
+        }
+        return controller;
+    }
+    
+    private void openUpdateUserWindow(User user, boolean ownAccount) {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        UpdateUserController controller;
+        try {
+            loader = new FXMLLoader(getClass().getResource("/fxml/UpdateUser.fxml"));
+            root = loader.load();
+            controller = (UpdateUserController)loader.getController();
+            stage = new Stage();
+            stage.setTitle("TutoringTrain - Admin Client");
+            stage.setResizable(false);
+            stage.setScene(new Scene(root));
+            stage.show();
+            controller.setUser(user);
+            controller.setTitle(ownAccount ? "Own Account" : "Update Account");
+            controller.setOwnAccout(ownAccount);
+        } catch (IOException ioex) {
+            logger.exception(ioex, getClass());
+        }
+    }
+    
+    private void closeWindow() {
+        ((Stage)pane.getScene().getWindow()).close();
     }
 
     @Override
-    public void requestBlockUserFinished(Result result) {
-        logger.info(result.toString(), getClass());
+    public void userDataChanged(User user) {
+        setWelcomeMessage(user);
     }
 
     @Override
-    public void requestUnblockUserFinished(Result result) {
-        logger.info(result.toString(), getClass());
+    public void authenticationSuccessful() {
     }
 
     @Override
-    public void requestRegisterUserFinished(Result result) {
-        logger.info(result.toString(), getClass());
-    }   
+    public void authenticationCanceled() {
+        onBtnLogout(null);
+    }
 }

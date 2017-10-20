@@ -18,7 +18,7 @@ public class MainApp extends Application {
         stage.setTitle("TutoringTrain - Admin Client");
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.show();
+        stage.show();  
     }
 
     /**
