@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.utils.Views;
@@ -99,6 +100,7 @@ public class User implements Serializable {
     private Collection<Entry> entryCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @JsonView({Views.User.Out.Private.class})
+    @JsonProperty("block")
     private Blocked blocked;
 
     public User() {
