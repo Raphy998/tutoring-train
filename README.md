@@ -1,2 +1,4 @@
-# FrontEnd Web Application for tutoring-train
-A frontend react web application for our tutoring train project.
+# tutoring-train
+BSD-Project
+
+Please see the Wiki entries for further information and sprint planning.
