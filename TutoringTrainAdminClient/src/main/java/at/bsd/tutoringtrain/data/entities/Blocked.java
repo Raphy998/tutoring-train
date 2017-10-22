@@ -3,7 +3,7 @@ package at.bsd.tutoringtrain.data.entities;
 import at.bsd.tutoringtrain.data.mapper.views.JsonUserViews;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.sql.Date;
 
 public class Blocked implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -11,7 +11,10 @@ public class Blocked implements Serializable {
         JsonUserViews.In.Get.class
     })
     private String reason;
-    private ZonedDateTime duedate;
+    @JsonView({
+        JsonUserViews.In.Get.class
+    })
+    private Date duedate;
 
     public Blocked() {
     }  
@@ -24,11 +27,11 @@ public class Blocked implements Serializable {
         this.reason = reason;
     }
 
-    public ZonedDateTime getDuedate() {
+    public Date getDuedate() {
         return duedate;
     }
 
-    public void setDuedate(ZonedDateTime duedate) {
+    public void setDuedate(Date duedate) {
         this.duedate = duedate;
     }
 }

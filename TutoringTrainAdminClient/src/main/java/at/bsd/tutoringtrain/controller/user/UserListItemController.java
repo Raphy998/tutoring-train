@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXButton;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -84,7 +85,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
     
     private void displayUser() {
         if (user != null) {
-            lblUsername.setText(user.getUsername());
+            lblUsername.setText("@" + user.getUsername());
             lblName.setText(user.getName());
             lblEducation.setText(user.getEducation());
             lblGender.setText(Gender.get(user.getGender()).getName());
@@ -92,7 +93,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
             if (user.getBlock() != null) {
                 paneBlocked.setVisible(true);
                 lblReason.setText(user.getBlock().getReason());
-                //lblDue.setText()
+                lblDue.setText(new SimpleDateFormat("dd.MM.yyyy hh:mm").format(user.getBlock().getDuedate()));
             } else {
                 paneBlocked.setVisible(false);
             }

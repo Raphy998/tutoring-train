@@ -11,6 +11,7 @@ import at.bsd.tutoringtrain.io.network.RequestResult;
 import at.bsd.tutoringtrain.io.network.listener.user.RequestOwnUserListener;
 import at.bsd.tutoringtrain.ui.listener.ReauthenticateListener;
 import at.bsd.tutoringtrain.ui.listener.UserDataChangedListner;
+import at.bsd.tutoringtrain.ui.search.SearchCategory;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
@@ -80,7 +81,7 @@ public class MainController implements Initializable, RequestOwnUserListener, Us
     private JFXButton btnSearch;
 
     @FXML
-    private JFXComboBox<Void> comboCategorie;
+    private JFXComboBox<SearchCategory> comboCategorie;
 
     @FXML
     private JFXSpinner spinner;
@@ -98,6 +99,8 @@ public class MainController implements Initializable, RequestOwnUserListener, Us
         db = Database.getInstance();
         db.addUserChangedListener(this);
         snackbar = new JFXSnackbar(pane);
+        comboCategorie.getItems().addAll(SearchCategory.ALL, SearchCategory.USER, SearchCategory.SUBJECT, SearchCategory.OFFER);
+        comboCategorie.getSelectionModel().select(SearchCategory.ALL);
         
         try {          
             if (communicator.requestOwnUser(this)) {

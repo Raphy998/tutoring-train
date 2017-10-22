@@ -63,6 +63,8 @@ public class BlockUserController implements Initializable, RequestBlockUserListe
     private Database db;
     private MessageLogger logger; 
     private BufferedImage avatar;
+    
+    
     private User user;
     
     @Override

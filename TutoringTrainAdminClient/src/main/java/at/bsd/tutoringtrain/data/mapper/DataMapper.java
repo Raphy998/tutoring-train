@@ -2,6 +2,8 @@ package at.bsd.tutoringtrain.data.mapper;
 
 import at.bsd.tutoringtrain.data.configuration.Configuration;
 import at.bsd.tutoringtrain.data.entities.BlockRequest;
+import at.bsd.tutoringtrain.data.entities.Offer;
+import at.bsd.tutoringtrain.data.entities.Subject;
 import at.bsd.tutoringtrain.data.entities.User;
 import at.bsd.tutoringtrain.io.network.Credentials;
 import at.bsd.tutoringtrain.messages.MessageContainer;
@@ -26,7 +28,6 @@ public class DataMapper {
     private final static ObjectMapper MAPPER = new ObjectMapper();
     
     static {
-        //By default all fields without explicit view definition are included, disable this
         MAPPER.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
         MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         MAPPER.setVisibility(FIELD, JsonAutoDetect.Visibility.NONE);
@@ -98,11 +99,47 @@ public class DataMapper {
         return MAPPER.readerWithView(jsonView).forType(new TypeReference<ArrayList<User>>(){}).readValue(json);
     }
     
+    /**
+     * 
+     * @param json
+     * @return
+     * @throws IOException 
+     */
+    public static Subject toSubject(String json) throws IOException {
+        return MAPPER.readValue(json, Subject.class);
+    }
     
+    /**
+     * 
+     * @param json
+     * @param jsonView
+     * @return
+     * @throws IOException 
+     */
+    public static Subject toSubject(String json, Class jsonView) throws IOException {
+        return MAPPER.readerWithView(jsonView).forType(Subject.class).readValue(json);
+    }
     
+    /**
+     * 
+     * @param subject
+     * @return
+     * @throws JsonProcessingException 
+     */
+    public static String toJSON(Subject subject) throws JsonProcessingException  {
+        return MAPPER.writeValueAsString(subject);
+    }
     
-    
-    
+    /**
+     * 
+     * @param subject
+     * @param jsonView
+     * @return
+     * @throws JsonProcessingException 
+     */
+    public static String toJSON(Subject subject, Class jsonView) throws JsonProcessingException  {
+        return MAPPER.writerWithView(jsonView).forType(Subject.class).writeValueAsString(subject);
+    }
     
     /**
      * 
@@ -110,9 +147,45 @@ public class DataMapper {
      * @return
      * @throws IOException 
      */
-    /*public static Subject toSubject(String json) throws IOException {
-        return MAPPER.readValue(json, Subject.class);
-    }*/
+    public static Offer toOffer(String json) throws IOException {
+        return MAPPER.readValue(json, Offer.class);
+    }
+    
+    /**
+     * 
+     * @param json
+     * @param jsonView
+     * @return
+     * @throws IOException 
+     */
+    public static Offer toOffer(String json, Class jsonView) throws IOException {
+        return MAPPER.readerWithView(jsonView).forType(Offer.class).readValue(json);
+    }
+    
+    /**
+     * 
+     * @param offer
+     * @return
+     * @throws JsonProcessingException 
+     */
+    public static String toJSON(Offer offer) throws JsonProcessingException  {
+        return MAPPER.writeValueAsString(offer);
+    }
+    
+    /**
+     * 
+     * @param offer
+     * @param jsonView
+     * @return
+     * @throws JsonProcessingException 
+     */
+    public static String toJSON(Offer offer, Class jsonView) throws JsonProcessingException  {
+        return MAPPER.writerWithView(jsonView).forType(Offer.class).writeValueAsString(offer);
+    }
+    
+    
+    
+    
     
     /**
      * 
@@ -144,15 +217,7 @@ public class DataMapper {
         return MAPPER.readValue(json, Configuration.class);
     }
      
-    /**
-     * 
-     * @param subject
-     * @return
-     * @throws JsonProcessingException 
-     */
-    /*public static String toJSON(Subject subject) throws JsonProcessingException  {
-        return MAPPER.writeValueAsString(subject);
-    }*/
+    
     
     
     

@@ -242,7 +242,7 @@ public class RegisterUserController implements Initializable, RequestRegisterUse
                 emailMessage.append("Dear ");
                 emailMessage.append(getName());
                 emailMessage.append(",\n\nYour account has been created with the following credentials:\n\nUsername: ");
-                emailMessage.append(getUsername());
+                emailMessage.append(getCurrentUsername());
                 emailMessage.append("\n Password: ");
                 emailMessage.append(getPassword());
                 emailMessage.append("\n\nKind regards,\n");

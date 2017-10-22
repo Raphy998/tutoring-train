@@ -9,6 +9,7 @@ import org.apache.commons.mail.SimpleEmail;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
+@Deprecated
 public class EmailService {
     private final static String HOST_NAME = "smtp.googlemail.com";
     private final static String MAIL_ADDRESS = "noreply.tutoringtrain@gmail.com";
