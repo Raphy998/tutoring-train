@@ -32,6 +32,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
@@ -174,15 +175,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         return authorizationHeader != null && authorizationHeader.toLowerCase()
                     .startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ");
     }
-
-    private void abortWithStatus(ContainerRequestContext requestContext, int status) {
-        // Abort the filter chain with a 401 status code
-        // The "WWW-Authenticate" is sent along with the response
-        requestContext.abortWith(
-                Response.status(status)
-                        .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME)
-                        .build());
-    }
     
     private void abortWithStatus(ContainerRequestContext requestContext, int status, Object msg) {
         // Abort the filter chain with a 401 status code
@@ -190,6 +182,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         requestContext.abortWith(
                 Response.status(status)
                         .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME)
+                        .type(MediaType.APPLICATION_JSON)
                         .entity(msg)
                         .build());
     }

@@ -28,9 +28,18 @@ import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.transaction.TransactionalException;
 import javax.ws.rs.GET;
@@ -38,6 +47,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.SecurityContext;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * REST Web Service
@@ -364,6 +376,136 @@ public class UserResource extends AbstractResource {
         }
         
         return err;
+    }
+    
+    @Secured
+    @POST
+    @Path("/avatar")
+    @Consumes(value = MediaType.MULTIPART_FORM_DATA)
+    public Response setAvatar(@Context HttpServletRequest httpServletRequest,
+                    @FormDataParam("name") String name,
+                    @FormDataParam("file") InputStream uploadedInputStream,
+                    @Context SecurityContext securityContext) throws Exception {
+        
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        String imgType = null;
+        
+        try {
+            imgType = FilenameUtils.getExtension(name);
+            if (imgType.equalsIgnoreCase("jpeg")) imgType = "jpg";
+
+            if (!imgType.equalsIgnoreCase("png") && !imgType.equalsIgnoreCase("jpg")) {
+                throw new UnsupportedDataTypeException("only png and jpg are supported");
+            }
+            else {
+                BufferedImage bi = ImageIO.read(uploadedInputStream);
+                System.out.println("bi: " + bi.toString());
+                bi = getScaledImage(bi);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(bi, imgType, baos);
+                baos.flush();
+                byte[] imageInByte = baos.toByteArray();
+                baos.close();
+
+                userService.setAvatar(securityContext.getUserPrincipal().getName(), 
+                        imageInByte);
+            }
+            
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (UnsupportedDataTypeException e) {
+                response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE);
+                response.entity(new ErrorBuilder(Error.UNSUPPORTED_MEDIA_TYPE).withParams(imgType).withLang(lang).build());
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    private BufferedImage getScaledImage(BufferedImage srcImg){
+        int maxWH = 256;
+        int newWidth, newHeight;
+        
+        if (srcImg.getHeight() >= srcImg.getWidth()) {
+            newHeight = maxWH;
+            newWidth = (int)(maxWH * (float)((float)srcImg.getWidth() / (float)srcImg.getHeight()));
+        }
+        else {
+            newHeight = (int)(maxWH * (float)((float)srcImg.getHeight() / (float)srcImg.getWidth()));
+            newWidth = maxWH;
+        }
+        System.out.println("w: " + newWidth + " h: " + newHeight);
+        
+        BufferedImage resizedImg = new BufferedImage(newWidth, newHeight, srcImg.getType());
+        Graphics2D g2 = resizedImg.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, 0, 0, newWidth, newHeight, null);
+        g2.dispose();
+        return resizedImg;
+    }
+    
+    @Secured
+    @GET
+    @Path("/avatar/{username}")
+    @Produces("image/jpg")
+    public Response getAvatar(@Context HttpServletRequest httpServletRequest,
+            @PathParam("username") String username) throws Exception
+    {
+        Language lang = (Language) httpServletRequest.getAttribute("lang");
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        File tempFile = null;
+        
+        try {
+            byte[] avatar = userService.getAvatar(username);
+            
+            if (avatar != null) {
+                tempFile = File.createTempFile(getTmpFilePrefix(username), ".jpg", null);
+                FileOutputStream fos = new FileOutputStream(tempFile);
+                fos.write(avatar);
+                response.type("image/jpg").entity(tempFile);
+            }
+            else {
+                response.status(Response.Status.NO_CONTENT);
+            }
+        } 
+        catch (Exception ex) {
+            response.type(MediaType.APPLICATION_JSON);
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+        finally {
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/avatar")
+    @Produces("image/jpg")
+    public Response getAvatarOwn(@Context HttpServletRequest httpServletRequest,
+            @Context SecurityContext securityContext) throws Exception
+    {
+        return getAvatar(httpServletRequest, securityContext.getUserPrincipal().getName());
+    }
+    
+    private String getTmpFilePrefix(String username) {
+        return "tmp" + username;
     }
     
     //TODO: Unused in Sprint 1

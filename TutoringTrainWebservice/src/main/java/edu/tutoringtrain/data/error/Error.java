@@ -43,6 +43,7 @@ public class Error {
     public static final int BLOCKED_NO_REASON = 28;
     public static final int JSON_INVALID = 29;
     public static final int CONSTRAINT_VIOLATION = 30;
+    public static final int UNSUPPORTED_MEDIA_TYPE = 31;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -56,7 +57,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return CONSTRAINT_VIOLATION;
+        return UNSUPPORTED_MEDIA_TYPE;
     }
 
     public Error() {

@@ -16,6 +16,7 @@ import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.data.Gender;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
@@ -161,6 +162,26 @@ public class UserService extends AbstractService {
     @Transactional
     public int getCountAll() {
         return ((Number)em.createNamedQuery("User.countAll").getSingleResult()).intValue();
+    }
+    
+    @Transactional
+    public void setAvatar(String username, byte[] avatar) throws UserNotFoundException, NullValueException {
+        if (username == null) {
+            throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
+        }
+        
+        User user = getUserByUsername(username);
+        user.setAvatar(avatar);
+    }
+    
+    @Transactional
+    public byte[] getAvatar(String username) throws UserNotFoundException, NullValueException {
+        if (username == null) {
+            throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
+        }
+        
+        User user = getUserByUsername(username);
+        return (byte[]) user.getAvatar();
     }
     
     /*
