@@ -24,6 +24,7 @@ import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
+import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
@@ -142,6 +143,10 @@ public abstract class AbstractResource {
         }
         catch (BlockException ex) {
             response.status(CustomHttpStatusCodes.BLOCK_ERROR);
+            response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (SubjectNotActiveException ex) {
+            response.status(CustomHttpStatusCodes.SUBJECT_NOT_ACTIVE);
             response.entity(ex.getError().withLang(lang).build());
         }
         catch (Exception e) {

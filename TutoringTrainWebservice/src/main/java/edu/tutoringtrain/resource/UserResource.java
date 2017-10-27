@@ -48,7 +48,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
@@ -400,7 +399,6 @@ public class UserResource extends AbstractResource {
             }
             else {
                 BufferedImage bi = ImageIO.read(uploadedInputStream);
-                System.out.println("bi: " + bi.toString());
                 bi = getScaledImage(bi);
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -431,7 +429,7 @@ public class UserResource extends AbstractResource {
     }
     
     private BufferedImage getScaledImage(BufferedImage srcImg){
-        int maxWH = 256;
+        int maxWH = 360;
         int newWidth, newHeight;
         
         if (srcImg.getHeight() >= srcImg.getWidth()) {

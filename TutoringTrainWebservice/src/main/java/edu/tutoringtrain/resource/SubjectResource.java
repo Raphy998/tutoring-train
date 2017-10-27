@@ -18,7 +18,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.data.dao.SubjectService;
+import edu.tutoringtrain.data.dao.UserService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.NullValueException;
@@ -32,6 +34,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * REST Web Service
@@ -45,16 +48,18 @@ public class SubjectResource extends AbstractResource {
     
     @Inject
     SubjectService subjectService;
+    @Inject
+    UserService userService;
     
     @Secured
     @GET
     @Produces(value = MediaType.APPLICATION_JSON)
-    public Response getAll(@Context HttpServletRequest httpServletRequest) throws Exception {
+    public Response getAllActive(@Context HttpServletRequest httpServletRequest) throws Exception {
         
         Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
-            List<Subject> subjects = subjectService.getAllSubjects();
+            List<Subject> subjects = subjectService.getAllActiveSubjects();
             response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).with(lang.getLocale()).writeValueAsString(subjects.toArray()));
         } 
         catch (Exception ex) {
@@ -70,11 +75,36 @@ public class SubjectResource extends AbstractResource {
     }
     
     @Secured(Role.ADMIN)
+    @GET
+    @Path("inactive")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getAllInactive(@Context HttpServletRequest httpServletRequest) throws Exception {
+        
+        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        try {
+            List<Subject> subjects = subjectService.getAllInactiveSubjects();
+            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).with(lang.getLocale()).writeValueAsString(subjects.toArray()));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+
+        return response.build();
+    }
+    
+    @Secured
     @POST
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response create(@Context HttpServletRequest httpServletRequest,
-                    final String subjectStr) throws Exception {
+                    final String subjectStr,
+                    @Context SecurityContext securityContext) throws Exception {
         
         Language lang = (Language)httpServletRequest.getAttribute("lang");
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
@@ -83,6 +113,14 @@ public class SubjectResource extends AbstractResource {
         try {
             subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).withType(Subject.class).readValue(subjectStr);
             checkConstraints(subjectIn, lang, ConstraintGroups.Create.class);
+            
+            //if user is admin, activate subject immediately
+            if (userService.getUserByUsername(securityContext.getUserPrincipal().getName()).getRole().equals(UserRoles.ADMIN)) {
+                subjectIn.setIsactive('1');
+            }
+            else {
+                subjectIn.setIsactive('0');
+            }
             Subject subjectOut = subjectService.createSubject(subjectIn);
             
             response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).with(lang.getLocale()).writeValueAsString(subjectOut));

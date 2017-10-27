@@ -128,7 +128,7 @@ public class AuthenticationService extends AbstractService {
 
         Session session = new Session(token);
         session.setUser(user);
-        session.setExpirydate(DateUtils.toDate(LocalDateTime.now().plusDays(1)));
+        session.setExpirydate(DateUtils.toDate(LocalDateTime.now().plusMonths(1)));
         em.persist(session);
     }
     

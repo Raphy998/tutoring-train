@@ -10,6 +10,7 @@ import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
+import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Entry;
@@ -81,7 +82,7 @@ public class OfferService extends AbstractService {
     }
     
     @Transactional
-    public Entry createOffer(String username, Entry offerReq) throws NullValueException, SubjectNotFoundException, UserNotFoundException {
+    public Entry createOffer(String username, Entry offerReq) throws NullValueException, SubjectNotFoundException, UserNotFoundException, SubjectNotActiveException {
         if (username == null) {
             throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
@@ -92,6 +93,11 @@ public class OfferService extends AbstractService {
         Subject s = subjectService.getSubject(offerReq.getSubject().getId());
         if (s == null) {
             throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(offerReq.getSubject().getId()));
+        }else {
+            //if subject is not active
+            if (!s.getIsactive().equals('1')) {
+                throw new SubjectNotActiveException(new ErrorBuilder(Error.SUBJECT_NOT_ACTIVE));
+            }
         }
         
         User user = userService.getUserByUsername(username);
@@ -110,7 +116,7 @@ public class OfferService extends AbstractService {
     }
     
     @Transactional
-    public void updateOffer(String username, Entry offerReq) throws NullValueException, OfferNotFoundException, SubjectNotFoundException, InvalidArgumentException {
+    public void updateOffer(String username, Entry offerReq) throws NullValueException, OfferNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException {
         if (offerReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
         }
@@ -131,7 +137,20 @@ public class OfferService extends AbstractService {
         if (offerReq.getDuedate() != null) dbOffer.setDuedate(offerReq.getDuedate());
         if (offerReq.getPostedon() != null) dbOffer.setPostedon(offerReq.getPostedon());
         if (offerReq.getIsactive() != null) dbOffer.setIsactive(offerReq.getIsactive());
-        if (offerReq.getSubject() != null) dbOffer.setSubject(subjectService.getSubject(offerReq.getSubject().getId()));
+        if (offerReq.getSubject() != null) {
+            Subject s = subjectService.getSubject(offerReq.getSubject().getId());
+            if (s == null) {
+                throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(offerReq.getSubject().getId()));
+            } else {
+                //if subject is not active
+                if (!s.getIsactive().equals('1')) {
+                    throw new SubjectNotActiveException(new ErrorBuilder(Error.SUBJECT_NOT_ACTIVE));
+                }
+                else {
+                    dbOffer.setSubject(s);
+                }
+            }
+        }
     }
     
     @Transactional

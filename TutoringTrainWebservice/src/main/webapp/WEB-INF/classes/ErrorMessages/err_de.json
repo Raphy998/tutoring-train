@@ -29,5 +29,6 @@
     "28": "Benutzer ist bis %s gesperrt",
     "29": "Json parsing error: '%s'",
     "30": "Constraint violation: '%s'",
-    "31": "Nicht unterstützter Dateityp '%s'. Es wird ausschließlich png und jpg unterstützt"
+    "31": "Nicht unterstützter Dateityp '%s'. Es wird ausschließlich png und jpg unterstützt",
+    "32": "Gegenstand ist nicht aktiviert"
 }
