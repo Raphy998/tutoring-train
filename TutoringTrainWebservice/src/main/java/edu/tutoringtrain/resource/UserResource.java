@@ -405,10 +405,10 @@ public class UserResource extends AbstractResource {
                 ImageIO.write(bi, imgType, baos);
                 baos.flush();
                 byte[] imageInByte = baos.toByteArray();
-                baos.close();
 
                 userService.setAvatar(securityContext.getUserPrincipal().getName(), 
                         imageInByte);
+                baos.close();
             }
             
         } 
