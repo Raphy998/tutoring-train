@@ -30,5 +30,7 @@
     "29": "Json parsing error: '%s'",
     "30": "Constraint violation: '%s'",
     "31": "Unsupported media type '%s'. Only png and jpg are supported",
-    "32": "Subject is not activated"
+    "32": "Subject is not activated",
+    "33": "start must be >= 0",
+    "34": "pageSize must be > 0"
 }

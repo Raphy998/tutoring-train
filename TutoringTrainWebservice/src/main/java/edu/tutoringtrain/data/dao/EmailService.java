@@ -9,7 +9,6 @@ import edu.tutoringtrain.entities.User;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javafx.concurrent.Task;
 import javax.enterprise.context.ApplicationScoped;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,7 +18,6 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.validation.constraints.Future;
 
 /**
  *
@@ -38,6 +36,7 @@ public class EmailService extends AbstractService {
     
     private static final String WELCOME_SUBJECT = "Welcome to TutoringTrain";
     private static final String WELCOME_CONTENT = "Welcome %s!";
+    private static final String WELCOME_CONTENT_WITH_PASSWORD = "Welcome %s!" + LINE_SEP + LINE_SEP + "Your credentials are:" + LINE_SEP + "Username: %s" + LINE_SEP + "Password: %s";
     
     private ExecutorService executor;
     
@@ -45,8 +44,11 @@ public class EmailService extends AbstractService {
         executor = Executors.newFixedThreadPool(10); // Max 10 threads.
     }
     
-    //WIP
     public void sendWelcomeEmail(final User user, final boolean errorIfNotSend) {
+        sendWelcomeEmail(user, errorIfNotSend, null);
+    }
+    
+    public void sendWelcomeEmail(final User user, final boolean errorIfNotSend, final String password) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -56,7 +58,7 @@ public class EmailService extends AbstractService {
                     }
 
                     Message message = new MimeMessage(getSMTPSession());
-                    setWelcomeEmailContents(message, user);
+                    setWelcomeEmailContents(message, user, password);
                     Transport.send(message);
 
                 } catch (MessagingException e) {
@@ -66,15 +68,20 @@ public class EmailService extends AbstractService {
                 }
             }
         });
-        
     }
     
-    private void setWelcomeEmailContents(Message message, User user) throws AddressException, MessagingException {
+    private void setWelcomeEmailContents(Message message, User user, String password) throws AddressException, MessagingException {
         message.setFrom(new InternetAddress("noreply.tutoringtrain@gmail.com"));		//seems to do nothing...
         message.setRecipients(Message.RecipientType.TO,
                         InternetAddress.parse(user.getEmail()));
         message.setSubject(WELCOME_SUBJECT);
-        message.setText(String.format(WELCOME_CONTENT, user.getUsername()));
+        
+        if (password == null) {
+            message.setText(String.format(WELCOME_CONTENT, user.getUsername()));
+        }
+        else {
+            message.setText(String.format(WELCOME_CONTENT_WITH_PASSWORD, user.getUsername(), user.getUsername(), password));
+        }
     }
     
     public void sendVerificationEmail(User user, String key) {
@@ -97,6 +104,7 @@ public class EmailService extends AbstractService {
 
         Session session = Session.getInstance(props,
           new javax.mail.Authenticator() {
+                @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(SMTP_CRED_EMAIL, SMTP_CRED_PASS);
                 }

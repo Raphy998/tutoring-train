@@ -17,7 +17,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -47,11 +46,11 @@ public class AuthenticationResource extends AbstractResource {
     public Response authenticateUser(@Context HttpServletRequest httpServletRequest,
                     String creds) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         
         try {
-            Credentials credentials = getMapper().reader().withType(Credentials.class).readValue(creds);
+            Credentials credentials = getMapper().reader().forType(Credentials.class).readValue(creds);
             // Authenticate the user using the credentials provided
             authService.authenticate(credentials.getUsername(), credentials.getPassword(), credentials.getRequiredRole());
 
@@ -82,13 +81,13 @@ public class AuthenticationResource extends AbstractResource {
             String creds,
             @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         String username = securityContext.getUserPrincipal().getName();
         
         try {
             if (creds != null && !creds.isEmpty()) {
-                Credentials credentials = getMapper().reader().withType(Credentials.class).readValue(creds);
+                Credentials credentials = getMapper().reader().forType(Credentials.class).readValue(creds);
                 if (credentials.getRequiredRole() != null) {
                     if (!authService.canAuthenticate(credentials.getRequiredRole(),
                             userService.getUserByUsername(username).getRole())) {

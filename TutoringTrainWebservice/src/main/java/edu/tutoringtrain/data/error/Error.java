@@ -45,6 +45,8 @@ public class Error {
     public static final int CONSTRAINT_VIOLATION = 30;
     public static final int UNSUPPORTED_MEDIA_TYPE = 31;
     public static final int SUBJECT_NOT_ACTIVE = 32;
+    public static final int START_LT_ZERO = 33;
+    public static final int PAGE_SIZE_LTE_ZERO = 34;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -58,7 +60,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return SUBJECT_NOT_ACTIVE;
+        return PAGE_SIZE_LTE_ZERO;
     }
 
     public Error() {

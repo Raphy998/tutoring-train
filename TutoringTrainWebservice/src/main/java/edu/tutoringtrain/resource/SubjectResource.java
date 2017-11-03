@@ -56,7 +56,7 @@ public class SubjectResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getAllActive(@Context HttpServletRequest httpServletRequest) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
             List<Subject> subjects = subjectService.getAllActiveSubjects();
@@ -80,7 +80,7 @@ public class SubjectResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getAllInactive(@Context HttpServletRequest httpServletRequest) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
             List<Subject> subjects = subjectService.getAllInactiveSubjects();
@@ -106,12 +106,12 @@ public class SubjectResource extends AbstractResource {
                     final String subjectStr,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         Subject subjectIn = null;
         
         try {
-            subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).withType(Subject.class).readValue(subjectStr);
+            subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).forType(Subject.class).readValue(subjectStr);
             checkConstraints(subjectIn, lang, ConstraintGroups.Create.class);
             
             //if user is admin, activate subject immediately
@@ -151,12 +151,12 @@ public class SubjectResource extends AbstractResource {
     public Response update(@Context HttpServletRequest httpServletRequest,
                     final String subjectStr) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         Subject subjectIn = null;
         
         try {
-            subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).withType(Subject.class).readValue(subjectStr);
+            subjectIn = getMapper().readerWithView(Views.Subject.In.Update.class).forType(Subject.class).readValue(subjectStr);
             checkConstraints(subjectIn, lang, ConstraintGroups.Update.class);
             subjectService.updateSubject(subjectIn);
         } 
@@ -192,7 +192,7 @@ public class SubjectResource extends AbstractResource {
     public Response delete(@Context HttpServletRequest httpServletRequest,
                     @PathParam(value = "id") Integer subjectId) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -216,7 +216,7 @@ public class SubjectResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getCountAll(@Context HttpServletRequest httpServletRequest) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {

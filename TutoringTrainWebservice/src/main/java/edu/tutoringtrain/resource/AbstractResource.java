@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.tutoringtrain.data.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
@@ -28,8 +29,11 @@ import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.UserSearchCriteriaDeserializer;
 import java.text.SimpleDateFormat;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.MessageInterpolator;
@@ -53,10 +57,15 @@ public abstract class AbstractResource {
         mapper.setVisibility(FIELD, Visibility.NONE);
         mapper.setVisibility(GETTER, Visibility.PROTECTED_AND_PUBLIC);
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"));
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
     }
     
     protected ObjectMapper getMapper() {
         return mapper;
+    }
+    
+    protected Language getLang(HttpServletRequest httpServletRequest) {
+        return (Language)httpServletRequest.getAttribute("lang");
     }
     
     protected void checkConstraints(Object o, Language lang) throws ConstraintViolationException {
@@ -161,5 +170,16 @@ public abstract class AbstractResource {
                 .withParams(ex.getMessage())
                 .withLang(lang)
                 .build());
+    }
+    
+    protected void checkStartPageSize(Integer start, Integer pageSize) throws QueryStringException {
+        if (start != null && pageSize != null) {
+            if (start < 0) {
+                throw new QueryStringException(new ErrorBuilder(Error.START_LT_ZERO));
+            }
+            else if (pageSize <= 0) {
+                throw new QueryStringException(new ErrorBuilder(Error.PAGE_SIZE_LTE_ZERO));
+            }
+        }
     }
 }

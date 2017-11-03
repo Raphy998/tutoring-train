@@ -54,12 +54,12 @@ public class OfferResource extends AbstractResource {
                     final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Entry.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).forType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn, lang, ConstraintGroups.Create.class);
             Entry offerOut = offerService.createOffer(username, offerIn);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).with(lang.getLocale()).writeValueAsString(offerOut));
@@ -84,12 +84,12 @@ public class OfferResource extends AbstractResource {
                     final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).withType(Entry.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).forType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn, lang, ConstraintGroups.Update.class);
             offerService.updateOffer(username, offerIn);
         } 
@@ -113,13 +113,15 @@ public class OfferResource extends AbstractResource {
             @QueryParam(value = "start") Integer start,
             @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
 
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
             if (start == null || pageSize == null) {
                 throw new QueryStringException(new ErrorBuilder(Error.START_PAGESIZE_QUERY_MISSING));
             }
+            checkStartPageSize(start, pageSize);
+            
             List<Entry> newestOffers = offerService.getNewestOffers(start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).with(lang.getLocale()).writeValueAsString(newestOffers.toArray()));
         } 
@@ -144,7 +146,7 @@ public class OfferResource extends AbstractResource {
             @QueryParam(value = "start") Integer start,
             @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
 
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -177,7 +179,7 @@ public class OfferResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getCountAll(@Context HttpServletRequest httpServletRequest) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {

@@ -60,7 +60,6 @@ public class User implements Serializable {
     @JsonView({Views.Offer.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class})
     private String username;
     @Size(max = 64)
-    @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "PASSWORD", length = 64)
     @JsonView({Views.User.In.Register.class})
     private String password;
@@ -68,6 +67,7 @@ public class User implements Serializable {
     @JsonView({Views.User.Out.Public.class})
     private Character role;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
+    @NotNull(groups = ConstraintGroups.Create.class)
     @Size(max = 50)
     @Column(name = "EMAIL", length = 50)
     @JsonView({Views.User.In.Register.class, Views.User.Out.Private.class})
