@@ -515,10 +515,6 @@ public class UserResource extends AbstractResource {
         return getAvatar(httpServletRequest, securityContext.getUserPrincipal().getName());
     }
     
-    private String getTmpFilePrefix(String username) {
-        return "tmp" + username;
-    }
-    
     @Secured
     @DELETE
     @Path("/avatar")
