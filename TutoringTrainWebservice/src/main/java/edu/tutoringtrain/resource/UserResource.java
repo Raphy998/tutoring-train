@@ -38,6 +38,7 @@ import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.ImageUtils;
 import edu.tutoringtrain.utils.Views;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -479,16 +480,14 @@ public class UserResource extends AbstractResource {
     {
         Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
-        File tempFile = null;
         
         try {
             byte[] avatar = userService.getAvatar(username);
             
             if (avatar != null) {
-                tempFile = File.createTempFile(getTmpFilePrefix(username), ".jpg", null);
-                FileOutputStream fos = new FileOutputStream(tempFile);
-                fos.write(avatar);
-                response.type("image/jpg").entity(tempFile);
+                
+                final InputStream bigInputStream = new ByteArrayInputStream(avatar);
+                response.type("image/jpg").entity(bigInputStream);
             }
             else {
                 response.status(Response.Status.NO_CONTENT);
@@ -502,11 +501,6 @@ public class UserResource extends AbstractResource {
             catch (Exception e) {
                 unknownError(e, response, lang);
             } 
-        }
-        finally {
-            if (tempFile != null && tempFile.exists()) {
-                tempFile.delete();
-            }
         }
  
         return response.build();
@@ -522,7 +516,7 @@ public class UserResource extends AbstractResource {
     }
     
     private String getTmpFilePrefix(String username) {
-        return "tmp_" + username;
+        return "tmp" + username;
     }
     
     @Secured
