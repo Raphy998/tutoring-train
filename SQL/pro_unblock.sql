@@ -1,0 +1,4 @@
+CREATE OR REPLACE PROCEDURE PRO_UNBLOCK AS 
+BEGIN
+  delete from blocked where DUEDATE <= sysdate;
+END PRO_UNBLOCK;
