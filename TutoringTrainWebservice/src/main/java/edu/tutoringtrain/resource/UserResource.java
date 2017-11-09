@@ -6,7 +6,6 @@
 package edu.tutoringtrain.resource;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.mysema.query.types.Predicate;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.Gender;
@@ -32,16 +31,12 @@ import edu.tutoringtrain.data.search.SearchCriteria;
 import edu.tutoringtrain.data.search.UserSearchCriteriaDeserializer;
 import edu.tutoringtrain.data.search.UserSearch;
 import edu.tutoringtrain.entities.Blocked;
-import edu.tutoringtrain.entities.QBlocked;
-import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.ImageUtils;
 import edu.tutoringtrain.utils.Views;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
@@ -129,12 +124,31 @@ public class UserResource extends AbstractResource {
     public Response updateOwn(@Context HttpServletRequest httpServletRequest,
                     final String userStr,
                     @Context SecurityContext securityContext) throws Exception {
+
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        User userIn = null;
         
-        //set user in userStr to logged in user
-        User userIn = getMapper().readerWithView(Views.User.In.Update.class).forType(User.class).readValue(userStr);
-        userIn.setUsername(securityContext.getUserPrincipal().getName());
-        
-        return updateAny(httpServletRequest, getMapper().writeValueAsString(userIn));
+        try {
+            userIn = getMapper().readerWithView(Views.User.In.Update.class).forType(User.class).readValue(userStr);
+            userIn.setUsername(securityContext.getUserPrincipal().getName());
+            checkConstraints(userIn, lang);
+            userService.updateUser(userIn);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (TransactionalException rbex) {
+                response.status(Response.Status.CONFLICT);
+                response.entity(getError(rbex, userIn).withLang(lang).build());
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
     }
     
     @Secured(Role.ADMIN)
