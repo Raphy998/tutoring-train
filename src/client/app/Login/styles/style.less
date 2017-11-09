@@ -1,0 +1,80 @@
+@color: #4D926A;
+@colorLoginDiv: rgba(255,255,255,255,1);
+html, body { height: 100%; margin:0; padding: 0;}
+
+#header {
+  color: @color;
+}
+
+#divMainLogin {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-size: cover;
+  background-color: #E8F3F4;
+}
+
+#divLoginRegisterInner {
+  background-color: @colorLoginDiv;
+  text-align: center;
+  height: 100%;
+  height: 20em;
+  position: relative;
+}
+
+#divLoginRegister {
+  display: block;
+  width: 25%;
+  height: 22em;
+  min-width: 20em;
+  position: relative;
+  top: 35%;
+  transform: translateY(-50%);
+  .centerVertically;
+}
+
+.divTabsLoginRegister {
+  display: block;
+  text-align: center;
+  .centerVertically;
+}
+
+.tabHeight {
+  height: 30em;
+}
+
+.btnLogin {
+  width: 70%;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.btnRegister {
+  width: 70%;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+
+.centerVertically {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rounded-corners (@radius: 5px) {
+    border-radius: @radius;
+    -webkit-border-radius: @radius;
+    -moz-border-radius: @radius;
+}
+
+.loginLogo {
+  display: block;
+  width: 80%;
+  .centerVertically;
+  height: auto;
+}
