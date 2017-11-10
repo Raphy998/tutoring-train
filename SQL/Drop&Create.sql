@@ -30,7 +30,7 @@ CREATE TABLE TUSER(
     name VARCHAR2 (30),
     avatar BLOB,
     averageRating NUMBER(2,1),
-    education VARCHAR2(20),
+    education VARCHAR2(50),
     gender char(1),
     CONSTRAINT pk_tuser PRIMARY KEY (username),
     CONSTRAINT u_user_email UNIQUE (email)
@@ -74,6 +74,7 @@ Create Table Entry (
     description VARCHAR2(500),
     username VARCHAR2(20),
 	flag CHAR(1),
+	headline VARCHAR2(50)
     CONSTRAINT pk_entry PRIMARY KEY (id),
     CONSTRAINT fk_entry_user FOREIGN KEY (username) references TUser (username),
     CONSTRAINT fk_entry_subject FOREIGN KEY (subject) references Subject (id)
