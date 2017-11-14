@@ -83,8 +83,8 @@ public class User implements Serializable {
     @Column(name = "AVERAGERATING", precision = 2, scale = 1)
     @JsonView({Views.User.Out.Public.class})
     private BigDecimal averagerating;
-    @Size(max = 20)
-    @Column(name = "EDUCATION", length = 20)
+    @Size(max = 50)
+    @Column(name = "EDUCATION", length = 50)
     @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private String education;
     @Column(name = "GENDER")

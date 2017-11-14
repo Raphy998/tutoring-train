@@ -9,6 +9,6 @@ package edu.tutoringtrain.data;
  *
  * @author Elias
  */
-public enum UserProperty {
+public enum ResettableUserProp {
     NAME, EDUCATION
 }

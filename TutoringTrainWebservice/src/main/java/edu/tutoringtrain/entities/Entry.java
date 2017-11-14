@@ -96,6 +96,11 @@ public class Entry implements Serializable {
     @XmlTransient
     @JsonView(Views.Offer.Out.Public.class)
     private User user;
+    @Size(max = 50)
+    //@NotNull(groups = ConstraintGroups.Create.class)
+    @Column(name = "HEADLINE", length = 50)
+    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    private String headline;
 
     public Entry() {
     }
@@ -191,6 +196,14 @@ public class Entry implements Serializable {
     @Override
     public String toString() {
         return "edu.tutoringtrain.entities.Entry[ id=" + id + " ]";
+    }
+
+    public String getHeadline() {
+        return headline;
+    }
+
+    public void setHeadline(String headline) {
+        this.headline = headline;
     }
     
 }

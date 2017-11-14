@@ -17,7 +17,7 @@ import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.data.Gender;
-import edu.tutoringtrain.data.UserProperty;
+import edu.tutoringtrain.data.ResettableUserProp;
 import edu.tutoringtrain.data.search.CharacterOperation;
 import edu.tutoringtrain.data.search.CharacterSearchCriteria;
 import edu.tutoringtrain.data.search.OrderDirection;
@@ -27,11 +27,9 @@ import edu.tutoringtrain.data.search.StringSearchCriteria;
 import edu.tutoringtrain.data.search.UserProp;
 import edu.tutoringtrain.data.search.UserQueryGenerator;
 import edu.tutoringtrain.data.search.UserSearch;
-import edu.tutoringtrain.entities.QBlocked;
 import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
@@ -89,7 +87,7 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    public void resetProperties(String username, UserProperty[] props) throws NullValueException, UserNotFoundException {
+    public void resetProperties(String username, ResettableUserProp[] props) throws NullValueException, UserNotFoundException {
         if (username == null) {
             throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
@@ -98,13 +96,13 @@ public class UserService extends AbstractService {
             throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
         }
         
-        for (UserProperty prop: props) {
+        for (ResettableUserProp prop: props) {
             resetProp(user, prop);
         }
     }
     
     @Transactional
-    private void resetProp(User user, UserProperty prop) {
+    private void resetProp(User user, ResettableUserProp prop) {
         switch (prop) {
             case NAME:
                 user.setName(null);

@@ -32,5 +32,6 @@
     "31": "Nicht unterstützter Dateityp '%s'. Es wird ausschließlich png und jpg unterstützt",
     "32": "Gegenstand ist nicht aktiviert",
     "33": "start muss >= 0 sein",
-    "34": "pageSize muss > 0 sein"
+    "34": "pageSize muss > 0 sein",
+    "35": "Angebot (id=%s) nicht gefunden"
 }

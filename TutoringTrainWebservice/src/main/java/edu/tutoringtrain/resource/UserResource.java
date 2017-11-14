@@ -21,7 +21,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
-import edu.tutoringtrain.data.UserProperty;
+import edu.tutoringtrain.data.ResettableUserProp;
 import edu.tutoringtrain.data.dao.EmailService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
@@ -196,7 +196,7 @@ public class UserResource extends AbstractResource {
         Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         try {
-            UserProperty[] props2reset = getMapper().reader().forType(UserProperty[].class).readValue(propStr);
+            ResettableUserProp[] props2reset = getMapper().reader().forType(ResettableUserProp[].class).readValue(propStr);
             userService.resetProperties(username, props2reset);
         } 
         catch (Exception ex) {

@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import edu.tutoringtrain.data.ResettableOfferProp;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
@@ -17,6 +18,7 @@ import edu.tutoringtrain.entities.Entry;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.DateUtils;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -65,8 +67,6 @@ public class OfferService extends AbstractService {
      */
     @Transactional
     public List<Entry> getNewestOffersOfUser(String username, int start, int pageSize) throws UserNotFoundException {
-        List<Entry> results = null;
-
         User user = em.find(User.class, username);
         if (user == null) {
             throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
@@ -76,9 +76,7 @@ public class OfferService extends AbstractService {
         query.setParameter("username", username);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
-        results = query.getResultList();
-
-        return results;
+        return query.getResultList();
     }
     
     @Transactional
@@ -116,31 +114,55 @@ public class OfferService extends AbstractService {
     }
     
     @Transactional
-    public void updateOffer(String username, Entry offerReq) throws NullValueException, OfferNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException {
+    public Entry getOffer(BigDecimal id) throws OfferNotFoundException {
+        Entry offer = em.find(Entry.class, id);
+        if (offer == null) {
+            throw new OfferNotFoundException(new ErrorBuilder(Error.OFFER_NOT_FOUND).withParams(id));
+        }
+        return offer;
+    }
+    
+    @Transactional
+    public Entry getOffer(BigDecimal id, String username) throws OfferNotFoundException {
+        Entry offer = getOffer(id);
+        if (offer == null || !offer.getUser().getUsername().equals(username)) {
+            throw new OfferNotFoundException(new ErrorBuilder(Error.OFFER_OF_USER_NOT_FOUND).withParams(id, username));
+        }
+        return offer;
+    }
+    
+    @Transactional
+    public void updateOffer(Entry offerReq, String username) throws NullValueException, OfferNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException {
         if (offerReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
         }
         if (offerReq.getIsactive() != null && offerReq.getIsactive() != '0' && offerReq.getIsactive() != '1') {
             throw new InvalidArgumentException(new ErrorBuilder(Error.CONSTRAINT_VIOLATION).withParams("isActive must be 0 or 1"));
         }
-        
-        TypedQuery<Entry> query = em.createNamedQuery("Entry.findOfferByIdAndUsername", Entry.class);
-        query.setParameter("id", offerReq.getId());
-        query.setParameter("username", username);
-        List<Entry> results = query.getResultList();
-
-        if (results.isEmpty()) {
-            throw new OfferNotFoundException(new ErrorBuilder(Error.OFFER_NOT_FOUND).withParams(offerReq.getId(), username));
+        updateProperties(getOffer(offerReq.getId(), username), offerReq);
+    }
+    
+    @Transactional
+    public void updateOffer(Entry offerReq) throws NullValueException, OfferNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException {
+        if (offerReq == null) {
+            throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
         }
-        Entry dbOffer = results.get(0);  
-        if (offerReq.getDescription() != null) dbOffer.setDescription(offerReq.getDescription());
-        if (offerReq.getDuedate() != null) dbOffer.setDuedate(offerReq.getDuedate());
-        if (offerReq.getPostedon() != null) dbOffer.setPostedon(offerReq.getPostedon());
-        if (offerReq.getIsactive() != null) dbOffer.setIsactive(offerReq.getIsactive());
-        if (offerReq.getSubject() != null) {
-            Subject s = subjectService.getSubject(offerReq.getSubject().getId());
+        if (offerReq.getIsactive() != null && offerReq.getIsactive() != '0' && offerReq.getIsactive() != '1') {
+            throw new InvalidArgumentException(new ErrorBuilder(Error.CONSTRAINT_VIOLATION).withParams("isActive must be 0 or 1"));
+        }
+        updateProperties(getOffer(offerReq.getId()), offerReq);
+    }
+    
+    private void updateProperties(Entry dbOffer, Entry dataOffer) throws SubjectNotFoundException, SubjectNotActiveException {
+        if (dataOffer.getDescription() != null) dbOffer.setDescription(dataOffer.getDescription());
+        if (dataOffer.getHeadline()!= null) dbOffer.setHeadline(dataOffer.getHeadline());
+        if (dataOffer.getDuedate() != null) dbOffer.setDuedate(dataOffer.getDuedate());
+        if (dataOffer.getPostedon() != null) dbOffer.setPostedon(dataOffer.getPostedon());
+        if (dataOffer.getIsactive() != null) dbOffer.setIsactive(dataOffer.getIsactive());
+        if (dataOffer.getSubject() != null) {
+            Subject s = subjectService.getSubject(dataOffer.getSubject().getId());
             if (s == null) {
-                throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(offerReq.getSubject().getId()));
+                throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(dataOffer.getSubject().getId()));
             } else {
                 //if subject is not active
                 if (!s.getIsactive().equals('1')) {
@@ -156,5 +178,38 @@ public class OfferService extends AbstractService {
     @Transactional
     public int getCountAll() {
         return ((Number)em.createNamedQuery("Entry.countOfferAll").getSingleResult()).intValue();
+    }
+    
+    @Transactional
+    public void resetProperties(BigDecimal id, ResettableOfferProp[] props) throws NullValueException, OfferNotFoundException {
+        if (id == null) {
+            throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
+        }
+        Entry offer = getOffer(id);
+        
+        for (ResettableOfferProp prop: props) {
+            resetProp(offer, prop);
+        }
+    }
+    
+    @Transactional
+    public void resetProperties(BigDecimal id, ResettableOfferProp[] props, String username) throws NullValueException, OfferNotFoundException {
+        if (id == null) {
+            throw new NullValueException(new ErrorBuilder(Error.OFFER_NULL));
+        }
+        Entry offer = getOffer(id, username);
+
+        for (ResettableOfferProp prop: props) {
+            resetProp(offer, prop);
+        }
+    }
+    
+    @Transactional
+    private void resetProp(Entry offer, ResettableOfferProp prop) {
+        switch (prop) {
+            case DUEDATE:
+                offer.setDuedate(null);
+                break;
+        }
     }
 }
