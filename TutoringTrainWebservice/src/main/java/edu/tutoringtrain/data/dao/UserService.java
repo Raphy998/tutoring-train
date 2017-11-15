@@ -24,9 +24,9 @@ import edu.tutoringtrain.data.search.OrderDirection;
 import edu.tutoringtrain.data.search.OrderElement;
 import edu.tutoringtrain.data.search.StringOperation;
 import edu.tutoringtrain.data.search.StringSearchCriteria;
-import edu.tutoringtrain.data.search.UserProp;
-import edu.tutoringtrain.data.search.UserQueryGenerator;
-import edu.tutoringtrain.data.search.UserSearch;
+import edu.tutoringtrain.data.search.user.UserProp;
+import edu.tutoringtrain.data.search.user.UserQueryGenerator;
+import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
@@ -254,20 +254,6 @@ public class UserService extends AbstractService {
             .limit(pageSize)
             .list(QUser.user);
     }
-    
-    public UserSearch test() {
-        UserSearch us = new UserSearch();
-        us.getCriteria().add(new StringSearchCriteria<>(UserProp.USERNAME, StringOperation.CONTAINS, "Adm", true));
-        us.getCriteria().add(new StringSearchCriteria<>(UserProp.USERNAME, StringOperation.ENDS_WITH, "in", true, true));
-        us.getCriteria().add(new CharacterSearchCriteria<>(UserProp.GENDER, CharacterOperation.EQ, 'U', false, true));
-        us.getOrder().add(new OrderElement<>(UserProp.USERNAME, OrderDirection.ASC));
-        
-        return us;
-    }
-    
-    
-    
-    
     
     /*
     public boolean sendRegisterVerificationEmail(User user) {

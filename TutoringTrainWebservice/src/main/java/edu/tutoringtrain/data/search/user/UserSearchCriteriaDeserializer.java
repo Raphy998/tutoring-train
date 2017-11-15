@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.search;
+package edu.tutoringtrain.data.search.user;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,7 +11,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import edu.tutoringtrain.data.search.CharacterSearchCriteria;
+import edu.tutoringtrain.data.search.EntityProp;
+import edu.tutoringtrain.data.search.NumberSearchCriteria;
+import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.StringSearchCriteria;
 import java.io.IOException;
 
 /**
@@ -45,7 +51,7 @@ public class UserSearchCriteriaDeserializer extends StdDeserializer<SearchCriter
             throw new IOException("no key property given");
         }
         else {
-            UserProp prop;
+            UserProp prop = null;
             try {
                 prop = UserProp.valueOf(subNode.textValue().toUpperCase());
                 if (null != prop.getDataType()) switch (prop.getDataType()) {
@@ -62,8 +68,11 @@ public class UserSearchCriteriaDeserializer extends StdDeserializer<SearchCriter
                         break;
                 }
             }
-            catch (Exception ex) {
+            catch (IllegalArgumentException ex) {
                 throw new IOException("invalid value '" + subNode.textValue() + "' for key");
+            }
+            catch (InvalidFormatException ex) {
+                throw new IOException("operation '" + ex.getValue() + "' not possible on type " + prop.getDataType() + " of key " + prop);
             }
         }
         

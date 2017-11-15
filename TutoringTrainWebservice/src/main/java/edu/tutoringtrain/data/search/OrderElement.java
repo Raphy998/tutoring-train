@@ -11,23 +11,23 @@ package edu.tutoringtrain.data.search;
  * @param <T>
  */
 public class OrderElement<T extends EntityProp> {
-    private T prop;
+    private T key;
     private OrderDirection direction;
 
     public OrderElement() {
     }
 
-    public OrderElement(T prop, OrderDirection direction) {
-        this.prop = prop;
+    public OrderElement(T key, OrderDirection direction) {
+        this.key = key;
         this.direction = direction;
     }
 
-    public T getProp() {
-        return prop;
+    public T getKey() {
+        return key;
     }
 
-    public void setProp(T prop) {
-        this.prop = prop;
+    public void setKey(T prop) {
+        this.key = prop;
     }
 
     public OrderDirection getDirection() {

@@ -9,8 +9,14 @@ import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.path.ComparablePath;
+import com.mysema.query.types.path.DateTimePath;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.StringPath;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -18,8 +24,8 @@ import com.mysema.query.types.path.StringPath;
  * @param <T>
  */
 public abstract class QueryGenerator<T extends EntityProp> {
-    public abstract Predicate[] getPredicates(Search<T> s);
-    public abstract OrderSpecifier[] getOrders(Search<T> s);
+    public abstract Predicate[] getPredicates(Search<T> s) throws Exception;
+    public abstract OrderSpecifier[] getOrders(Search<T> s) throws Exception;
     
     protected Predicate getPredicate(StringSearchCriteria crit) {
         Predicate pred = null;
@@ -70,13 +76,62 @@ public abstract class QueryGenerator<T extends EntityProp> {
         return pred;
     }
     
+    protected Predicate getPredicate(BooleanSearchCriteria crit) {
+        Predicate pred = null;
+        ComparablePath<Character> key = (ComparablePath<Character>) getKey(crit.getKey());
+        
+        switch (crit.getOperation()) {
+            case EQ:
+                pred = key.eq(Boolean.parseBoolean(crit.getValue().toString()) ? '1' : '0');
+                break;
+        }
+
+        if (crit.isNot()) {
+            pred = pred.not();
+        }
+        
+        return pred;
+    }
+    
+    protected Predicate getPredicate(DateSearchCriteria crit) throws ParseException {
+        Predicate pred = null;
+        DateTimePath<Date> key = (DateTimePath<Date>) getKey(crit.getKey());
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+        
+        switch (crit.getOperation()) {
+            case EQ:
+                pred = key.eq(format.parse(crit.getValue().toString()));
+                break;
+            case BEFORE:
+                pred = key.before(format.parse(crit.getValue().toString()));
+                break;
+            case AFTER:
+                pred = key.after(format.parse(crit.getValue().toString()));
+                break;
+            case BEFORE_EQ:
+                pred = key.before(format.parse(crit.getValue().toString())).or(
+                    key.eq(format.parse(crit.getValue().toString())));
+                break;
+            case AFTER_EQ:
+                pred = key.after(format.parse(crit.getValue().toString())).or(
+                    key.eq(format.parse(crit.getValue().toString())));
+                break;
+        }
+
+        if (crit.isNot()) {
+            pred = pred.not();
+        }
+        
+        return pred;
+    }
+    
     protected Predicate getPredicate(NumberSearchCriteria crit) {
         Predicate pred = null;
         NumberPath key = (NumberPath) getKey(crit.getKey());
         
         switch (crit.getOperation()) {
             case EQ:
-                key.eq(crit.getValue().toString());
+                pred = key.eq(Integer.valueOf(crit.getValue().toString()));
                 break;
             case GT:
                 pred = key.gt(Integer.valueOf(crit.getValue().toString()));

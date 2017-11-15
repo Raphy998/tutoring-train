@@ -3,12 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.search;
+package edu.tutoringtrain.data.search.user;
 
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.expr.ComparableExpression;
 import com.mysema.query.types.expr.ComparableExpressionBase;
+import edu.tutoringtrain.data.search.CharacterSearchCriteria;
+import edu.tutoringtrain.data.search.EntityProp;
+import edu.tutoringtrain.data.search.NumberSearchCriteria;
+import edu.tutoringtrain.data.search.OrderDirection;
+import edu.tutoringtrain.data.search.OrderElement;
+import edu.tutoringtrain.data.search.QueryGenerator;
+import edu.tutoringtrain.data.search.Search;
+import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.StringSearchCriteria;
 import edu.tutoringtrain.entities.QUser;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +33,7 @@ public class UserQueryGenerator extends QueryGenerator<UserProp> {
     public Predicate[] getPredicates(Search<UserProp> s) {
         List<Predicate> preds = new ArrayList<>();
         
-        for (SearchCriteria crit: s.getCriteria()) {            
+        for (SearchCriteria<UserProp> crit: s.getCriteria()) {            
             if (crit instanceof StringSearchCriteria) {
                 preds.add(getPredicate((StringSearchCriteria<UserProp>) crit));
             }
@@ -32,7 +41,7 @@ public class UserQueryGenerator extends QueryGenerator<UserProp> {
                 preds.add(getPredicate((CharacterSearchCriteria<UserProp>) crit));
             }
             else if (crit instanceof NumberSearchCriteria) {
-                preds.add(getPredicate((CharacterSearchCriteria<UserProp>) crit));
+                preds.add(getPredicate((NumberSearchCriteria<UserProp>) crit));
             }
         }
         
@@ -45,8 +54,8 @@ public class UserQueryGenerator extends QueryGenerator<UserProp> {
         
         for (OrderElement o: s.getOrder()) {      
             OrderSpecifier os;
-            if (o.getDirection() == OrderDirection.ASC) os = getKey(o.getProp()).asc();
-            else os = getKey(o.getProp()).desc();
+            if (o.getDirection() == OrderDirection.ASC) os = getKey(o.getKey()).asc();
+            else os = getKey(o.getKey()).desc();
             orders.add(os);
         }
         
@@ -55,7 +64,7 @@ public class UserQueryGenerator extends QueryGenerator<UserProp> {
     
     @Override
     protected ComparableExpressionBase getKey(EntityProp k) {
-        ComparableExpression var = null;
+        ComparableExpressionBase var = null;
         UserProp key = (UserProp) k;
         
         switch (key) {

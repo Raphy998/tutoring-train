@@ -64,7 +64,7 @@ public class ErrorMessageProvider {
             loadMsgsFromFile(lang);         //try to load them from file
             localizedErrorMsgs = errorMsgs.get(lang);
             if (localizedErrorMsgs == null) {           //if still not found
-                errorMsgs.get(Language.getDefault());   //use default
+                localizedErrorMsgs = errorMsgs.get(Language.getDefault());   //use default
             }
         }
         

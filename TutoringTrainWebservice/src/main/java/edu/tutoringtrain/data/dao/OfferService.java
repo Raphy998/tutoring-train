@@ -5,6 +5,9 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import com.mysema.query.jpa.EclipseLinkTemplates;
+import com.mysema.query.jpa.JPQLQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
 import edu.tutoringtrain.data.ResettableOfferProp;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
@@ -14,11 +17,18 @@ import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.search.offer.OfferQueryGenerator;
+import edu.tutoringtrain.data.search.offer.OfferSearch;
+import edu.tutoringtrain.data.search.user.UserQueryGenerator;
+import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.Entry;
+import edu.tutoringtrain.entities.QEntry;
+import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.DateUtils;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -211,5 +221,29 @@ public class OfferService extends AbstractService {
                 offer.setDuedate(null);
                 break;
         }
+    }
+    
+    @Transactional
+    public List<Entry> search(OfferSearch searchCriteria) throws ParseException {
+        OfferQueryGenerator gen = new OfferQueryGenerator();
+        JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+
+        return query.from(QEntry.entry)
+            .where(gen.getPredicates(searchCriteria))
+            .orderBy(gen.getOrders(searchCriteria))
+            .list(QEntry.entry);
+    }
+    
+    @Transactional
+    public List<Entry> search(OfferSearch searchCriteria, int start, int pageSize) throws ParseException {
+        OfferQueryGenerator gen = new OfferQueryGenerator();
+        JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        
+        return query.from(QEntry.entry)
+            .where(gen.getPredicates(searchCriteria))
+            .orderBy(gen.getOrders(searchCriteria))
+            .offset(start)
+            .limit(pageSize)
+            .list(QEntry.entry);
     }
 }

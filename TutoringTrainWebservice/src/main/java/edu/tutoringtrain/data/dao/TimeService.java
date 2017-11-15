@@ -22,7 +22,7 @@ public class TimeService extends AbstractService {
         StoredProcedureQuery query = em
         .createStoredProcedureQuery("PRO_UNBLOCK");
         query.execute();
-        System.out.println("Unblocked Users");
+        log("Unblocked Users");
     }
     
     //Every 24 hours at 00:00:00
@@ -31,6 +31,10 @@ public class TimeService extends AbstractService {
         StoredProcedureQuery query = em
         .createStoredProcedureQuery("PRO_TSESSION");
         query.execute();
-        System.out.println("Cleared expired Session Tokens");
+        log("Cleared expired Session Tokens");
+    }
+    
+    private void log(String msg) {
+        System.out.println("Information: TIMED EVENT EXECUTED: " + msg);
     }
 }

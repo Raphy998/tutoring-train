@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.resource;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.ResettableOfferProp;
@@ -18,6 +19,9 @@ import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.offer.OfferSearch;
+import edu.tutoringtrain.data.search.offer.OfferSearchCriteriaDeserializer;
 import edu.tutoringtrain.entities.Entry;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
@@ -236,7 +240,7 @@ public class OfferResource extends AbstractResource {
                 throw new OfferNotFoundException(new ErrorBuilder(Error.OFFER_NOT_FOUND).withParams(id));
             }
             
-            //if user is Admin, he can reset properties of any offer, if not only of the ones the user created
+            //if user is Admin, he can reset properties of any offer, if not only of the ones he created
             if (user.getRole().equals(UserRoles.ADMIN)) {
                 offerService.resetProperties(offerID, props2reset);
             }
@@ -256,13 +260,12 @@ public class OfferResource extends AbstractResource {
         return response.build();
     }
     
-    //WIP
-    /*@Secured
+    @Secured
     @POST
     @Path("/search")
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
-    public Response searchUsers(@Context HttpServletRequest httpServletRequest,
+    public Response searchOffers(@Context HttpServletRequest httpServletRequest,
                     @QueryParam(value = "start") Integer start,
                     @QueryParam(value = "pageSize") Integer pageSize,
                     final String searchStr) throws Exception {
@@ -275,17 +278,17 @@ public class OfferResource extends AbstractResource {
             
             //register module to deserialize SearchCriteria for user
             final SimpleModule module = new SimpleModule();
-            module.addDeserializer(SearchCriteria.class, new UserSearchCriteriaDeserializer());
+            module.addDeserializer(SearchCriteria.class, new OfferSearchCriteriaDeserializer());
             getMapper().registerModule(module);
             
-            UserSearch usIn = getMapper().reader().forType(UserSearch.class).readValue(searchStr);
-            List<User> users;
-            if (start != null && pageSize != null) users = userService.search(usIn, start, pageSize);
-            else users = userService.search(usIn);
+            OfferSearch osIn = getMapper().reader().forType(OfferSearch.class).readValue(searchStr);
+            List<Entry> offers;
+            if (start != null && pageSize != null) offers = offerService.search(osIn, start, pageSize);
+            else offers = offerService.search(osIn);
             
             
-            response.entity(getMapper().writerWithView(Views.User.Out.Private.class)
-                    .writeValueAsString(users));
+            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class)
+                    .writeValueAsString(offers));
         } 
         catch (Exception ex) {
             try {
@@ -297,5 +300,5 @@ public class OfferResource extends AbstractResource {
         }
  
         return response.build();
-    }*/
+    }
 }
