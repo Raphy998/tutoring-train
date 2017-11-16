@@ -91,6 +91,10 @@ public class StartActivity extends AppCompatActivity implements OnClickListener{
             Intent myIntent = new Intent(this, LoginActivity.class);
             this.startActivity(myIntent);
         }
+        else{
+            Intent myIntent = new Intent(this, MainActivity.class);
+            this.startActivity(myIntent);
+        }
     }
 }
 
