@@ -5,6 +5,9 @@
  */
 package edu.tutoringtrain.data.dao;
 
+import com.mysema.query.jpa.EclipseLinkTemplates;
+import com.mysema.query.jpa.JPQLQuery;
+import com.mysema.query.jpa.impl.JPAQuery;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.UserRoles;
@@ -14,6 +17,17 @@ import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.data.Gender;
+import edu.tutoringtrain.data.ResettableUserProp;
+import edu.tutoringtrain.data.search.CharacterOperation;
+import edu.tutoringtrain.data.search.CharacterSearchCriteria;
+import edu.tutoringtrain.data.search.OrderDirection;
+import edu.tutoringtrain.data.search.OrderElement;
+import edu.tutoringtrain.data.search.StringOperation;
+import edu.tutoringtrain.data.search.StringSearchCriteria;
+import edu.tutoringtrain.data.search.user.UserProp;
+import edu.tutoringtrain.data.search.user.UserQueryGenerator;
+import edu.tutoringtrain.data.search.user.UserSearch;
+import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
 import java.util.List;
@@ -49,7 +63,6 @@ public class UserService extends AbstractService {
         em.persist(userReq);
         
         return userReq;
-        //TODO: send verification email
     }
     
     @Transactional
@@ -71,8 +84,33 @@ public class UserService extends AbstractService {
         if (userReq.getGender() != null) currentUser.setGender(getGenderOrDefault(userReq.getGender()));
         if (userReq.getName() != null) currentUser.setName(userReq.getName());
         if (userReq.getPassword()!= null) currentUser.setPassword(userReq.getPassword());
-
-        //TODO: send verification email
+    }
+    
+    @Transactional
+    public void resetProperties(String username, ResettableUserProp[] props) throws NullValueException, UserNotFoundException {
+        if (username == null) {
+            throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
+        }
+        User user = em.find(User.class, username);
+        if (user == null) {
+            throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
+        }
+        
+        for (ResettableUserProp prop: props) {
+            resetProp(user, prop);
+        }
+    }
+    
+    @Transactional
+    private void resetProp(User user, ResettableUserProp prop) {
+        switch (prop) {
+            case NAME:
+                user.setName(null);
+                break;
+            case EDUCATION:
+                user.setEducation(null);
+                break;
+        }
     }
     
     @Transactional
@@ -161,6 +199,60 @@ public class UserService extends AbstractService {
     @Transactional
     public int getCountAll() {
         return ((Number)em.createNamedQuery("User.countAll").getSingleResult()).intValue();
+    }
+    
+    @Transactional
+    public void setAvatar(String username, byte[] avatar) throws UserNotFoundException, NullValueException {
+        if (username == null) {
+            throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
+        }
+        
+        User user = getUserByUsername(username);
+        user.setAvatar(avatar);
+    }
+    
+    @Transactional
+    public void resetAvatar(String username) throws UserNotFoundException, NullValueException {
+        if (username == null) {
+            throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
+        }
+        
+        User user = getUserByUsername(username);
+        user.setAvatar(null);
+    }
+    
+    @Transactional
+    public byte[] getAvatar(String username) throws UserNotFoundException, NullValueException {
+        if (username == null) {
+            throw new NullValueException(new ErrorBuilder(Error.USER_NULL));
+        }
+        
+        User user = getUserByUsername(username);
+        return (byte[]) user.getAvatar();
+    }
+    
+    @Transactional
+    public List<User> search(UserSearch searchCriteria) {
+        UserQueryGenerator gen = new UserQueryGenerator();
+        JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        
+        return query.from(QUser.user)
+            .where(gen.getPredicates(searchCriteria))
+            .orderBy(gen.getOrders(searchCriteria))
+            .list(QUser.user);
+    }
+    
+    @Transactional
+    public List<User> search(UserSearch searchCriteria, int start, int pageSize) {
+        UserQueryGenerator gen = new UserQueryGenerator();
+        JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        
+        return query.from(QUser.user)
+            .where(gen.getPredicates(searchCriteria))
+            .orderBy(gen.getOrders(searchCriteria))
+            .offset(start)
+            .limit(pageSize)
+            .list(QUser.user);
     }
     
     /*

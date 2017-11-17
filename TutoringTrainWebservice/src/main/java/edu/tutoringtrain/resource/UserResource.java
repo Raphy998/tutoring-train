@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.resource;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.Gender;
@@ -20,24 +21,40 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.ResettableUserProp;
 import edu.tutoringtrain.data.dao.EmailService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.user.UserSearchCriteriaDeserializer;
+import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.User;
+import edu.tutoringtrain.utils.ImageUtils;
 import edu.tutoringtrain.utils.Views;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.transaction.TransactionalException;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.SecurityContext;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.RandomStringUtils;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * REST Web Service
@@ -60,15 +77,26 @@ public class UserResource extends AbstractResource {
     public Response register(@Context HttpServletRequest httpServletRequest,
                     final String userStr) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
         
         try {
-            userIn = getMapper().readerWithView(Views.User.In.Register.class).withType(User.class).readValue(userStr);
+            userIn = getMapper().readerWithView(Views.User.In.Register.class).forType(User.class).readValue(userStr);
             checkConstraints(userIn, lang, ConstraintGroups.Create.class);
-            User userOut = userService.registerUser(userIn);
-            emailService.sendWelcomeEmail(userIn, false);
+            User userOut;
+            
+            if (userIn.getPassword() == null) {
+                //if user doesn't have a password set, generate one and send it to the given email
+                String genPassword = RandomStringUtils.randomAlphanumeric(8);
+                userIn.setPassword(DigestUtils.md5Hex(genPassword));
+                userOut = userService.registerUser(userIn);
+                emailService.sendWelcomeEmail(userOut, false, genPassword);
+            }
+            else {
+                userOut = userService.registerUser(userIn);
+                emailService.sendWelcomeEmail(userIn, false);
+            }
             
             response.entity(getMapper().writerWithView(Views.User.Out.Private.class).writeValueAsString(userOut));
         }
@@ -96,16 +124,15 @@ public class UserResource extends AbstractResource {
     public Response updateOwn(@Context HttpServletRequest httpServletRequest,
                     final String userStr,
                     @Context SecurityContext securityContext) throws Exception {
-        
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
         
         try {
-            userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
-            userIn.setUsername(securityContext.getUserPrincipal().getName());       //set user to logged in user (to avoid making another json view)
+            userIn = getMapper().readerWithView(Views.User.In.Update.class).forType(User.class).readValue(userStr);
+            userIn.setUsername(securityContext.getUserPrincipal().getName());
             checkConstraints(userIn, lang);
-            
             userService.updateUser(userIn);
         } 
         catch (Exception ex) {
@@ -132,12 +159,12 @@ public class UserResource extends AbstractResource {
     public Response updateAny(@Context HttpServletRequest httpServletRequest,
                     final String userStr) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
         
         try {
-            userIn = getMapper().readerWithView(Views.User.In.Update.class).withType(User.class).readValue(userStr);
+            userIn = getMapper().readerWithView(Views.User.In.Update.class).forType(User.class).readValue(userStr);
             checkConstraints(userIn, lang);
             userService.updateUser(userIn);
         } 
@@ -157,13 +184,52 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
+    @Secured(Role.ADMIN)
+    @POST
+    @Path("/reset/{username}")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response resetAny(@Context HttpServletRequest httpServletRequest,
+                    @PathParam("username") String username,
+                    final String propStr) throws Exception {
+
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        try {
+            ResettableUserProp[] props2reset = getMapper().reader().forType(ResettableUserProp[].class).readValue(propStr);
+            userService.resetProperties(username, props2reset);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @POST
+    @Path("/reset")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response resetOwn(@Context HttpServletRequest httpServletRequest,
+                    final String propStr,
+                    @Context SecurityContext securityContext) throws Exception {
+
+        return resetAny(httpServletRequest, propStr, securityContext.getUserPrincipal().getName());
+    }
+    
     @Secured
     @GET
     @Path("/gender")
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getAllGenders(@Context HttpServletRequest httpServletRequest) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -188,7 +254,7 @@ public class UserResource extends AbstractResource {
     public Response getOwnUser(@Context HttpServletRequest httpServletRequest,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
@@ -216,10 +282,11 @@ public class UserResource extends AbstractResource {
                     @QueryParam(value = "start") Integer start,
                     @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
+            checkStartPageSize(start, pageSize);
             List<User> userEntities;
             if (start != null && pageSize != null) {
                 userEntities = userService.getUsers(start, pageSize);
@@ -252,11 +319,11 @@ public class UserResource extends AbstractResource {
                     final String blockStr,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Blocked blockIn = getMapper().readerWithView(Views.Block.In.Create.class).withType(Blocked.class).readValue(blockStr);
+            Blocked blockIn = getMapper().readerWithView(Views.Block.In.Create.class).forType(Blocked.class).readValue(blockStr);
             checkConstraints(blockIn, lang);
             
             if (securityContext.getUserPrincipal().getName().equals(blockIn.getUsername())) {
@@ -293,7 +360,7 @@ public class UserResource extends AbstractResource {
                     @PathParam("username") String user2unblock,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -326,7 +393,7 @@ public class UserResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getCountAll(@Context HttpServletRequest httpServletRequest) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -364,6 +431,178 @@ public class UserResource extends AbstractResource {
         }
         
         return err;
+    }
+    
+    @Secured
+    @POST
+    @Path("/avatar")
+    @Consumes(value = MediaType.MULTIPART_FORM_DATA)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response setAvatar(@Context HttpServletRequest httpServletRequest,
+                    @FormDataParam("name") String name,
+                    @FormDataParam("file") InputStream uploadedInputStream,
+                    @Context SecurityContext securityContext) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        String imgType = null;
+        
+        try {
+            imgType = FilenameUtils.getExtension(name);
+            if (imgType.equalsIgnoreCase("jpeg")) imgType = "jpg";
+
+            if (!imgType.equalsIgnoreCase("png") && !imgType.equalsIgnoreCase("jpg")) {
+                throw new UnsupportedDataTypeException("only png and jpg are supported");
+            }
+            else {
+                BufferedImage bi = ImageIO.read(uploadedInputStream);
+                bi = ImageUtils.getScaledImage(bi, 360);
+
+                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    ImageIO.write(bi, imgType, baos);
+                    baos.flush();
+                    byte[] imageInByte = baos.toByteArray();
+                    
+                    userService.setAvatar(securityContext.getUserPrincipal().getName(),
+                            imageInByte);
+                }
+            }
+            
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (UnsupportedDataTypeException e) {
+                response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE);
+                response.entity(new ErrorBuilder(Error.UNSUPPORTED_MEDIA_TYPE).withParams(imgType).withLang(lang).build());
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/avatar/{username}")
+    @Produces("image/jpg")
+    public Response getAvatar(@Context HttpServletRequest httpServletRequest,
+            @PathParam("username") String username) throws Exception
+    {
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            byte[] avatar = userService.getAvatar(username);
+            
+            if (avatar != null) {
+                
+                final InputStream bigInputStream = new ByteArrayInputStream(avatar);
+                response.type("image/jpg").entity(bigInputStream);
+            }
+            else {
+                response.status(Response.Status.NO_CONTENT);
+            }
+        } 
+        catch (Exception ex) {
+            response.type(MediaType.APPLICATION_JSON);
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/avatar")
+    @Produces("image/jpg")
+    public Response getAvatarOwn(@Context HttpServletRequest httpServletRequest,
+            @Context SecurityContext securityContext) throws Exception {
+        return getAvatar(httpServletRequest, securityContext.getUserPrincipal().getName());
+    }
+    
+    @Secured
+    @DELETE
+    @Path("/avatar")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response resetAvatarOwn(@Context HttpServletRequest httpServletRequest,
+                    @Context SecurityContext securityContext) throws Exception {
+        return resetAvatar(httpServletRequest, securityContext.getUserPrincipal().getName());
+    }
+    
+    @Secured(Role.ADMIN)
+    @DELETE
+    @Path("/avatar/{username}")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response resetAvatar(@Context HttpServletRequest httpServletRequest,
+                    @PathParam("username") String username) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            userService.resetAvatar(username);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured(Role.ADMIN)
+    @POST
+    @Path("/search")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response searchUsers(@Context HttpServletRequest httpServletRequest,
+                    @QueryParam(value = "start") Integer start,
+                    @QueryParam(value = "pageSize") Integer pageSize,
+                    final String searchStr) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            checkStartPageSize(start, pageSize);
+            
+            //register module to deserialize SearchCriteria for user
+            final SimpleModule module = new SimpleModule();
+            module.addDeserializer(SearchCriteria.class, new UserSearchCriteriaDeserializer());
+            getMapper().registerModule(module);
+            
+            UserSearch usIn = getMapper().reader().forType(UserSearch.class).readValue(searchStr);
+            List<User> users;
+            if (start != null && pageSize != null) users = userService.search(usIn, start, pageSize);
+            else users = userService.search(usIn);
+            
+            
+            response.entity(getMapper().writerWithView(Views.User.Out.Private.class)
+                    .writeValueAsString(users));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
     }
     
     //TODO: Unused in Sprint 1

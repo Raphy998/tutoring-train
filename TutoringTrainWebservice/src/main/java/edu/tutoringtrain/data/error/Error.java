@@ -26,7 +26,7 @@ public class Error {
     public static final int SUBJECT_NULL = 11;
     public static final int USER_NOT_FOUND = 12;
     public static final int SUBJECT_NOT_FOUND = 13;
-    public static final int OFFER_NOT_FOUND = 14;
+    public static final int OFFER_OF_USER_NOT_FOUND = 14;
     public static final int GENDER_NOT_FOUND = 15;
     public static final int INVALID_EMAIL = 16;
     public static final int START_PAGESIZE_QUERY_MISSING = 17;
@@ -43,6 +43,11 @@ public class Error {
     public static final int BLOCKED_NO_REASON = 28;
     public static final int JSON_INVALID = 29;
     public static final int CONSTRAINT_VIOLATION = 30;
+    public static final int UNSUPPORTED_MEDIA_TYPE = 31;
+    public static final int SUBJECT_NOT_ACTIVE = 32;
+    public static final int START_LT_ZERO = 33;
+    public static final int PAGE_SIZE_LTE_ZERO = 34;
+    public static final int OFFER_NOT_FOUND = 35;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -56,7 +61,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return CONSTRAINT_VIOLATION;
+        return OFFER_NOT_FOUND;
     }
 
     public Error() {

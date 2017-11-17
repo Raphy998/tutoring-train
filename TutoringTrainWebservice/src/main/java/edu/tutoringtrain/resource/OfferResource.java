@@ -5,17 +5,27 @@
  */
 package edu.tutoringtrain.resource;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.Secured;
+import edu.tutoringtrain.data.ResettableOfferProp;
+import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.dao.OfferService;
+import edu.tutoringtrain.data.dao.UserService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
+import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.offer.OfferSearch;
+import edu.tutoringtrain.data.search.offer.OfferSearchCriteriaDeserializer;
 import edu.tutoringtrain.entities.Entry;
+import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -44,6 +54,8 @@ import javax.ws.rs.core.SecurityContext;
 public class OfferResource extends AbstractResource {
 
     @Inject
+    UserService userService;
+    @Inject
     OfferService offerService;
     
     @Secured
@@ -54,12 +66,12 @@ public class OfferResource extends AbstractResource {
                     final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         String username = securityContext.getUserPrincipal().getName();
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).withType(Entry.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).forType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn, lang, ConstraintGroups.Create.class);
             Entry offerOut = offerService.createOffer(username, offerIn);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).with(lang.getLocale()).writeValueAsString(offerOut));
@@ -84,14 +96,21 @@ public class OfferResource extends AbstractResource {
                     final String offerStr,
                     @Context SecurityContext securityContext) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
-        String username = securityContext.getUserPrincipal().getName();
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).withType(Entry.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).forType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn, lang, ConstraintGroups.Update.class);
-            offerService.updateOffer(username, offerIn);
+            User user = userService.getUserByUsername(securityContext.getUserPrincipal().getName());
+            
+            //if user is Admin, he can reset properties of any offer, if not only of the ones the user created
+            if (user.getRole().equals(UserRoles.ADMIN)) {
+                offerService.updateOffer(offerIn);
+            }
+            else {
+                offerService.updateOffer(offerIn, securityContext.getUserPrincipal().getName());
+            }
         } 
         catch (Exception ex) {
             try {
@@ -113,13 +132,15 @@ public class OfferResource extends AbstractResource {
             @QueryParam(value = "start") Integer start,
             @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
 
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
             if (start == null || pageSize == null) {
                 throw new QueryStringException(new ErrorBuilder(Error.START_PAGESIZE_QUERY_MISSING));
             }
+            checkStartPageSize(start, pageSize);
+            
             List<Entry> newestOffers = offerService.getNewestOffers(start, pageSize);
             response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).with(lang.getLocale()).writeValueAsString(newestOffers.toArray()));
         } 
@@ -144,7 +165,7 @@ public class OfferResource extends AbstractResource {
             @QueryParam(value = "start") Integer start,
             @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
 
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
@@ -177,11 +198,97 @@ public class OfferResource extends AbstractResource {
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getCountAll(@Context HttpServletRequest httpServletRequest) throws Exception {
         
-        Language lang = (Language)httpServletRequest.getAttribute("lang");
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
             response.entity(offerService.getCountAll());
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @POST
+    @Path("/reset/{id}")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response reset(@Context HttpServletRequest httpServletRequest,
+                    @PathParam("id") String id,
+                    final String propStr,
+                    @Context SecurityContext securityContext) throws Exception {
+
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            ResettableOfferProp[] props2reset = getMapper().reader().forType(ResettableOfferProp[].class).readValue(propStr);
+            User user = userService.getUserByUsername(securityContext.getUserPrincipal().getName());
+            BigDecimal offerID;
+            try {
+                offerID = new BigDecimal(id);
+            }
+            catch (Exception ex) {
+                throw new OfferNotFoundException(new ErrorBuilder(Error.OFFER_NOT_FOUND).withParams(id));
+            }
+            
+            //if user is Admin, he can reset properties of any offer, if not only of the ones he created
+            if (user.getRole().equals(UserRoles.ADMIN)) {
+                offerService.resetProperties(offerID, props2reset);
+            }
+            else {
+                offerService.resetProperties(offerID, props2reset, securityContext.getUserPrincipal().getName());
+            }
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @POST
+    @Path("/search")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response searchOffers(@Context HttpServletRequest httpServletRequest,
+                    @QueryParam(value = "start") Integer start,
+                    @QueryParam(value = "pageSize") Integer pageSize,
+                    final String searchStr) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            checkStartPageSize(start, pageSize);
+            
+            //register module to deserialize SearchCriteria for user
+            final SimpleModule module = new SimpleModule();
+            module.addDeserializer(SearchCriteria.class, new OfferSearchCriteriaDeserializer());
+            getMapper().registerModule(module);
+            
+            OfferSearch osIn = getMapper().reader().forType(OfferSearch.class).readValue(searchStr);
+            List<Entry> offers;
+            if (start != null && pageSize != null) offers = offerService.search(osIn, start, pageSize);
+            else offers = offerService.search(osIn);
+            
+            
+            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class)
+                    .writeValueAsString(offers));
         } 
         catch (Exception ex) {
             try {

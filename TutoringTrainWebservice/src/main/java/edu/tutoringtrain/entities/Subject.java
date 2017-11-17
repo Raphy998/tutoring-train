@@ -6,8 +6,11 @@
 package edu.tutoringtrain.entities;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.misc.NumericBooleanDeserializer;
+import edu.tutoringtrain.misc.NumericBooleanSerializer;
 import edu.tutoringtrain.misc.SubjectLocalizeSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
@@ -40,7 +43,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @JsonSerialize(using = SubjectLocalizeSerializer.class)
 @NamedQueries({
-    @NamedQuery(name = "Subject.findAll", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC")
+    @NamedQuery(name = "Subject.findAllActive", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC"),
+    @NamedQuery(name = "Subject.findAllInactive", query = "SELECT s FROM Subject s WHERE s.isactive = '0' ORDER BY s.enname ASC")
     , @NamedQuery(name = "Subject.findById", query = "SELECT s FROM Subject s WHERE s.id = :id")
     , @NamedQuery(name = "Subject.findByDename", query = "SELECT s FROM Subject s WHERE s.dename = :dename")
     , @NamedQuery(name = "Subject.findByEnname", query = "SELECT s FROM Subject s WHERE s.enname = :enname")
@@ -70,6 +74,10 @@ public class Subject implements Serializable {
     @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String enname;
     @Column(name = "ISACTIVE")
+    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, 
+        Views.Subject.In.Update.class})
+    @JsonSerialize(using=NumericBooleanSerializer.class)
+    @JsonDeserialize(using=NumericBooleanDeserializer.class)
     private Character isactive;
     @OneToMany(mappedBy = "subject")
     private Collection<Entry> entryCollection;

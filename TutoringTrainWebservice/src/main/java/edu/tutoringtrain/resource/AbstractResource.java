@@ -24,11 +24,13 @@ import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
+import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.MessageInterpolator;
@@ -52,10 +54,15 @@ public abstract class AbstractResource {
         mapper.setVisibility(FIELD, Visibility.NONE);
         mapper.setVisibility(GETTER, Visibility.PROTECTED_AND_PUBLIC);
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"));
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
     }
     
     protected ObjectMapper getMapper() {
         return mapper;
+    }
+    
+    protected Language getLang(HttpServletRequest httpServletRequest) {
+        return (Language)httpServletRequest.getAttribute("lang");
     }
     
     protected void checkConstraints(Object o, Language lang) throws ConstraintViolationException {
@@ -144,6 +151,10 @@ public abstract class AbstractResource {
             response.status(CustomHttpStatusCodes.BLOCK_ERROR);
             response.entity(ex.getError().withLang(lang).build());
         }
+        catch (SubjectNotActiveException ex) {
+            response.status(CustomHttpStatusCodes.SUBJECT_NOT_ACTIVE);
+            response.entity(ex.getError().withLang(lang).build());
+        }
         catch (Exception e) {
             throw e;
         }
@@ -156,5 +167,16 @@ public abstract class AbstractResource {
                 .withParams(ex.getMessage())
                 .withLang(lang)
                 .build());
+    }
+    
+    protected void checkStartPageSize(Integer start, Integer pageSize) throws QueryStringException {
+        if (start != null && pageSize != null) {
+            if (start < 0) {
+                throw new QueryStringException(new ErrorBuilder(Error.START_LT_ZERO));
+            }
+            else if (pageSize <= 0) {
+                throw new QueryStringException(new ErrorBuilder(Error.PAGE_SIZE_LTE_ZERO));
+            }
+        }
     }
 }

@@ -28,5 +28,10 @@
     "27": "User is blocked for reason '%s'",
     "28": "User is blocked until %s",
     "29": "Json parsing error: '%s'",
-    "30": "Constraint violation: '%s'"
+    "30": "Constraint violation: '%s'",
+    "31": "Unsupported media type '%s'. Only png and jpg are supported",
+    "32": "Subject is not activated",
+    "33": "start must be >= 0",
+    "34": "pageSize must be > 0",
+    "35": "Offer (id=%s) not found"
 }
