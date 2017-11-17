@@ -32,9 +32,9 @@ import java.util.ArrayList;
         public void onBindViewHolder(CustomViewHolder holder, int position) {
            // holder.image.setImageResource(R.drawable.ic_list_black_24dp);
            // holder.txtHeadline.setText(list.get(position));
-            holder.txtHeadline.setText("Angebot " + position);
+            holder.txtHeadline.setText("Angebot Nr." + position);
             holder.txtUser.setText("admin ");
-            holder.txtDesc.setText("Beschreibung für das angebot/Nachfrage... ");
+            holder.txtDesc.setText("Beschreibung für das Angebot/ die Nachfrage... ");
         }
 
         @Override

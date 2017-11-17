@@ -1,10 +1,13 @@
 package at.train.tutorial.tutoringtrainapp;
 
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 
@@ -23,6 +26,16 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recView = (RecyclerView) findViewById(R.id.lv_test);
 
+        Window window = this.getWindow();
+
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        // finally change the color
+        window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary));
 
 
         // This is the array adapter, it takes the context of the activity as a
