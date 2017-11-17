@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd">
+  <persistence-unit name="aphrodite4" transaction-type="JTA">
+    <jta-data-source>java:app/aphrodite4</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+        <property name="eclipselink.cache.shared.default" value="false"/>
+        <property name="javax.persistence.validation.group.pre-persist" value="javax.validation.groups.Default"/>
+        <property name="javax.persistence.validation.group.pre-update" value="javax.validation.groups.Default,edu.tutoringtrain.utils.ConstraintGroups.Update"/>
+    </properties>
+  </persistence-unit>
+</persistence>

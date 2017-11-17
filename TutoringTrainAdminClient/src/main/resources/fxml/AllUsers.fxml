@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXScrollPane?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="700.0" prefWidth="1000.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.bsd.tutoringtrain.controller.user.AllUsersController">
+    <stylesheets>
+        <URL value="@/styles/Styles.css" />
+    </stylesheets>
+   <children>
+      <Label fx:id="lblTitel" alignment="CENTER" contentDisplay="CENTER" layoutX="238.0" layoutY="27.0" text="All Users" textAlignment="CENTER" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="30.0">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="btnClose" buttonType="RAISED" layoutX="152.0" layoutY="569.0" onAction="#onBtnClose" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="Close" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </JFXButton>
+      <JFXSpinner fx:id="spinner" layoutX="520.0" layoutY="40.0" radius="25.0" startingAngle="0.0" visible="false" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <JFXScrollPane layoutX="195.0" layoutY="177.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="130.0">
+         <children>
+            <JFXListView fx:id="lvUsers" depth="1" />
+         </children>
+      </JFXScrollPane>
+      <JFXTextField fx:id="txtSearch" editable="false" focusColor="#084c61" labelFloat="true" layoutX="40.0" layoutY="105.0" prefHeight="25.0" prefWidth="830.0" promptText="Search" unFocusColor="#86bab8" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="100.0" />
+      <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" layoutX="514.0" layoutY="60.0" onAction="#onBtnSearch" prefWidth="80.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="Search" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="100.0">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+      </JFXButton>
+   </children>
+</AnchorPane>
