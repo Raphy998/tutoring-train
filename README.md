@@ -1,4 +1,5 @@
 # tutoring-train
 BSD-Project
 
-Please see the Wiki entries for further information and sprint planning.
+A preconfigured Glassfish server for deploying the webservice can be found under:
+\\gandalf.htl-villach.at\Kommunikationschueler\5BHIFS\[PRIVATE] Share\glassfish_Preconfigured.zip
