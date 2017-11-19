@@ -17,4 +17,7 @@
     <string name="btnLogin">Login</string>
     <string name="title_activity_login">Sign in</string>
     <string name="password">Password</string>
+
+    <string name="sharedPref_key">at.train.tutoring.train</string>
+
 </resources>

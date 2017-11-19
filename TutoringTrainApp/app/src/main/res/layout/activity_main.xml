@@ -21,20 +21,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!--<android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"> -->
-
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="49dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/lv_test"/>
-
-    <!--</android.support.v4.widget.NestedScrollView>-->
-
 
     <RelativeLayout
         android:layout_width="match_parent"
