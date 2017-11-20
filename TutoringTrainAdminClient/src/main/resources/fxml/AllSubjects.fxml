@@ -12,11 +12,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" prefHeight="700.0" prefWidth="980.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.AllUsersController">
+<AnchorPane fx:id="pane" prefHeight="700.0" prefWidth="980.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.AllSubjectsController">
    <children>
       <VBox alignment="CENTER" layoutX="260.0" layoutY="15.0" prefHeight="50.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="lblTitle" alignment="CENTER" text="%titleAllUsers" textAlignment="CENTER" textFill="#084c61">
+            <Label alignment="CENTER" text="%titleAllSubjects" textAlignment="CENTER" textFill="#084c61">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>
@@ -48,7 +48,7 @@
             </HBox>
             <StackPane>
                <children>
-                  <JFXListView fx:id="lvUsers" depth="1" prefHeight="510.0" />
+                  <JFXListView fx:id="lvSubjects" depth="1" prefHeight="510.0" />
                   <JFXSpinner fx:id="spinner" radius="25.0" startingAngle="0.0" />
                </children>
             </StackPane>
