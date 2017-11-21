@@ -22,6 +22,7 @@ import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.data.dao.UserService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.data.error.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.entities.Subject;
@@ -50,6 +51,30 @@ public class SubjectResource extends AbstractResource {
     SubjectService subjectService;
     @Inject
     UserService userService;
+    
+    @Secured
+    @GET
+    @Path("all")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getAll(@Context HttpServletRequest httpServletRequest) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        try {
+            List<Subject> subjects = subjectService.getAllSubjects();
+            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).with(lang.getLocale()).writeValueAsString(subjects.toArray()));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+
+        return response.build();
+    }
     
     @Secured
     @GET
@@ -201,6 +226,10 @@ public class SubjectResource extends AbstractResource {
         catch (Exception ex) {
             try {
                 handleException(ex, response, lang);
+            }
+            catch (TransactionalException rbex) {
+                response.status(CustomHttpStatusCodes.SUBJECT_USED);
+                response.entity(new ErrorBuilder(Error.SUBJECT_USED).withParams(subjectId).withLang(lang).build());
             }
             catch (Exception e) {
                 unknownError(e, response, lang);

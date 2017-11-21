@@ -33,5 +33,6 @@
     "32": "Gegenstand ist nicht aktiviert",
     "33": "start muss >= 0 sein",
     "34": "pageSize muss > 0 sein",
-    "35": "Angebot (id=%s) nicht gefunden"
+    "35": "Angebot (id=%s) nicht gefunden",
+    "36": "Gegenstand (id=%s) kann nicht gelöscht werden, da er bereits verwendet wird"
 }

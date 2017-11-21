@@ -33,5 +33,6 @@
     "32": "Subject is not activated",
     "33": "start must be >= 0",
     "34": "pageSize must be > 0",
-    "35": "Offer (id=%s) not found"
+    "35": "Offer (id=%s) not found",
+    "36": "Subject (id=%s) cannot be deleted because it is already used"
 }

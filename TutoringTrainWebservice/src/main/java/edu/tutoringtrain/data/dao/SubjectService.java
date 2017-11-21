@@ -27,6 +27,17 @@ public class SubjectService extends AbstractService {
     }
     
     @Transactional
+    public List<Subject> getAllSubjects() {
+        List<Subject> results;
+        
+        TypedQuery<Subject> query =
+        em.createNamedQuery("Subject.findAll", Subject.class);
+        results = query.getResultList();
+
+        return results;
+    }
+    
+    @Transactional
     public List<Subject> getAllActiveSubjects() {
         List<Subject> results;
         

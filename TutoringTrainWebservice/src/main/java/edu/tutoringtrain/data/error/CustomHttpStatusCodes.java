@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data;
+package edu.tutoringtrain.data.error;
 
 /**
  *
@@ -19,4 +19,5 @@ public abstract class CustomHttpStatusCodes {
     public static final int BLOCK_ERROR = 456;
     public static final int SUBJECT_NOT_ACTIVE = 457;
     public static final int UNPROCESSABLE_ENTITY = 422;
+    public static final int SUBJECT_USED = 458;
 }

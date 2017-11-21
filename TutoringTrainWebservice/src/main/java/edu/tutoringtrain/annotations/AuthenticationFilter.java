@@ -5,7 +5,7 @@
  */
 package edu.tutoringtrain.annotations;
 
-import edu.tutoringtrain.data.CustomHttpStatusCodes;
+import edu.tutoringtrain.data.error.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.Role;
 import edu.tutoringtrain.data.dao.AuthenticationService;
 import edu.tutoringtrain.data.error.Error;

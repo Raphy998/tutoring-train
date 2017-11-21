@@ -43,8 +43,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @JsonSerialize(using = SubjectLocalizeSerializer.class)
 @NamedQueries({
-    @NamedQuery(name = "Subject.findAllActive", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC"),
-    @NamedQuery(name = "Subject.findAllInactive", query = "SELECT s FROM Subject s WHERE s.isactive = '0' ORDER BY s.enname ASC")
+    @NamedQuery(name = "Subject.findAll", query = "SELECT s FROM Subject s ORDER BY s.enname ASC")
+    , @NamedQuery(name = "Subject.findAllActive", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC")
+    , @NamedQuery(name = "Subject.findAllInactive", query = "SELECT s FROM Subject s WHERE s.isactive = '0' ORDER BY s.enname ASC")
     , @NamedQuery(name = "Subject.findById", query = "SELECT s FROM Subject s WHERE s.id = :id")
     , @NamedQuery(name = "Subject.findByDename", query = "SELECT s FROM Subject s WHERE s.dename = :dename")
     , @NamedQuery(name = "Subject.findByEnname", query = "SELECT s FROM Subject s WHERE s.enname = :enname")

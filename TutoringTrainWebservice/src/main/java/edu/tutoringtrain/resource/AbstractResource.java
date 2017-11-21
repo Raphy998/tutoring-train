@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.tutoringtrain.data.CustomHttpStatusCodes;
+import edu.tutoringtrain.data.error.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.error.Language;

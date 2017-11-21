@@ -30,11 +30,14 @@ import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
+import javax.websocket.Session;
 /**
  *
  * @author Elias
@@ -132,7 +135,7 @@ public class UserService extends AbstractService {
         if (username == null) {
             throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
-
+        
         User user = em.find(User.class, username);
         if (user == null) {
             throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));

@@ -48,6 +48,7 @@ public class Error {
     public static final int START_LT_ZERO = 33;
     public static final int PAGE_SIZE_LTE_ZERO = 34;
     public static final int OFFER_NOT_FOUND = 35;
+    public static final int SUBJECT_USED = 36;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -61,7 +62,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return OFFER_NOT_FOUND;
+        return SUBJECT_USED;
     }
 
     public Error() {
