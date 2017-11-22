@@ -41,6 +41,11 @@ public class Subject {
         this.id = id;
     }
 
+    public Subject(String enName, String deName) {
+        this.enname = enName;
+        this.dename = deName;
+    }
+
     public BigDecimal getId() {
         return id;
     }

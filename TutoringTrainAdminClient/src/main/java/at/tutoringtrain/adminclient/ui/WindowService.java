@@ -11,6 +11,7 @@ import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
 import at.tutoringtrain.adminclient.ui.controller.AuthenticationController;
 import at.tutoringtrain.adminclient.ui.controller.BlockUserController;
 import at.tutoringtrain.adminclient.ui.controller.ReauthenticationController;
+import at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterUserController;
 import at.tutoringtrain.adminclient.ui.controller.SubjectListItemController;
 import at.tutoringtrain.adminclient.ui.controller.UpdateUserController;
@@ -125,6 +126,22 @@ public class WindowService {
         stage.showAndWait();
     }
 
+    public void openRegisterSubjectWindow() throws IOException {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        RegisterSubjectController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/RegisterSubject.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (RegisterSubjectController)loader.getController();
+        stage = new Stage();
+        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));      
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
     public void openUpdateSubjectWindow(Subject subject, SubjectListItemController itemController) {
         
     }

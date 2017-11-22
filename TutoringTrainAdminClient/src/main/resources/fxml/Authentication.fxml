@@ -51,6 +51,6 @@
          </font>
       </JFXButton>
       <JFXSpinner fx:id="spinner" layoutX="282.0" layoutY="551.0" prefHeight="50.0" prefWidth="50.0" radius="25.0" startingAngle="0.0" AnchorPane.leftAnchor="282.0" AnchorPane.rightAnchor="282.0" AnchorPane.topAnchor="550.0" />
-      <JFXToggleButton fx:id="remember" alignment="CENTER_RIGHT" layoutX="362.0" layoutY="376.0" prefHeight="60.0" prefWidth="200.0" size="9.0" text="%remember" toggleColor="#084c61" toggleLineColor="#86bab8" unToggleColor="#86bab8" unToggleLineColor="#e8f3f4" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="430.0" />
+      <JFXToggleButton fx:id="remember" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="362.0" layoutY="376.0" prefHeight="60.0" prefWidth="200.0" size="9.0" text="%remember" toggleColor="#084c61" toggleLineColor="#86bab8" unToggleColor="#86bab8" unToggleLineColor="#e8f3f4" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="430.0" />
    </children>
 </AnchorPane>

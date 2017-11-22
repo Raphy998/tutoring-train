@@ -100,6 +100,7 @@ public final class DefaultValueProvider {
         this.defaultValidationPatterns.put("education", new ValidationPattern("^.{1,20}$", "messageValidationEducation"));
         this.defaultValidationPatterns.put("name", new ValidationPattern("^.{1,30}$", "messageValidationName"));
         this.defaultValidationPatterns.put("reason", new ValidationPattern("^.{1,100}$", "messageValidationReason"));
+        this.defaultValidationPatterns.put("subjectname", new ValidationPattern("^.{1,25}$", "messageValidationSubjectName"));
     }
     
     private void initializeDefaultAvatar() {
