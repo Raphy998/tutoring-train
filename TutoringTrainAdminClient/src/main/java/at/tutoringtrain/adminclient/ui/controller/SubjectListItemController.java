@@ -1,6 +1,7 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
 import at.tutoringtrain.adminclient.data.Subject;
+import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
@@ -11,6 +12,7 @@ import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.MessageListener;
+import at.tutoringtrain.adminclient.ui.listener.SubjectChangedListener;
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class SubjectListItemController implements Initializable, RequestDeleteSubjectListener {
+public class SubjectListItemController implements Initializable, RequestDeleteSubjectListener, SubjectChangedListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -39,8 +42,11 @@ public class SubjectListItemController implements Initializable, RequestDeleteSu
     private JFXButton btnEdit;
     @FXML
     private JFXButton btnRemove;
+    @FXML
+    private ImageView ivIcon;
 
     private Logger logger;
+    private Language language;
     private LocalizedValueProvider localizedValueProvider;
     private WindowService windowService;
     private Communicator communicator;
@@ -55,6 +61,7 @@ public class SubjectListItemController implements Initializable, RequestDeleteSu
     public void initialize(URL url, ResourceBundle rb) {
         logger = LogManager.getLogger(this);
         localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
+        language = ApplicationManager.getInstance().getLanguage();
         dataStorage = ApplicationManager.getDataStorage();
         windowService = ApplicationManager.getWindowService();
         communicator = ApplicationManager.getCommunicator();
@@ -63,7 +70,12 @@ public class SubjectListItemController implements Initializable, RequestDeleteSu
 
     @FXML
     void onBtnEdit(ActionEvent event) {
-        windowService.openUpdateSubjectWindow(subject, this);
+        try {
+            windowService.openUpdateSubjectWindow(subject, this);
+        } catch (Exception ex) {
+           logger.error("onBtnEdit: exception occurred", ex);
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
+        }
     }
 
     @FXML
@@ -112,6 +124,7 @@ public class SubjectListItemController implements Initializable, RequestDeleteSu
             lblActive.setText("NULL");
         } else {
             lblName.setText(subject.getName());
+            ivIcon.setOpacity(subject.isIsactive() ? 1 : 0.5);
             lblActive.setText(localizedValueProvider.getString(subject.isIsactive() ? "active" : "inactive"));
         }
     }
@@ -133,5 +146,10 @@ public class SubjectListItemController implements Initializable, RequestDeleteSu
         displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
         logger.error("Request failed with status code:" + result.getStatusCode());
         logger.error(result.getMessageContainer().toString());
+    }
+
+    @Override
+    public void subjectChanged(Subject subject) {
+        displaySubject();
     }
 }

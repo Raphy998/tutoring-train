@@ -12,7 +12,8 @@ public class Subject {
     @JsonView({
         JsonSubjectViews.In.Register.class,
         JsonSubjectViews.In.Get.class,
-        JsonSubjectViews.Out.Update.class 
+        JsonSubjectViews.Out.Update.class,
+        JsonSubjectViews.Out.UpdateState.class
     })
     private BigDecimal id;
     @JsonView({
@@ -31,6 +32,8 @@ public class Subject {
     private String name;
     @JsonView({
         JsonSubjectViews.In.Get.class,
+        JsonSubjectViews.Out.Update.class,
+        JsonSubjectViews.Out.UpdateState.class
     })
     private boolean isactive;
 

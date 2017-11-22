@@ -8,6 +8,11 @@ public class JsonSubjectViews {
     public static class Out {
         public static class Register {}
         public static class Update {}
+
+        public static class UpdateState {
+            public UpdateState() {
+            }
+        }
     }
     
     public static class In {

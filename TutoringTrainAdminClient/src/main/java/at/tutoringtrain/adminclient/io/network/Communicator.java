@@ -7,6 +7,7 @@ import at.tutoringtrain.adminclient.datamapper.DataMapper;
 import at.tutoringtrain.adminclient.datamapper.JsonSubjectViews;
 import at.tutoringtrain.adminclient.datamapper.JsonUserViews;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
+import at.tutoringtrain.adminclient.io.network.listener.subject.RequestAllSubjectsListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestDeleteSubjectListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestRegisterSubjectListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestSubjectCountListener;
@@ -44,7 +45,6 @@ import okhttp3.Response;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import at.tutoringtrain.adminclient.io.network.listener.subject.RequestAllSubjectsListener;
 
 /**
  *
@@ -609,6 +609,23 @@ public class Communicator {
         return enqueueRequest(HttpMethod.PUT, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, JsonSubjectViews.Out.Update.class));
     }
     
+    public boolean requestUpdateSubjectState(RequestUpdateSubjectListener listener, Subject subject) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new Exception("RequestUpdateSubjectListener must not be null");
+        }
+        if (subject == null) {
+            throw new Exception("Subject must not be null");
+        }
+        requestCallback = new RequestCallback<RequestUpdateSubjectListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                getListener().requestUpdateSubjectFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.PUT, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, JsonSubjectViews.Out.UpdateState.class));
+    }
+    
     /**
      * Delete subject
      * @param listener result listener
@@ -650,7 +667,7 @@ public class Communicator {
                 getListener().requestGetAllSubjectsFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.GET, true, "subject/", requestCallback);
+        return enqueueRequest(HttpMethod.GET, true, "subject/all/", requestCallback);
     }
     
     /**

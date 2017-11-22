@@ -365,8 +365,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         if (validateInputControls()) {
             disableControls(true);
             try {
-                User temporaryUser = new User(getUsername(), getName(), getGender(), StringUtils.isEmpty(getPassword()) ? null : getPassword(), getEmail(), getEducation());
-                temporaryUser.setAvatar(user.getAvatar());              
+                User temporaryUser = new User(getUsername(), getName(), getGender(), StringUtils.isEmpty(getPassword()) ? null : getPassword(), getEmail(), getEducation());            
                 if (user.isCurrentUser()) {
                     applicationManager.setCurrentUser(temporaryUser);
                     if (!communicator.requestUpdateOwnUser(this)) {
