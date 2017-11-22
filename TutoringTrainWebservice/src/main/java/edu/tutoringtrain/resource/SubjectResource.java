@@ -190,9 +190,19 @@ public class SubjectResource extends AbstractResource {
                 handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
+                String param;
+                if (subjectIn.getDename() != null && subjectIn.getEnname() != null) 
+                    param = subjectIn.getEnname() + "/" + subjectIn.getDename();
+                else if (subjectIn.getEnname() != null)
+                    param = subjectIn.getEnname();
+                else if (subjectIn.getDename() != null)
+                    param = subjectIn.getDename();
+                else        //should never happen
+                    param = "-";
+                
                 response.status(Response.Status.CONFLICT);
                 response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
-                        .withParams(subjectIn.getEnname() + "/" + subjectIn.getDename())
+                        .withParams(param)
                         .withLang(lang)
                         .build());
             }
