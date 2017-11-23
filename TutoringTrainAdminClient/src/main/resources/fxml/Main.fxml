@@ -3,7 +3,6 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXListView?>
-<?import com.jfoenix.controls.JFXScrollPane?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.net.URL?>
@@ -12,121 +11,116 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="pane" fx:id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1250.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.bsd.tutoringtrain.controller.MainController">
+<AnchorPane id="pane" fx:id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.MainController">
     <stylesheets>
         <URL value="@/styles/Styles.css" />
     </stylesheets>
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="250.0" spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="210.0" spacing="10.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                <image>
                   <Image url="@../images/logo.png" />
                </image>
                <VBox.margin>
-                  <Insets bottom="25.0" />
+                  <Insets bottom="15.0" />
                </VBox.margin>
             </ImageView>
-            <JFXButton fx:id="btnOwnAccount" alignment="CENTER" buttonType="RAISED" onAction="#onBtnOwnAccount" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="Own Account">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnMyAccount" alignment="CENTER" buttonType="RAISED" onAction="#onBtnOwnAccount" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%myAccount">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnNewAccount" alignment="CENTER" buttonType="RAISED" onAction="#onBtnNewAccount" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="New Account">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnNewAccount" alignment="CENTER" buttonType="RAISED" onAction="#onBtnNewAccount" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%newAccount">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnNewSubject" alignment="CENTER" buttonType="RAISED" onAction="#onBtnNewSubject" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="New Subject">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnAllAccounts" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllAccounts" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%allAccounts">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnAllAccounts" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllAccounts" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="All Accounts">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnNewSubject" alignment="CENTER" buttonType="RAISED" onAction="#onBtnNewSubject" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%newSubject">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnAllSubjects" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllSubjects" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="All Subjects">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnAllSubjects" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllSubjects" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%allSubjects">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnAllOffers" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllOffers" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="All Offers">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnAllOffers" alignment="CENTER" buttonType="RAISED" disable="true" onAction="#onBtnAllOffers" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%allOffers">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnSettings" alignment="CENTER" buttonType="RAISED" onAction="#onBtnSettings" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="Settings">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnSettings" alignment="CENTER" buttonType="RAISED" disable="true" onAction="#onBtnSettings" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%settings">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnLogout" alignment="CENTER" buttonType="RAISED" onAction="#onBtnLogout" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="Logout">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnLogout" alignment="CENTER" buttonType="RAISED" onAction="#onBtnLogout" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%logout">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnExit" alignment="CENTER" buttonType="RAISED" onAction="#onBtnExit" prefHeight="41.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="Exit">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
+            <JFXButton fx:id="btnExit" alignment="CENTER" buttonType="RAISED" onAction="#onBtnExit" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%exit">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
+            <JFXSpinner fx:id="spinner" radius="25.0" startingAngle="0.0" visible="false">
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+            </JFXSpinner>
          </children>
          <padding>
-            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </VBox>
-      <Label fx:id="lblWelcome" layoutX="250.0" layoutY="14.0" text="Welcome, " textAlignment="CENTER" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="30.0">
-         <font>
-            <Font name="System Bold" size="17.0" />
-         </font>
-      </Label>
-      <JFXScrollPane layoutX="601.0" layoutY="30.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0">
+      <VBox AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <JFXListView fx:id="lvResult" />
+            <Label fx:id="lblWelcome" text="%messageWelcome" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER" disable="true" prefHeight="50.0" spacing="5.0">
+               <children>
+                  <JFXTextField fx:id="txtSearch" editable="false" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="700.0" promptText="%search" unFocusColor="#86bab8" />
+                  <JFXComboBox fx:id="comboCategorie" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="150.0" promptText="%searchCategory" unFocusColor="#86bab8" />
+                  <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" onAction="#onBtnSearch" prefHeight="30.0" prefWidth="80.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%search">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </padding>
+                  </JFXButton>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+            <JFXListView fx:id="lvResult" disable="true" prefHeight="550.0">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </JFXListView>
          </children>
-      </JFXScrollPane>
-      <JFXTextField fx:id="txtSearch" editable="false" focusColor="#084c61" labelFloat="true" layoutX="300.0" layoutY="143.0" prefHeight="25.0" prefWidth="633.0" promptText="Search" unFocusColor="#86bab8" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="310.0" AnchorPane.topAnchor="140.0" />
-      <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" layoutX="774.0" layoutY="98.0" onAction="#onBtnSearch" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="Search" AnchorPane.leftAnchor="1100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="143.0">
-         <font>
-            <Font name="System Bold" size="13.0" />
-         </font>
          <padding>
-            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
          </padding>
-      </JFXButton>
-      <JFXComboBox fx:id="comboCategorie" focusColor="#084c61" labelFloat="true" layoutX="982.0" layoutY="140.0" promptText="Categorie" unFocusColor="#86bab8" AnchorPane.leftAnchor="950.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="140.0" />
-      <JFXSpinner fx:id="spinner" layoutX="530.0" layoutY="50.0" radius="25.0" startingAngle="0.0" visible="false" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      </VBox>
    </children>
 </AnchorPane>

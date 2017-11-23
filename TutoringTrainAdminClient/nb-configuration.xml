@@ -14,5 +14,8 @@ That way multiple projects can share the same settings (useful for formatting ru
 Any value defined here will override the pom.xml file value but is only applicable to the current project.
 -->
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
+        <netbeans.hint.license>default</netbeans.hint.license>
+        <org-netbeans-modules-javascript2-requirejs.enabled>true</org-netbeans-modules-javascript2-requirejs.enabled>
+        <org-netbeans-modules-javascript2-json.json_2e_comments>true</org-netbeans-modules-javascript2-json.json_2e_comments>
     </properties>
 </project-shared-configuration>
