@@ -6,9 +6,15 @@
 package edu.tutoringtrain.data.dao;
 
 import edu.tutoringtrain.entities.User;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -38,6 +44,8 @@ public class EmailService extends AbstractService {
     private static final String WELCOME_CONTENT = "Welcome %s!";
     private static final String WELCOME_CONTENT_WITH_PASSWORD = "Welcome %s!" + LINE_SEP + LINE_SEP + "Your credentials are:" + LINE_SEP + "Username: %s" + LINE_SEP + "Password: %s";
     
+    private static final String NEWS_SUBJECT = "TutoringTrain Newsletter";
+        
     private ExecutorService executor;
     
     public EmailService() {
@@ -119,5 +127,42 @@ public class EmailService extends AbstractService {
                         InternetAddress.parse(user.getEmail()));
         message.setSubject(VER_SUBJECT);
         message.setText(String.format(VER_CONTENT, user.getUsername(), String.format(VER_EMAIL, key)));
+    }
+    
+    public void sendNewsletter(final User user, final boolean errorIfNotSend) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (errorIfNotSend && (user == null || user.getEmail() == null)) {
+                        throw new IllegalArgumentException("cannot send email (user or email null)");
+                    }
+
+                    Message message = new MimeMessage(getSMTPSession());
+                    setNewsletterEmailContents(message, user);
+                    Transport.send(message);
+
+                } catch (MessagingException e) {
+                    if (errorIfNotSend) {
+                        throw new RuntimeException(e);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+    
+    private void setNewsletterEmailContents(Message message, User user) throws AddressException, MessagingException, IOException {
+        message.setFrom(new InternetAddress("noreply.tutoringtrain@gmail.com"));		//seems to do nothing...
+        message.setRecipients(Message.RecipientType.TO,
+                        InternetAddress.parse(user.getEmail()));
+        message.setSubject(NEWS_SUBJECT);
+        
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("NewsLetter/newsletter.html").getFile());
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
+        String firstName = user.getName().substring(0, user.getName().indexOf(' '));
+        message.setContent(in.lines().collect(Collectors.joining()).replaceAll("\\{name\\}", firstName), "text/html; charset=utf-8");
     }
 }

@@ -437,27 +437,28 @@ public class UserResource extends AbstractResource {
     @Secured
     @POST
     @Path("/avatar/B64")
-    @Consumes(value = MediaType.MULTIPART_FORM_DATA)
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response setAvatarB64(@Context HttpServletRequest httpServletRequest,
-                    @FormDataParam("name") String name,
-                    @FormDataParam("file") InputStream uploadedInputStream,
+                    InputStream uploadedInputStream,
                     @Context SecurityContext securityContext) throws Exception {
-        
-        byte[] targetArray = new byte[uploadedInputStream.available()];
-        uploadedInputStream.read(targetArray);
-        
-        Response r = Response.status(Response.Status.BAD_REQUEST).build();
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(targetArray))) {
-            r = setAvatar(httpServletRequest, name, bis, securityContext);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        try {
+            BufferedImage bi = ImageIO.read(uploadedInputStream);
+            bi = ImageUtils.getScaledImage(bi, 360);
+
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                ImageIO.write(bi, "jpg", baos);
+                baos.flush();
+                byte[] imageInByte = baos.toByteArray();
+
+                userService.setAvatar(securityContext.getUserPrincipal().getName(), imageInByte);
+            }
+            return Response.ok().build();
+        }      
         finally {
-            return r;
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
+
     
     @Secured
     @POST
@@ -625,6 +626,29 @@ public class UserResource extends AbstractResource {
             }
             catch (Exception e) {
                 unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/testNL")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getUsers(@Context HttpServletRequest httpServletRequeste) throws Exception {
+        
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            emailService.sendNewsletter(userService.getUserByUsername("moserr"), false);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, Language.EN);
+            }
+            catch (Exception e) {
+                unknownError(e, response, Language.EN);
             } 
         }
  
