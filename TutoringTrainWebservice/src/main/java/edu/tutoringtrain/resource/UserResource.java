@@ -39,6 +39,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Base64;
 import java.util.List;
 import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
@@ -431,6 +432,28 @@ public class UserResource extends AbstractResource {
         }
         
         return err;
+    }
+    
+    @Secured
+    @POST
+    @Path("/avatar/B64")
+    @Consumes(value = MediaType.MULTIPART_FORM_DATA)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response setAvatarB64(@Context HttpServletRequest httpServletRequest,
+                    @FormDataParam("name") String name,
+                    @FormDataParam("file") InputStream uploadedInputStream,
+                    @Context SecurityContext securityContext) throws Exception {
+        
+        byte[] targetArray = new byte[uploadedInputStream.available()];
+        uploadedInputStream.read(targetArray);
+        
+        Response r = Response.status(Response.Status.BAD_REQUEST).build();
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(targetArray))) {
+            r = setAvatar(httpServletRequest, name, bis, securityContext);
+        }
+        finally {
+            return r;
+        }
     }
     
     @Secured
