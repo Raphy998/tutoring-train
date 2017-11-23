@@ -3,8 +3,11 @@ package at.tutoringtrain.adminclient.ui;
 import at.tutoringtrain.adminclient.data.Subject;
 import at.tutoringtrain.adminclient.data.User;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
+import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
+import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
+import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
@@ -22,12 +25,16 @@ import at.tutoringtrain.adminclient.ui.listener.UserBlockListner;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
 import com.jfoenix.controls.JFXSnackbar;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
@@ -50,12 +57,15 @@ public class WindowService {
     private final ApplicationManager applicationManager;
     private final Logger logger;
     private final ResourceBundle resourceBundle;
+    private final LocalizedValueProvider localizedValueProvider;
+    private final DefaultValueProvider defaultValueProvider;
     
     private WindowService() {
         this.logger = LogManager.getLogger(this);
         this.applicationManager = ApplicationManager.getInstance();
         this.resourceBundle = applicationManager.getLanguageResourceBundle();
-        
+        this.localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
+        this.defaultValueProvider = ApplicationManager.getDefaultValueProvider();
     }
 
     
@@ -65,7 +75,8 @@ public class WindowService {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"), resourceBundle);
         root = loader.load();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Administrator Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.show();
@@ -81,7 +92,8 @@ public class WindowService {
         root = loader.load();
         controller = (AuthenticationController)loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -104,7 +116,8 @@ public class WindowService {
         controller.setWebserviceOperation(webserviceOperation);
         controller.setReauthenticationListener(listener);
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -120,7 +133,8 @@ public class WindowService {
         root = loader.load();
         controller = (RegisterUserController)loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -136,7 +150,8 @@ public class WindowService {
         root = loader.load();
         controller = (RegisterSubjectController)loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -152,7 +167,8 @@ public class WindowService {
         root = loader.load();
         controller = (UpdateSubjectController)loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));   
         controller.setSubject(subject);
@@ -174,7 +190,8 @@ public class WindowService {
         root = loader.load();
         controller = (UpdateUserController)loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));          
         controller.setUser(user);
@@ -194,7 +211,8 @@ public class WindowService {
         root = loader.load();
         controller = (BlockUserController) loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         controller.setUser(user);
@@ -213,7 +231,8 @@ public class WindowService {
         root = loader.load();
         controller = (AllUsersController)loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -229,7 +248,8 @@ public class WindowService {
         root = loader.load();
         controller = (AllSubjectsController)loader.getController();
         stage = new Stage();
-        stage.setTitle("TutoringTrain - Admin Client");
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -246,5 +266,14 @@ public class WindowService {
         Platform.runLater(() -> {
             snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message.toString()));
         });
+    }
+    
+    public Optional<ButtonType> openConfirmDialog(String headerKey, String contentKey, StringPlaceholder... placeholders) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultValueProvider.getDefaultIcon());
+        alert.setTitle(localizedValueProvider.getString("titleApplication"));
+        alert.setHeaderText(localizedValueProvider.getString(headerKey, placeholders));
+        alert.setContentText(localizedValueProvider.getString(contentKey, placeholders));
+        return alert.showAndWait(); 
     }
 }

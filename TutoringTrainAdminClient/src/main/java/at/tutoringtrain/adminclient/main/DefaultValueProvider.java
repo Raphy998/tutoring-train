@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import okhttp3.MediaType;
@@ -55,6 +56,7 @@ public final class DefaultValueProvider {
     private final TreeMap<String, ValidationPattern> defaultValidationPatterns;
     
     private BufferedImage defaultAvatar;
+    private Image defaultIcon;
     
     private DefaultValueProvider() {
         this.logger = LogManager.getLogger(this);
@@ -78,6 +80,7 @@ public final class DefaultValueProvider {
         this.defaultValidationPatterns = new TreeMap<>();
         this.initializeDefaultValidationPatterns();
         this.initializeDefaultAvatar();
+        this.initializeDefaultIcon();
         this.initializeDefaultGenders();
         this.initializeDefaultBlockDurations();
         this.logger.debug("DefaultValueProvider initialized");
@@ -112,6 +115,11 @@ public final class DefaultValueProvider {
         } finally {
             this.defaultAvatar = tmpImage;
         }
+    }
+    
+    private void initializeDefaultIcon() {
+        this.defaultIcon = new Image(getClass().getResource("/images/logo_white.png").toString());
+        
     }
     
     public Language getDefaultLanguage() {
@@ -192,5 +200,9 @@ public final class DefaultValueProvider {
     
     public ValidationPattern getDefaultValidationPattern(String key) {
         return defaultValidationPatterns.get(key);
+    }
+
+    public Image getDefaultIcon() {
+        return defaultIcon;
     }
 }

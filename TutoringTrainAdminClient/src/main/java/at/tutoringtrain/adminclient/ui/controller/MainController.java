@@ -60,7 +60,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     private Label lblWelcome;
     @FXML
-    private JFXListView<Void> lvResult;
+    private JFXListView<AnchorPane> lvResult;
     @FXML
     private JFXTextField txtSearch;
     @FXML
@@ -72,33 +72,26 @@ public class MainController implements Initializable, ApplicationExitListener, T
     
     private JFXSnackbar snackbar; 
     
+    private ApplicationManager applicationManager;
+    private Logger logger;
     private WindowService windowService;
     private LocalizedValueProvider localizedValueProvider;
     private Communicator communicator;
-    private ApplicationManager db;
-    private Logger logger;
+    
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        try { 
-            localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
+        localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
         windowService = WindowService.getInstance();
         logger = LogManager.getLogger(this);
         communicator = Communicator.getInstance();
-        db = ApplicationManager.getInstance();
-        db.registerMainApplicationExitListener(this);
-        db.addCurrentUserDataChangedListener(this);
+        applicationManager = ApplicationManager.getInstance();
+        applicationManager.registerMainApplicationExitListener(this);
+        applicationManager.addCurrentUserDataChangedListener(this);
         snackbar = new JFXSnackbar(pane);
         comboCategorie.getItems().addAll(SearchCategory.ALL, SearchCategory.USER, SearchCategory.SUBJECT, SearchCategory.OFFER);
         comboCategorie.getSelectionModel().select(SearchCategory.ALL);
-        
-            setWelcomeMessage(db.getCurrentUser());
-            
-            
-        } catch (Exception ex) {
-            logger.error("Exception", ex);
-            onBtnLogout(null);
-        }
+        setWelcomeMessage(applicationManager.getCurrentUser());
     }
     
     @FXML
@@ -181,7 +174,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     void onBtnOwnAccount(ActionEvent event) {
         try {
-            windowService.openUpdateUserWindow(db.getCurrentUser());
+            windowService.openUpdateUserWindow(applicationManager.getCurrentUser());
         } catch (Exception ex) {
             logger.error("Exception", ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));

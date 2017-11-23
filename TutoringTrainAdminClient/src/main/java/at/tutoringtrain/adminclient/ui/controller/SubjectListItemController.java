@@ -3,6 +3,7 @@ package at.tutoringtrain.adminclient.ui.controller;
 import at.tutoringtrain.adminclient.data.Subject;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
+import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestDeleteSubjectListener;
@@ -20,6 +21,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -82,12 +84,14 @@ public class SubjectListItemController implements Initializable, RequestDeleteSu
     void onBtnRemove(ActionEvent event) {
         if (subject != null) {
             if (parentController != null) {
-                try {
-                    communicator.requestDeleteSubject(this, subject);
-                } catch (Exception ex) {
-                    logger.error("onBtnRemove: exception occurred", ex);
-                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
-                }   
+                if (windowService.openConfirmDialog("dialogHeaderRemoveSubject", "dialogContenRemoveSubject", new StringPlaceholder("name", subject.getName())).get() == ButtonType.OK) {
+                   try {
+                        communicator.requestDeleteSubject(this, subject);
+                    } catch (Exception ex) {
+                        logger.error("onBtnRemove: exception occurred", ex);
+                        displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
+                    }      
+                }     
             } else {
                 displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
                 logger.error("parent-controller required to remove subject");
