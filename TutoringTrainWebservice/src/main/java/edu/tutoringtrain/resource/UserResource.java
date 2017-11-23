@@ -451,6 +451,9 @@ public class UserResource extends AbstractResource {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(targetArray))) {
             r = setAvatar(httpServletRequest, name, bis, securityContext);
         }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
         finally {
             return r;
         }
