@@ -41,6 +41,7 @@ public final class ApplicationConfiguration {
 
     public void setLanguage(Language language) {
         this.language = language;
+        logger.debug("language set to " + this.language.getLocale());
     }
 
     public String getServerIp() {
@@ -53,6 +54,7 @@ public final class ApplicationConfiguration {
         } else {
             this.serverIp = serverIp;
         }
+        logger.debug("server ip set to " + this.serverIp);
     }
     
     public int getServerPort() {
@@ -63,6 +65,7 @@ public final class ApplicationConfiguration {
         if (serverPort >= 0) {
             this.serverPort = serverPort;
         }
+        logger.debug("server port set to " + this.serverPort);
     }
     
     public boolean apply(ApplicationConfiguration config) {

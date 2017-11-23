@@ -118,7 +118,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     private UserAvatarChangedListner userAvatarChangedListner;
     private UserBlockListner userBlockListner;
    
-    private User user;
+    private User user, temporaryUser;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -365,7 +365,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         if (validateInputControls()) {
             disableControls(true);
             try {
-                User temporaryUser = new User(getUsername(), getName(), getGender(), StringUtils.isEmpty(getPassword()) ? null : getPassword(), getEmail(), getEducation());            
+                temporaryUser = new User(getUsername(), getName(), getGender(), StringUtils.isEmpty(getPassword()) ? null : getPassword(), getEmail(), getEducation());            
                 if (user.isCurrentUser()) {
                     applicationManager.setCurrentUser(temporaryUser);
                     if (!communicator.requestUpdateOwnUser(this)) {
@@ -395,6 +395,10 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     public void requestUpdateUserFinished(RequestResult result) {
         disableControls(false);     
         if (result.isSuccessful()) {
+            user.setName(temporaryUser.getName());
+            user.setEducation(temporaryUser.getEducation());
+            user.setEmail(temporaryUser.getEmail());
+            user.setGender(temporaryUser.getGender());
             notifyUserDataChangedListener(user);
             displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageUserSuccessfullyUpdated")));
         } else {
@@ -455,6 +459,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     @Override
     public void requestUnblockUserFinished(RequestResult result) {
         if (result.isSuccessful()) {
+            user.setBlock(null);
             userUnblocked();
         }
     }

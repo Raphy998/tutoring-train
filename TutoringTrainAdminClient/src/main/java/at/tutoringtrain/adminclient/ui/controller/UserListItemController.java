@@ -200,11 +200,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
     
     @Override
     public void userDataChanged(User user) {
-        if (this.user.isCurrentUser()) {
-            setUser(ApplicationManager.getInstance().getCurrentUser());
-        } else {
-            setUser(user);
-        }
+        setUser(user);
     }
 
     @Override
