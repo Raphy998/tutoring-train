@@ -17,11 +17,13 @@ public class Subject {
     })
     private BigDecimal id;
     @JsonView({
-       JsonSubjectViews.Out.Register.class,
+        JsonSubjectViews.In.Get.class,
+        JsonSubjectViews.Out.Register.class,
         JsonSubjectViews.Out.Update.class
     })
     private String dename;
     @JsonView({
+        JsonSubjectViews.In.Get.class,
         JsonSubjectViews.Out.Register.class,
         JsonSubjectViews.Out.Update.class
     })

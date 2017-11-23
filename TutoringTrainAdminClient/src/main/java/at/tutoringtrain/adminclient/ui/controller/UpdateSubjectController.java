@@ -178,8 +178,8 @@ public class UpdateSubjectController implements Initializable, TutoringTrainWind
             throw new RequiredParameterException(subject, "must not be null");
         }
         this.subject = subject;
-        
-        
+        txtDName.setText(this.subject.getDename());
+        txtEName.setText(this.subject.getEnname());
         txtName.setText(this.subject.getName());
         active.setSelected(this.subject.isIsactive());
     }
