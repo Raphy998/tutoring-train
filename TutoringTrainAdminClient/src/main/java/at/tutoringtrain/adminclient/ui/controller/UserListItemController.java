@@ -163,7 +163,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
         if (user.getBlock() != null) {
             boxBlocked.setVisible(true);
             lblReason.setText(user.getBlock().getReason());
-            lblDue.setText(new SimpleDateFormat("dd.MM.yyyy hh:mm").format(user.getBlock().getDuedate()));
+            lblDue.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(user.getBlock().getDuedate()));
         } else {
             boxBlocked.setVisible(false);
         }
