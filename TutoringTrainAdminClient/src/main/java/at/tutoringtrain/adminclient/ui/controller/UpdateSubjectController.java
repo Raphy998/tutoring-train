@@ -199,6 +199,8 @@ public class UpdateSubjectController implements Initializable, TutoringTrainWind
         disableControls(false);     
         if (result.isSuccessful()) {
             subject.setName(temporarySubject.getName());
+            subject.setEnname(temporarySubject.getEnname());
+            subject.setDename(temporarySubject.getDename());
             subject.setIsactive(temporarySubject.isIsactive());
             Platform.runLater(() -> txtName.setText(temporarySubject.getName()));
             notifySubjectChangedListener();
