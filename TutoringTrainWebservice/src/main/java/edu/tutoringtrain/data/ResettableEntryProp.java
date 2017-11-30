@@ -9,8 +9,6 @@ package edu.tutoringtrain.data;
  *
  * @author Elias
  */
-public abstract class UserRoles {
-    public static final Character USER = 'U';
-    public static final Character MODERATOR = 'M'; 
-    public static final Character ADMIN = 'A'; 
+public enum ResettableEntryProp {
+    DUEDATE
 }

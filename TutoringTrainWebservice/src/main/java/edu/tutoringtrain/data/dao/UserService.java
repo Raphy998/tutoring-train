@@ -10,7 +10,6 @@ import com.mysema.query.jpa.JPQLQuery;
 import com.mysema.query.jpa.impl.JPAQuery;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
-import edu.tutoringtrain.data.UserRoles;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.NullValueException;
@@ -18,26 +17,17 @@ import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.data.Gender;
 import edu.tutoringtrain.data.ResettableUserProp;
-import edu.tutoringtrain.data.search.CharacterOperation;
-import edu.tutoringtrain.data.search.CharacterSearchCriteria;
-import edu.tutoringtrain.data.search.OrderDirection;
-import edu.tutoringtrain.data.search.OrderElement;
-import edu.tutoringtrain.data.search.StringOperation;
-import edu.tutoringtrain.data.search.StringSearchCriteria;
-import edu.tutoringtrain.data.search.user.UserProp;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.search.user.UserQueryGenerator;
 import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
-import javax.websocket.Session;
 /**
  *
  * @author Elias
@@ -61,7 +51,7 @@ public class UserService extends AbstractService {
         
         Character gender = getGenderOrDefault(userReq.getGender());
         userReq.setGender(gender);
-        userReq.setRole(UserRoles.USER);
+        userReq.setRole(UserRole.USER.getChar());
         
         em.persist(userReq);
         
@@ -87,6 +77,22 @@ public class UserService extends AbstractService {
         if (userReq.getGender() != null) currentUser.setGender(getGenderOrDefault(userReq.getGender()));
         if (userReq.getName() != null) currentUser.setName(userReq.getName());
         if (userReq.getPassword()!= null) currentUser.setPassword(userReq.getPassword());
+    }
+    
+    @Transactional
+    public void setRole(String username, UserRole newRole) throws InvalidArgumentException, NullValueException, UserNotFoundException {
+        if (username == null) {
+            throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
+        }
+        if (newRole == null) {
+            throw new NullValueException(new ErrorBuilder(Error.UNKNOWN));
+        }
+        
+        User user = em.find(User.class, username);
+        if (user == null) {
+            throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
+        }
+        user.setRole(newRole.getChar());
     }
     
     @Transactional

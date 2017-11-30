@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.search.offer;
+package edu.tutoringtrain.data.search.entry;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,12 +18,12 @@ import java.io.IOException;
  *
  * @author Elias
  */
-public class OfferEntityPropDeserializer extends StdDeserializer<EntityProp> {
-    public OfferEntityPropDeserializer() {
+public class EntryEntityPropDeserializer extends StdDeserializer<EntityProp> {
+    public EntryEntityPropDeserializer() {
         this(null);
     }
 
-    public OfferEntityPropDeserializer(final Class<?> vc) {
+    public EntryEntityPropDeserializer(final Class<?> vc) {
         super(vc);
     }
 
@@ -32,6 +32,6 @@ public class OfferEntityPropDeserializer extends StdDeserializer<EntityProp> {
         final JsonNode node = parser.getCodec().readTree(parser);
         final ObjectMapper mapper = (ObjectMapper)parser.getCodec();
         
-        return mapper.treeToValue(node, OfferProp.class);
+        return mapper.treeToValue(node, EntryProp.class);
     }
 }

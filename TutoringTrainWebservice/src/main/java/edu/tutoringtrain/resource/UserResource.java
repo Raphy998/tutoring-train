@@ -20,12 +20,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.ResettableUserProp;
 import edu.tutoringtrain.data.dao.EmailService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
+import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.search.SearchCriteria;
 import edu.tutoringtrain.data.search.user.UserSearchCriteriaDeserializer;
@@ -39,7 +40,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Base64;
 import java.util.List;
 import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
@@ -152,7 +152,7 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @PUT
     @Path("/update")
     @Consumes(value = MediaType.APPLICATION_JSON)
@@ -185,7 +185,7 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @POST
     @Path("/reset/{username}")
     @Consumes(value = MediaType.APPLICATION_JSON)
@@ -275,7 +275,7 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @GET
     @Path("/all")
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -311,7 +311,7 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @POST
     @Path("/block")
     @Consumes(value = MediaType.APPLICATION_JSON)
@@ -353,7 +353,7 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @GET
     @Path("/unblock/{username}")
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -565,7 +565,7 @@ public class UserResource extends AbstractResource {
         return resetAvatar(httpServletRequest, securityContext.getUserPrincipal().getName());
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @DELETE
     @Path("/avatar/{username}")
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -590,7 +590,7 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @POST
     @Path("/search")
     @Consumes(value = MediaType.APPLICATION_JSON)
@@ -634,14 +634,15 @@ public class UserResource extends AbstractResource {
     
     @Secured
     @GET
-    @Path("/testNL")
+    @Path("/testNL/{username}")
     @Produces(value = MediaType.APPLICATION_JSON)
-    public Response getUsers(@Context HttpServletRequest httpServletRequeste) throws Exception {
+    public Response testNL(@Context HttpServletRequest httpServletRequeste,
+                            @PathParam("username") String username) throws Exception {
         
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            emailService.sendNewsletter(userService.getUserByUsername("moserr"), false);
+            emailService.sendNewsletter(userService.getUserByUsername(username), false);
         } 
         catch (Exception ex) {
             try {
@@ -655,7 +656,46 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    //TODO: Unused in Sprint 1
+    @Secured(UserRole.ADMIN)
+    @PUT
+    @Path("/role/{username}")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response setRole(@Context HttpServletRequest httpServletRequest,
+                    @PathParam("username") String username,
+                    final String newRole,
+                    @Context SecurityContext securityContext) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            UserRole role = UserRole.toUserRole(((User)getMapper().readerWithView(Views.User.In.Promote.class).forType(User.class).readValue(newRole)).getRole());
+            User user2update = userService.getUserByUsername(username);
+            
+            if (username.equals(securityContext.getUserPrincipal().getName())) {
+                throw new UnauthorizedException(new ErrorBuilder(Error.DEGRADE_OWN));
+            }
+            if (user2update.getRole().equals(UserRole.ADMIN.getChar())) {
+                throw new UnauthorizedException(new ErrorBuilder(Error.DEGRADE_ADMIN));
+            }
+            else {
+                userService.setRole(username, role);
+            }
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    //TODO: Unused until static IP
     /*
     @GET
     @Path("/verify")

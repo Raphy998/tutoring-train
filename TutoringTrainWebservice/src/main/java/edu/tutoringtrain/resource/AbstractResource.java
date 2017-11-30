@@ -22,7 +22,7 @@ import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
-import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
+import edu.tutoringtrain.data.exceptions.EntryNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
@@ -139,7 +139,7 @@ public abstract class AbstractResource {
             response.status(CustomHttpStatusCodes.USER_NOT_FOUND);
             response.entity(ex.getError().withLang(lang).build());
         }
-        catch (OfferNotFoundException ex) {
+        catch (EntryNotFoundException ex) {
             response.status(CustomHttpStatusCodes.OFFER_NOT_FOUND);
             response.entity(ex.getError().withLang(lang).build());
         }

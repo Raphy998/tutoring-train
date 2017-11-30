@@ -7,7 +7,7 @@
     "6": "Benutzername darf nicht null sein",
     "7": "Name darf nicht null sein",
     "8": "Benutzer darf nicht null sein",
-    "9": "Angebot darf nicht null sein",
+    "9": "Eintrag darf nicht null sein",
     "10": "Geschlecht darf nicht null sein",
     "11": "Gegenstand darf nicht null sein",
     "12": "Benutzer '%s' nicht gefunden",
@@ -34,5 +34,10 @@
     "33": "start muss >= 0 sein",
     "34": "pageSize muss > 0 sein",
     "35": "Angebot (id=%s) nicht gefunden",
-    "36": "Gegenstand (id=%s) kann nicht gelöscht werden, da er bereits verwendet wird"
+    "36": "Gegenstand (id=%s) kann nicht gelöscht werden, da er bereits verwendet wird",
+    "37": "Rolle '%s' ist ungültig",
+    "38": "Rolle eines Admins kann nicht geändert werden",
+    "39": "Eigene Rolle kann nicht geändert werden",
+    "40": "Nachfrage (id=%s) von Benutzer '%s' nicht gefunden",
+    "41": "Nachfrage (id=%s) nicht gefunden"
 }

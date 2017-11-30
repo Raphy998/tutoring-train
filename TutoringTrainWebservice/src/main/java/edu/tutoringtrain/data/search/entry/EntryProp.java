@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.search.offer;
+package edu.tutoringtrain.data.search.entry;
 
 import edu.tutoringtrain.data.search.DataType;
 import static edu.tutoringtrain.data.search.DataType.*;
@@ -13,7 +13,7 @@ import edu.tutoringtrain.data.search.EntityProp;
  *
  * @author Elias
  */
-public enum OfferProp implements EntityProp {
+public enum EntryProp implements EntityProp {
     ID(NUMBER), 
     POSTEDON(DATE), 
     ISACTIVE(BOOLEAN), 
@@ -24,7 +24,7 @@ public enum OfferProp implements EntityProp {
     
     private final DataType dataType;
 
-    OfferProp(DataType dataType) {
+    EntryProp(DataType dataType) {
         this.dataType = dataType;
     }
 

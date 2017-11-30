@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.search.offer;
+package edu.tutoringtrain.data.search.entry;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,12 +25,12 @@ import java.io.IOException;
  *
  * @author Elias
  */
-public class OfferSearchCriteriaDeserializer extends StdDeserializer<SearchCriteria> {
-    public OfferSearchCriteriaDeserializer() {
+public class EntrySearchCriteriaDeserializer extends StdDeserializer<SearchCriteria> {
+    public EntrySearchCriteriaDeserializer() {
         this(null);
     }
 
-    public OfferSearchCriteriaDeserializer(final Class<?> vc) {
+    public EntrySearchCriteriaDeserializer(final Class<?> vc) {
         super(vc);
     }
 
@@ -42,7 +42,7 @@ public class OfferSearchCriteriaDeserializer extends StdDeserializer<SearchCrite
         
         //add a module to deserialize all EntityProps to UserProps since this Deserializer is only used for Users
         final SimpleModule module = new SimpleModule();
-        module.addDeserializer(EntityProp.class, new OfferEntityPropDeserializer());
+        module.addDeserializer(EntityProp.class, new EntryEntityPropDeserializer());
         mapper.registerModule(module);
         
         SearchCriteria sc = null;
@@ -52,9 +52,9 @@ public class OfferSearchCriteriaDeserializer extends StdDeserializer<SearchCrite
             throw new IOException("no key property given");
         }
         else {
-            OfferProp prop = null;
+            EntryProp prop = null;
             try {
-                prop = OfferProp.valueOf(subNode.textValue().toUpperCase());
+                prop = EntryProp.valueOf(subNode.textValue().toUpperCase());
                 if (null != prop.getDataType()) switch (prop.getDataType()) {
                     case STRING:
                         sc = mapper.treeToValue(node, StringSearchCriteria.class);

@@ -21,7 +21,7 @@ public class Error {
     public static final int USERNAME_NULL = 6;
     public static final int NAME_NULL = 7;
     public static final int USER_NULL = 8;
-    public static final int OFFER_NULL = 9;
+    public static final int ENTRY_NULL = 9;
     public static final int GENDER_NULL = 10;
     public static final int SUBJECT_NULL = 11;
     public static final int USER_NOT_FOUND = 12;
@@ -49,6 +49,11 @@ public class Error {
     public static final int PAGE_SIZE_LTE_ZERO = 34;
     public static final int OFFER_NOT_FOUND = 35;
     public static final int SUBJECT_USED = 36;
+    public static final int ILLEGAL_ROLE = 37;
+    public static final int DEGRADE_ADMIN = 38;
+    public static final int DEGRADE_OWN = 39;
+    public static final int REQUEST_NOT_FOUND = 40;
+    public static final int REQUEST_OF_USER_NOT_FOUND = 41;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -62,7 +67,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return SUBJECT_USED;
+        return DEGRADE_OWN;
     }
 
     public Error() {

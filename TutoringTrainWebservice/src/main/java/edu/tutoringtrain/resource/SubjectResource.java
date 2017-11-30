@@ -17,8 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import edu.tutoringtrain.data.Role;
-import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.data.dao.UserService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
@@ -99,7 +98,7 @@ public class SubjectResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @GET
     @Path("inactive")
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -140,7 +139,7 @@ public class SubjectResource extends AbstractResource {
             checkConstraints(subjectIn, lang, ConstraintGroups.Create.class);
             
             //if user is admin, activate subject immediately
-            if (userService.getUserByUsername(securityContext.getUserPrincipal().getName()).getRole().equals(UserRoles.ADMIN)) {
+            if (userService.getUserByUsername(securityContext.getUserPrincipal().getName()).getRole().equals(UserRole.ADMIN.getChar())) {
                 subjectIn.setIsactive('1');
             }
             else {
@@ -169,7 +168,7 @@ public class SubjectResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @PUT
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -220,7 +219,7 @@ public class SubjectResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @DELETE
     @Path("{id}")
     @Produces(value = MediaType.APPLICATION_JSON)

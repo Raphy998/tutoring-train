@@ -10,8 +10,8 @@ import edu.tutoringtrain.data.error.ErrorBuilder;
  *
  * @author Elias
  */
-public class OfferNotFoundException extends WsErrorException {
-    public OfferNotFoundException(ErrorBuilder err) {
+public class EntryNotFoundException extends WsErrorException {
+    public EntryNotFoundException(ErrorBuilder err) {
         super(err);
     }
 }

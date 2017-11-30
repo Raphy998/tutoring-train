@@ -6,7 +6,7 @@
 package edu.tutoringtrain.annotations;
 
 import edu.tutoringtrain.data.error.CustomHttpStatusCodes;
-import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.dao.AuthenticationService;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.error.ErrorBuilder;
@@ -86,11 +86,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         // Get the resource class which matches with the requested URL
         // Extract the roles declared by it
         Class<?> resourceClass = resourceInfo.getResourceClass();
-        List<Role> classRoles = extractRoles(resourceClass);
+        List<UserRole> classRoles = extractRoles(resourceClass);
         // Get the resource method which matches with the requested URL
         // Extract the roles declared by it
         Method resourceMethod = resourceInfo.getResourceMethod();
-        List<Role> methodRoles = extractRoles(resourceMethod);
+        List<UserRole> methodRoles = extractRoles(resourceMethod);
         
         try {
             // Check if the user is allowed to execute the method
@@ -154,7 +154,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     }
     
     // Extract the roles from the annotated element
-    private List<Role> extractRoles(AnnotatedElement annotatedElement) {
+    private List<UserRole> extractRoles(AnnotatedElement annotatedElement) {
         if (annotatedElement == null) {
             return new ArrayList<>();
         } else {
@@ -162,7 +162,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             if (secured == null) {
                 return new ArrayList<>();
             } else {
-                Role[] allowedRoles = secured.value();
+                UserRole[] allowedRoles = secured.value();
                 return Arrays.asList(allowedRoles);
             }
         }

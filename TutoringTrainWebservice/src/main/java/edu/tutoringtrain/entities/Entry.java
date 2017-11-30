@@ -8,6 +8,7 @@ package edu.tutoringtrain.entities;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.tutoringtrain.data.EntryType;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.misc.NumericBooleanDeserializer;
 import edu.tutoringtrain.misc.NumericBooleanSerializer;
@@ -51,11 +52,13 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Entry.findOfferByIdAndUsername", query = "SELECT e FROM Entry e WHERE e.flag = 'O' AND e.id = :id AND e.user.username = :username")
     , @NamedQuery(name = "Entry.findOfferNewest", query = "SELECT e FROM Entry e WHERE e.flag = 'O' ORDER BY e.postedon DESC")
     , @NamedQuery(name = "Entry.findOfferNewestOfUser", query = "SELECT e FROM Entry e WHERE e.flag = 'O' AND e.user.username = :username ORDER BY e.postedon DESC")
-    , @NamedQuery(name = "Entry.countOfferAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'O'")})
+    , @NamedQuery(name = "Entry.countOfferAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'O'")
+        
+    , @NamedQuery(name = "Entry.findRequestByIdAndUsername", query = "SELECT e FROM Entry e WHERE e.flag = 'R' AND e.id = :id AND e.user.username = :username")
+    , @NamedQuery(name = "Entry.findRequestNewest", query = "SELECT e FROM Entry e WHERE e.flag = 'R' ORDER BY e.postedon DESC")
+    , @NamedQuery(name = "Entry.findRequestNewestOfUser", query = "SELECT e FROM Entry e WHERE e.flag = 'R' AND e.user.username = :username ORDER BY e.postedon DESC")
+    , @NamedQuery(name = "Entry.countRequestAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'R'")})
 public class Entry implements Serializable {
-    public static final Character FLAG_OFFER = 'O';
-    public static final Character FLAG_REQUEST = 'R';
-
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Id

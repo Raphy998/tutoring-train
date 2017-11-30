@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.search.offer;
+package edu.tutoringtrain.data.search.entry;
 
-import edu.tutoringtrain.data.search.user.*;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
-import com.mysema.query.types.expr.ComparableExpression;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import edu.tutoringtrain.data.search.BooleanSearchCriteria;
-import edu.tutoringtrain.data.search.CharacterSearchCriteria;
 import edu.tutoringtrain.data.search.DateSearchCriteria;
 import edu.tutoringtrain.data.search.EntityProp;
 import edu.tutoringtrain.data.search.NumberSearchCriteria;
@@ -30,36 +27,33 @@ import java.util.List;
  *
  * @author Elias
  */
-public class OfferQueryGenerator extends QueryGenerator<OfferProp> {
+public class EntryQueryGenerator extends QueryGenerator<EntryProp> {
     private final QEntry offer = QEntry.entry;
     
     @Override
-    public Predicate[] getPredicates(Search<OfferProp> s) throws ParseException {
+    public Predicate[] getPredicates(Search<EntryProp> s) throws ParseException {
         List<Predicate> preds = new ArrayList<>();
         
-        for (SearchCriteria<OfferProp> crit: s.getCriteria()) {            
+        for (SearchCriteria<EntryProp> crit: s.getCriteria()) {            
             if (crit instanceof StringSearchCriteria) {
-                preds.add(getPredicate((StringSearchCriteria<OfferProp>) crit));
+                preds.add(getPredicate((StringSearchCriteria<EntryProp>) crit));
             }
             else if (crit instanceof BooleanSearchCriteria) {
-                preds.add(getPredicate((BooleanSearchCriteria<OfferProp>) crit));
+                preds.add(getPredicate((BooleanSearchCriteria<EntryProp>) crit));
             }
             else if (crit instanceof DateSearchCriteria) {
-                preds.add(getPredicate((DateSearchCriteria<OfferProp>) crit));
+                preds.add(getPredicate((DateSearchCriteria<EntryProp>) crit));
             }
             else if (crit instanceof NumberSearchCriteria) {
-                preds.add(getPredicate((NumberSearchCriteria<OfferProp>) crit));
+                preds.add(getPredicate((NumberSearchCriteria<EntryProp>) crit));
             }
         }
-        
-        //Only offers, since offers and requests are the same entity in the database and webservice
-        preds.add(offer.flag.eq('O'));
         
         return preds.toArray(new Predicate[0]);
     }
     
     @Override
-    public OrderSpecifier[] getOrders(Search<OfferProp> s) {
+    public OrderSpecifier[] getOrders(Search<EntryProp> s) {
         List<OrderSpecifier> orders = new ArrayList<>();
         
         for (OrderElement o: s.getOrder()) {      
@@ -75,7 +69,7 @@ public class OfferQueryGenerator extends QueryGenerator<OfferProp> {
     @Override
     protected ComparableExpressionBase getKey(EntityProp k) {
         ComparableExpressionBase var = null;
-        OfferProp key = (OfferProp) k;
+        EntryProp key = (EntryProp) k;
         
         switch (key) {
             case ID:

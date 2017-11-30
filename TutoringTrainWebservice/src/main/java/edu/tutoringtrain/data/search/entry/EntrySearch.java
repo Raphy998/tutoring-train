@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.tutoringtrain.data.search.offer;
+package edu.tutoringtrain.data.search.entry;
 
 import edu.tutoringtrain.data.search.OrderElement;
 import edu.tutoringtrain.data.search.Search;
@@ -15,27 +15,27 @@ import java.util.List;
  *
  * @author Elias
  */
-public class OfferSearch implements Search<OfferProp> {
-    List<SearchCriteria<OfferProp>> criteria;
-    List<OrderElement<OfferProp>> order;
+public class EntrySearch implements Search<EntryProp> {
+    List<SearchCriteria<EntryProp>> criteria;
+    List<OrderElement<EntryProp>> order;
 
-    public OfferSearch() {
+    public EntrySearch() {
         criteria = new ArrayList<>();
         order = new ArrayList<>();
     }
     
-    public OfferSearch(List<SearchCriteria<OfferProp>> criteria, List<OrderElement<OfferProp>> order) {
+    public EntrySearch(List<SearchCriteria<EntryProp>> criteria, List<OrderElement<EntryProp>> order) {
         this.criteria = criteria;
         this.order = order;
     }
 
     @Override
-    public List<SearchCriteria<OfferProp>> getCriteria() {
+    public List<SearchCriteria<EntryProp>> getCriteria() {
         return criteria;
     }
 
     @Override
-    public List<OrderElement<OfferProp>> getOrder() {
+    public List<OrderElement<EntryProp>> getOrder() {
         return order;
     }
 

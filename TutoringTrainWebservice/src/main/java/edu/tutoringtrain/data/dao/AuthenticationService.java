@@ -7,8 +7,7 @@ package edu.tutoringtrain.data.dao;
 
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
-import edu.tutoringtrain.data.Role;
-import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.NullValueException;
@@ -91,7 +90,7 @@ public class AuthenticationService extends AbstractService {
         boolean canAuth = true;
         
         //if non-admin logges in via admin application
-        if (requiredRole != null && requiredRole.equals(UserRoles.ADMIN) && !role.equals(UserRoles.ADMIN)) {
+        if (requiredRole != null && requiredRole.equals(UserRole.ADMIN.getChar()) && !role.equals(UserRole.ADMIN.getChar())) {
             canAuth = false;
         }
         
@@ -133,7 +132,7 @@ public class AuthenticationService extends AbstractService {
     }
     
     @Transactional
-    public void checkPermissions(String token, List<Role> roles) throws UnauthorizedException, ForbiddenException, BlockedException {
+    public void checkPermissions(String token, List<UserRole> roles) throws UnauthorizedException, ForbiddenException, BlockedException {
         User user = getUserByToken(token);
         if (user == null) {
             throw new UnauthorizedException(new ErrorBuilder(Error.TOKEN_INVALID).withParams(token));
@@ -150,19 +149,19 @@ public class AuthenticationService extends AbstractService {
         }
     }
     
-    private boolean hasPermissions(User user, List<Role> roles) {
+    private boolean hasPermissions(User user, List<UserRole> roles) {
         boolean hasPerm = false;
         
-        if (user.getRole().equals(UserRoles.ADMIN)) {
+        if (user.getRole().equals(UserRole.ADMIN.getChar())) {
             hasPerm = true;
         }
-        else if (user.getRole().equals(UserRoles.MODERATOR)) {
-            if (!roles.contains(Role.ADMIN)) {
+        else if (user.getRole().equals(UserRole.MODERATOR.getChar())) {
+            if (!roles.contains(UserRole.ADMIN)) {
                 hasPerm = true;
             }
         }
-        else if (user.getRole().equals(UserRoles.USER)) {
-            if (!(roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR))) {
+        else if (user.getRole().equals(UserRole.USER.getChar())) {
+            if (!(roles.contains(UserRole.ADMIN) || roles.contains(UserRole.MODERATOR))) {
                 hasPerm = true;
             }
         }

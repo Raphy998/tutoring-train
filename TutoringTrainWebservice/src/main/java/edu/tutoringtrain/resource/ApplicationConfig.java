@@ -55,6 +55,7 @@ public class ApplicationConfig extends Application {
         resources.add(AuthenticationResource.class);
         resources.add(SubjectResource.class);
         resources.add(OfferResource.class);
+        resources.add(RequestResource.class);
         return resources;
     }
 }

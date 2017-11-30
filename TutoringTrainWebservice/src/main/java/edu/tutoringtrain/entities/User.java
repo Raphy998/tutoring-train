@@ -64,7 +64,7 @@ public class User implements Serializable {
     @JsonView({Views.User.In.Register.class})
     private String password;
     @Column(name = "ROLE")
-    @JsonView({Views.User.Out.Public.class})
+    @JsonView({Views.User.Out.Public.class, Views.User.In.Promote.class})
     private Character role;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @NotNull(groups = ConstraintGroups.Create.class)

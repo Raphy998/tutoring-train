@@ -24,6 +24,7 @@ public interface Views {
         public static interface In {
             public static interface Register {};
             public static interface Update extends Register {};
+            public static interface Promote {};
         };
         public static interface Out {
             public static interface Public {};

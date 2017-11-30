@@ -7,7 +7,7 @@
     "6": "username must not be null",
     "7": "name must not be null",
     "8": "user must not be null",
-    "9": "offer must not be null",
+    "9": "entry must not be null",
     "10": "gender must not be null",
     "11": "subject must not be null",
     "12": "User '%s' not found",
@@ -34,5 +34,10 @@
     "33": "start must be >= 0",
     "34": "pageSize must be > 0",
     "35": "Offer (id=%s) not found",
-    "36": "Subject (id=%s) cannot be deleted because it is already used"
+    "36": "Subject (id=%s) cannot be deleted because it is already used",
+    "37": "Role '%s' is not valid",
+    "38": "Cannot change the role of an admin",
+    "39": "Cannot change own role",
+    "40": "Request (id=%s) of User '%s' not found",
+    "41": "Request (id=%s) not found"
 }

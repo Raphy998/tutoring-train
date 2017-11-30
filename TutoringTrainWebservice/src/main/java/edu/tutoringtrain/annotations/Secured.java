@@ -5,7 +5,7 @@
  */
 package edu.tutoringtrain.annotations;
 
-import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.UserRole;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
@@ -21,5 +21,5 @@ import javax.ws.rs.NameBinding;
 @Retention(RUNTIME)
 @Target({TYPE, METHOD})
 public @interface Secured { 
-    Role[] value() default {};
+    UserRole[] value() default {};
 }

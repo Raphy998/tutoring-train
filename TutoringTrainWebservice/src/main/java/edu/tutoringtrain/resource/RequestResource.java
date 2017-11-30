@@ -50,11 +50,11 @@ import javax.ws.rs.core.SecurityContext;
  * @author Elias
  */
 @Localized
-@Path("/offer")
+@Path("/request")
 @RequestScoped
-public class OfferResource extends AbstractResource {
+public class RequestResource extends AbstractResource {
 
-    private static final EntryType type = EntryType.OFFER; 
+    private static final EntryType type = EntryType.REQUEST; 
     
     @Inject
     UserService userService;
@@ -268,7 +268,7 @@ public class OfferResource extends AbstractResource {
     @Path("/search")
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
-    public Response searchOffers(@Context HttpServletRequest httpServletRequest,
+    public Response searchRequests(@Context HttpServletRequest httpServletRequest,
                     @QueryParam(value = "start") Integer start,
                     @QueryParam(value = "pageSize") Integer pageSize,
                     final String searchStr) throws Exception {
