@@ -18,4 +18,19 @@ public enum UserRole {
     public Character getValue() {
         return value;
     }
+    
+    public static UserRole valueOf(char roleid) {
+        UserRole role = USER;
+        if (roleid == 'A') {
+            role = ADMIN;
+        } else if (roleid == 'M') {
+            role = MODERATOR;
+        }
+        return role;
+    }
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }

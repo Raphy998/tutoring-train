@@ -11,6 +11,7 @@ public class JsonUserViews {
         public static class UpdateOwn {}
         public static class Block {}
         public static class UpdatePassowrd {}
+        public static class UpdateRole {}
     }
     
     public static class In {

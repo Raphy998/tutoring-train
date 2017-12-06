@@ -21,6 +21,7 @@ import at.tutoringtrain.adminclient.io.network.listener.user.RequestOwnUserListe
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestReauthenticateListner;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestRegisterUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetAvatarListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestSetUserRoleListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestTokenValidationListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUnblockUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateAvatarListener;
@@ -539,6 +540,23 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/unblock/" + username, requestCallback);
+    }
+    
+    public boolean requestSetUserRole(RequestSetUserRoleListener listener, User user) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (user == null) {
+            throw new RequiredParameterException(user, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestSetUserRoleListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                getListener().requestSetUserRoleFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.PUT, true, "user/role/" + user.getUsername(), requestCallback, json, dataMapper.toJSON(user, JsonUserViews.Out.UpdateRole.class));
     }
     
     /**

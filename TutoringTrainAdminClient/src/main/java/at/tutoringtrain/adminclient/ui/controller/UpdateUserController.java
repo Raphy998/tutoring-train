@@ -6,9 +6,11 @@ import at.tutoringtrain.adminclient.exception.RequiredParameterException;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
+import at.tutoringtrain.adminclient.io.network.UserRole;
 import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetAvatarListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestSetUserRoleListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUnblockUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateOwnUserListener;
@@ -59,7 +61,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class UpdateUserController implements Initializable, TutoringTrainWindowWithReauthentication, ReauthenticationListener, UserBlockListner, RequestUpdateUserListener, RequestUpdateOwnUserListener, RequestGetAvatarListener, RequestUpdateAvatarListener, RequestUnblockUserListener, RequestResetAvatarListener {
+public class UpdateUserController implements Initializable, TutoringTrainWindowWithReauthentication, ReauthenticationListener, UserBlockListner, RequestUpdateUserListener, RequestUpdateOwnUserListener, RequestGetAvatarListener, RequestUpdateAvatarListener, RequestUnblockUserListener, RequestResetAvatarListener, RequestSetUserRoleListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -98,6 +100,8 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     private JFXButton btnSelectAvatar;
     @FXML
     private JFXButton btnRemoveAvatar;
+    @FXML
+    private JFXComboBox<UserRole> comboRole;
 
     private JFXSnackbar snackbar;
     
@@ -119,6 +123,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     private UserBlockListner userBlockListner;
    
     private User user, temporaryUser;
+    private boolean userRoleChangedHandlerEnabled;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -129,6 +134,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         windowService = ApplicationManager.getWindowService();
         localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
         defaultValueProvider = ApplicationManager.getDefaultValueProvider();
+        userRoleChangedHandlerEnabled = true;
         initializeControls();
         initializeControlValidators();
         displayDefaultAvatar();
@@ -138,6 +144,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     private void initializeControls() {
         snackbar = new JFXSnackbar(pane);
         comboGender.setItems(FXCollections.observableArrayList(dataStorage.getGenders().values()));
+        comboRole.setItems(FXCollections.observableArrayList(UserRole.values()));
         initializeControls(false);
     }
 
@@ -187,6 +194,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             btnUnblock.setDisable(disable);
             btnSelectAvatar.setDisable(disable);
             btnRemoveAvatar.setDisable(disable);
+            comboRole.setDisable(disable);
             ivAvatar.setDisable(disable);
             spinner.setVisible(disable);
         });
@@ -235,12 +243,15 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         txtEmail.setText(user.getEmail());
         txtEducation.setText(user.getEducation());
         comboGender.getSelectionModel().select(dataStorage.getGender(user.getGender()));
+        userRoleChangedHandlerEnabled = false;
+        comboRole.getSelectionModel().select(UserRole.valueOf(user.getRole()));
+        userRoleChangedHandlerEnabled = true;
         initializeControls(user.isCurrentUser());
         if (user.getAvatar() != null) {
             displayAvatar(user.getAvatar());
         } else {
             loadAvatarFromWebService();
-        }
+        }    
     }
     
     private void loadAvatarFromWebService() {
@@ -385,6 +396,24 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             }
         }
     }
+    
+    @FXML
+    void onRoleSelected(ActionEvent event) {
+        if (userRoleChangedHandlerEnabled) {
+            disableControls(true);
+            try {          
+                temporaryUser = new User();
+                temporaryUser.setUsername(user.getUsername());
+                temporaryUser.setRole(comboRole.getSelectionModel().getSelectedItem().getValue());
+                if (!communicator.requestSetUserRole(this, temporaryUser)) {
+                    disableControls(false);
+                }
+            } catch (Exception ex) {
+                disableControls(false);
+                logger.error("onRoleSelected: excpetion occurred", ex);
+            }
+        }
+    }
 
     @FXML
     void onBtnClose(ActionEvent event) {
@@ -461,6 +490,24 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         if (result.isSuccessful()) {
             user.setBlock(null);
             userUnblocked();
+        }
+    }
+    
+    @Override
+    public void requestSetUserRoleFinished(RequestResult result) {
+        disableControls(false);
+        if (result.isSuccessful()) {   
+            user.setRole(temporaryUser.getRole());
+            temporaryUser = null;
+            notifyUserDataChangedListener(user);
+            displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageUserRoleSuccessfullySet")));
+        } else {
+            Platform.runLater(() -> {
+                userRoleChangedHandlerEnabled = false;
+                comboRole.getSelectionModel().select(UserRole.valueOf(user.getRole()));
+                userRoleChangedHandlerEnabled = true;
+            });
+            displayMessage(result.getMessageContainer());
         }
     }
 

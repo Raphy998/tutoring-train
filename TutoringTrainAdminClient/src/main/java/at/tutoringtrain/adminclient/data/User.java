@@ -57,7 +57,8 @@ public final class User extends Entity implements Cloneable {
     
     @JsonView ({
         JsonUserViews.In.Register.class,
-        JsonUserViews.In.Get.class
+        JsonUserViews.In.Get.class,
+        JsonUserViews.Out.UpdateRole.class
     })
     private Character role;
     
