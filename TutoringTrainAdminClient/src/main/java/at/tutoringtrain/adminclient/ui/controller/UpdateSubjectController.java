@@ -87,11 +87,7 @@ public class UpdateSubjectController implements Initializable, TutoringTrainWind
         logger.debug("UpdateSubjectController initialized"); 
     }    
     
-    @FXML
-    void onBtnClose(ActionEvent event) {
-        closeWindow();
-    }
-
+    
     @FXML
     void onBtnUpdate(ActionEvent event)  {
         if (!StringUtils.isBlank(getDEName()) || !StringUtils.isBlank(getENName())) {

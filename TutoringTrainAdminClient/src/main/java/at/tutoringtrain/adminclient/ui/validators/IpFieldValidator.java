@@ -5,14 +5,14 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.control.TextInputControl;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.validator.routines.InetAddressValidator;
 import org.apache.commons.validator.routines.RegexValidator;
 /**
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class EmailFieldValidator extends TextFieldValidator {
-    public EmailFieldValidator(ValidationPattern validationPattern) {
+public class IpFieldValidator extends TextFieldValidator {
+    public IpFieldValidator(ValidationPattern validationPattern) {
         super(validationPattern);
     }
     
@@ -25,7 +25,7 @@ public class EmailFieldValidator extends TextFieldValidator {
         if (srcControl.get() instanceof TextInputControl) {
             textField = (TextInputControl) srcControl.get();
             regexValidator = new RegexValidator(validationPattern.getPattern(), false);
-            if (textField.getText() == null || StringUtils.isBlank(textField.getText()) || !regexValidator.isValid(textField.getText()) || !EmailValidator.getInstance().isValid(textField.getText())) {
+            if (textField.getText() == null || StringUtils.isBlank(textField.getText()) || !regexValidator.isValid(textField.getText()) || !InetAddressValidator.getInstance().isValidInet4Address(textField.getText())) {
                 hasErrors.set(true);
             } else {
                 hasErrors.set(false);

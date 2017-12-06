@@ -194,7 +194,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     void onBtnSettings(ActionEvent event) {
         try {
-            
+            windowService.openSettingsWindow();
         } catch (Exception ex) {
             logger.error("Exception", ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));

@@ -16,6 +16,7 @@ import at.tutoringtrain.adminclient.ui.controller.BlockUserController;
 import at.tutoringtrain.adminclient.ui.controller.ReauthenticationController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterUserController;
+import at.tutoringtrain.adminclient.ui.controller.SettingsController;
 import at.tutoringtrain.adminclient.ui.controller.SubjectListItemController;
 import at.tutoringtrain.adminclient.ui.controller.UpdateSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.UpdateUserController;
@@ -247,6 +248,23 @@ public class WindowService {
         loader = new FXMLLoader(getClass().getResource("/fxml/AllSubjects.fxml"), resourceBundle);
         root = loader.load();
         controller = (AllSubjectsController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openSettingsWindow() throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        SettingsController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/Settings.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (SettingsController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultIcon());

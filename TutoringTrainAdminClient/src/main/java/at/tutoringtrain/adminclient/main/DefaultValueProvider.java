@@ -104,6 +104,8 @@ public final class DefaultValueProvider {
         this.defaultValidationPatterns.put("name", new ValidationPattern("^.{1,30}$", "messageValidationName"));
         this.defaultValidationPatterns.put("reason", new ValidationPattern("^.{1,100}$", "messageValidationReason"));
         this.defaultValidationPatterns.put("subjectname", new ValidationPattern("^.{1,25}$", "messageValidationSubjectName"));
+        this.defaultValidationPatterns.put("serverip", new ValidationPattern("^.+$", "messageValidationServerIp"));
+        this.defaultValidationPatterns.put("serverport", new ValidationPattern("^[1-9][0-9]*$", "messageValidationServerPort"));
     }
     
     private void initializeDefaultAvatar() {

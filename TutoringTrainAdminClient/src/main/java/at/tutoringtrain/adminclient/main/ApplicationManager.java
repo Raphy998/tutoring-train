@@ -42,6 +42,7 @@ public final class ApplicationManager {
     private final ArrayList<UserDataChangedListner> currentUserDataChangedListeners;
     private final Stack<User> currentUser;
     
+    private ApplicationConfiguration temporaryApplicationConfiguration;
     private ApplicationExitListener mainApplicationExitListener;
     
     private ApplicationManager() {
@@ -153,6 +154,10 @@ public final class ApplicationManager {
     public void setLanguage(Language language) {
         applicationConfiguration.setLanguage(language);
     }
+
+    public void setTemporaryApplicationConfiguration(ApplicationConfiguration temporaryApplicationConfiguration) {
+        this.temporaryApplicationConfiguration = temporaryApplicationConfiguration;
+    }
     
     public boolean isTokenFileAvailable() {
         return getFileService().isTokenFileAvailable();
@@ -185,6 +190,12 @@ public final class ApplicationManager {
     
     public void writeConfigFile() throws IOException {
         getFileService().writeConfig(applicationConfiguration);
+    }
+    
+    public void writeTemporaryConfigFile() throws IOException {
+        if (temporaryApplicationConfiguration != null) {
+            getFileService().writeConfig(temporaryApplicationConfiguration);
+        }
     }
     
     public boolean deleteConfigFile() {
