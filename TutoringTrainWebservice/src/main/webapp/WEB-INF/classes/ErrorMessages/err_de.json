@@ -39,5 +39,6 @@
     "38": "Rolle eines Admins kann nicht geändert werden",
     "39": "Eigene Rolle kann nicht geändert werden",
     "40": "Nachfrage (id=%s) von Benutzer '%s' nicht gefunden",
-    "41": "Nachfrage (id=%s) nicht gefunden"
+    "41": "Nachfrage (id=%s) nicht gefunden",
+    "42": "Es ist ein unerwarteter Fehler mit dem Chatserver aufgetreten"
 }

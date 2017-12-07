@@ -7,6 +7,7 @@ package edu.tutoringtrain.data.dao;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -15,8 +16,6 @@ import javax.persistence.PersistenceContext;
  */
 @ApplicationScoped
 public class AbstractService {
-    @PersistenceContext(unitName = "aphrodite4")
+    @PersistenceContext(unitName = "jtaUnit")
     protected EntityManager em;
-    
-    
 }

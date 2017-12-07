@@ -23,9 +23,11 @@ import javax.ws.rs.core.Response;
 import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.ResettableUserProp;
 import edu.tutoringtrain.data.dao.EmailService;
+import edu.tutoringtrain.data.dao.XMPPService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
+import edu.tutoringtrain.data.exceptions.ConstraintViolationException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.search.SearchCriteria;
@@ -33,17 +35,13 @@ import edu.tutoringtrain.data.search.user.UserSearchCriteriaDeserializer;
 import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.User;
-import edu.tutoringtrain.utils.ImageUtils;
 import edu.tutoringtrain.utils.Views;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.transaction.TransactionalException;
 import javax.ws.rs.DELETE;
@@ -56,7 +54,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-
 /**
  * REST Web Service
  *
@@ -70,6 +67,8 @@ public class UserResource extends AbstractResource {
     UserService userService;
     @Inject
     EmailService emailService;
+    @Inject
+    XMPPService xmppService;
     
     @POST
     @Path("/register")
@@ -81,6 +80,7 @@ public class UserResource extends AbstractResource {
         Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
+        ErrorBuilder errBuilder = new ErrorBuilder();
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Register.class).forType(User.class).readValue(userStr);
@@ -91,11 +91,12 @@ public class UserResource extends AbstractResource {
                 //if user doesn't have a password set, generate one and send it to the given email
                 String genPassword = RandomStringUtils.randomAlphanumeric(8);
                 userIn.setPassword(DigestUtils.md5Hex(genPassword));
-                userOut = userService.registerUser(userIn);
+                
+                userOut = userService.registerUser(userIn, errBuilder);
                 emailService.sendWelcomeEmail(userOut, false, genPassword);
             }
             else {
-                userOut = userService.registerUser(userIn);
+                userOut = userService.registerUser(userIn, errBuilder);
                 emailService.sendWelcomeEmail(userIn, false);
             }
             
@@ -105,9 +106,13 @@ public class UserResource extends AbstractResource {
             try {
                 handleException(ex, response, lang);
             }
-            catch (TransactionalException rbex) {
-                response.status(Response.Status.CONFLICT);
-                response.entity(getError(rbex, userIn).withLang(lang).build());
+            catch (TransactionalException e) {
+                if (errBuilder.getErrorCode() == Error.USERNAME_CONFLICT || errBuilder.getErrorCode() == Error.EMAIL_CONFLICT) 
+                    response.status(Response.Status.CONFLICT);
+                else 
+                    response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                
+                response.entity(errBuilder.withLang(lang).build());
             }
             catch (Exception e) {
                 unknownError(e, response, lang);
@@ -116,6 +121,7 @@ public class UserResource extends AbstractResource {
  
         return response.build();
     }
+    
     
     @Secured
     @PUT
@@ -129,20 +135,25 @@ public class UserResource extends AbstractResource {
         Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
+        ErrorBuilder errBuilder = new ErrorBuilder();
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Update.class).forType(User.class).readValue(userStr);
             userIn.setUsername(securityContext.getUserPrincipal().getName());
             checkConstraints(userIn, lang);
-            userService.updateUser(userIn);
+            userService.updateUser(userIn, errBuilder);
         } 
         catch (Exception ex) {
             try {
                 handleException(ex, response, lang);
             }
-            catch (TransactionalException rbex) {
-                response.status(Response.Status.CONFLICT);
-                response.entity(getError(rbex, userIn).withLang(lang).build());
+            catch (TransactionalException e) {
+                if (errBuilder.getErrorCode() == Error.USERNAME_CONFLICT || errBuilder.getErrorCode() == Error.EMAIL_CONFLICT) 
+                    response.status(Response.Status.CONFLICT);
+                else 
+                    response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                
+                response.entity(errBuilder.withLang(lang).build());
             }
             catch (Exception e) {
                 unknownError(e, response, lang);
@@ -163,19 +174,24 @@ public class UserResource extends AbstractResource {
         Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
         User userIn = null;
+        ErrorBuilder errBuilder = new ErrorBuilder();
         
         try {
             userIn = getMapper().readerWithView(Views.User.In.Update.class).forType(User.class).readValue(userStr);
             checkConstraints(userIn, lang);
-            userService.updateUser(userIn);
+            userService.updateUser(userIn, errBuilder);
         } 
         catch (Exception ex) {
             try {
                 handleException(ex, response, lang);
             }
-            catch (TransactionalException rbex) {
-                response.status(Response.Status.CONFLICT);
-                response.entity(getError(rbex, userIn).withLang(lang).build());
+            catch (TransactionalException e) {
+                if (errBuilder.getErrorCode() == Error.EMAIL_CONFLICT) 
+                    response.status(Response.Status.CONFLICT);
+                else 
+                    response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                
+                response.entity(errBuilder.withLang(lang).build());
             }
             catch (Exception e) {
                 unknownError(e, response, lang);
@@ -412,28 +428,6 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    private static ErrorBuilder getError(TransactionalException ex, User userIn) {
-        ErrorBuilder err;
-        try {
-            SQLIntegrityConstraintViolationException innerEx = (SQLIntegrityConstraintViolationException) ex.getCause().getCause().getCause().getCause();
-            
-            if (innerEx.getMessage().contains("U_USER_EMAIL")) {
-                err = new ErrorBuilder(Error.EMAIL_CONFLICT).withParams(userIn.getEmail());
-            }
-            else if (innerEx.getMessage().contains("PK_TUSER")) {
-                err = new ErrorBuilder(Error.USERNAME_CONFLICT).withParams(userIn.getUsername());
-            }
-            else {
-                err = new ErrorBuilder(Error.UNKNOWN).withParams(innerEx.getMessage());
-            }
-        }
-        catch (Exception e) {
-            err = new ErrorBuilder(Error.UNKNOWN).withParams(e.getMessage());
-        }
-        
-        return err;
-    }
-    
     @Secured
     @POST
     @Path("/avatar/B64")
@@ -442,16 +436,7 @@ public class UserResource extends AbstractResource {
                     InputStream uploadedInputStream,
                     @Context SecurityContext securityContext) throws Exception {
         try {
-            BufferedImage bi = ImageIO.read(uploadedInputStream);
-            bi = ImageUtils.getScaledImage(bi, 360);
-
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                ImageIO.write(bi, "jpg", baos);
-                baos.flush();
-                byte[] imageInByte = baos.toByteArray();
-
-                userService.setAvatar(securityContext.getUserPrincipal().getName(), imageInByte);
-            }
+            userService.setAvatar(securityContext.getUserPrincipal().getName(), uploadedInputStream, "jpg");
             return Response.ok().build();
         }      
         finally {
@@ -482,19 +467,8 @@ public class UserResource extends AbstractResource {
                 throw new UnsupportedDataTypeException("only png and jpg are supported");
             }
             else {
-                BufferedImage bi = ImageIO.read(uploadedInputStream);
-                bi = ImageUtils.getScaledImage(bi, 360);
-
-                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                    ImageIO.write(bi, imgType, baos);
-                    baos.flush();
-                    byte[] imageInByte = baos.toByteArray();
-                    
-                    userService.setAvatar(securityContext.getUserPrincipal().getName(),
-                            imageInByte);
-                }
+                userService.setAvatar(securityContext.getUserPrincipal().getName(), uploadedInputStream, imgType);
             }
-            
         } 
         catch (Exception ex) {
             try {
@@ -512,7 +486,6 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured
     @GET
     @Path("/avatar/{username}")
     @Produces("image/jpg")
@@ -526,7 +499,6 @@ public class UserResource extends AbstractResource {
             byte[] avatar = userService.getAvatar(username);
             
             if (avatar != null) {
-                
                 final InputStream bigInputStream = new ByteArrayInputStream(avatar);
                 response.type("image/jpg").entity(bigInputStream);
             }
@@ -632,30 +604,6 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured
-    @GET
-    @Path("/testNL/{username}")
-    @Produces(value = MediaType.APPLICATION_JSON)
-    public Response testNL(@Context HttpServletRequest httpServletRequeste,
-                            @PathParam("username") String username) throws Exception {
-        
-        Response.ResponseBuilder response = Response.status(Response.Status.OK);
-
-        try {
-            emailService.sendNewsletter(userService.getUserByUsername(username), false);
-        } 
-        catch (Exception ex) {
-            try {
-                handleException(ex, response, Language.EN);
-            }
-            catch (Exception e) {
-                unknownError(e, response, Language.EN);
-            } 
-        }
- 
-        return response.build();
-    }
-    
     @Secured(UserRole.ADMIN)
     @PUT
     @Path("/role/{username}")
@@ -689,6 +637,54 @@ public class UserResource extends AbstractResource {
             }
             catch (Exception e) {
                 unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/testNL/{username}")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response testNL(@Context HttpServletRequest httpServletRequest,
+                            @PathParam("username") String username) throws Exception {
+        
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            emailService.sendNewsletter(userService.getUserByUsername(username), false);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, Language.EN);
+            }
+            catch (Exception e) {
+                unknownError(e, response, Language.EN);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @GET
+    @Path("/xmpp/{username}")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getXMPPCredentials(@Context HttpServletRequest httpServletRequest,
+                            @PathParam("username") String username) throws Exception {
+        
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            User u = userService.getUserByUsername(username);
+            response.entity(xmppService.getCredentials(username, u.getPassword()));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, Language.EN);
+            }
+            catch (Exception e) {
+                unknownError(e, response, Language.EN);
             } 
         }
  

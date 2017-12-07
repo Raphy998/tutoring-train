@@ -56,7 +56,20 @@ public class ErrorBuilder {
             ex.printStackTrace();
         }
         
-        return retVal;
-                
+        return retVal; 
     }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public List<Object> getParams() {
+        return params;
+    }
+
+    public Language getLang() {
+        return lang;
+    }
+    
+    
 }

@@ -8,6 +8,11 @@ package edu.tutoringtrain.utils;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -32,5 +37,22 @@ public class ImageUtils {
         g2.drawImage(srcImg, 0, 0, newWidth, newHeight, null);
         g2.dispose();
         return resizedImg;
+    }
+    
+    public static byte[] getScaledImage(byte[] imgData, String imgType, int maxWH) throws IOException{
+        return getScaledImage(new ByteArrayInputStream(imgData), imgType, maxWH);
+    }
+    
+    public static byte[] getScaledImage(InputStream imgIS, String imgType, int maxWH) throws IOException{
+        BufferedImage bi = ImageIO.read(imgIS);
+        bi = ImageUtils.getScaledImage(bi, maxWH);
+
+        byte[] imageInByte;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(bi, imgType, baos);
+            baos.flush();
+            imageInByte = baos.toByteArray();
+        }
+        return imageInByte;
     }
 }

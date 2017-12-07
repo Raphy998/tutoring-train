@@ -28,6 +28,7 @@ import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.exceptions.XMPPException;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -153,6 +154,10 @@ public abstract class AbstractResource {
         }
         catch (SubjectNotActiveException ex) {
             response.status(CustomHttpStatusCodes.SUBJECT_NOT_ACTIVE);
+            response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (XMPPException ex) {
+            response.status(Response.Status.INTERNAL_SERVER_ERROR);
             response.entity(ex.getError().withLang(lang).build());
         }
         catch (Exception e) {

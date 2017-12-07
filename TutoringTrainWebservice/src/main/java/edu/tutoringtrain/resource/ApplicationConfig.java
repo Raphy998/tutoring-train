@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import edu.tutoringtrain.annotations.AuthenticationFilter;
 import edu.tutoringtrain.annotations.LanguageFilter;
-import edu.tutoringtrain.data.dao.TimeService;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
