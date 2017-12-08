@@ -11,9 +11,7 @@ import java.math.BigDecimal;
  *
  * @author Marco Wilscher <marco.wilscher@edu.htl-villach.at>
  */
-public final class User extends Entity implements Cloneable {
-    private static final long serialVersionUID = 1830655504546896238L;
-    
+public final class User {
     @JsonView ({
         JsonUserViews.Out.Register.class, 
         JsonUserViews.In.Register.class, 
