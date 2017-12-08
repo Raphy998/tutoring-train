@@ -45,6 +45,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -123,7 +124,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     private UserBlockListner userBlockListner;
    
     private User user, temporaryUser;
-    private boolean userRoleChangedHandlerEnabled;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -134,7 +134,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         windowService = ApplicationManager.getWindowService();
         localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
         defaultValueProvider = ApplicationManager.getDefaultValueProvider();
-        userRoleChangedHandlerEnabled = true;
         initializeControls();
         initializeControlValidators();
         displayDefaultAvatar();
@@ -242,16 +241,24 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         txtName.setText(user.getName());
         txtEmail.setText(user.getEmail());
         txtEducation.setText(user.getEducation());
-        comboGender.getSelectionModel().select(dataStorage.getGender(user.getGender()));
-        userRoleChangedHandlerEnabled = false;
-        comboRole.getSelectionModel().select(UserRole.valueOf(user.getRole()));
-        userRoleChangedHandlerEnabled = true;
+        comboGender.getSelectionModel().select(dataStorage.getGender(user.getGender()));  
+        if (!UserRole.valueOf(user.getRole()).isHighestPriority()) {
+            comboRole.getItems().remove(UserRole.ROOT);
+        }
+        selectUserRole(user.getRole());
         initializeControls(user.isCurrentUser());
         if (user.getAvatar() != null) {
             displayAvatar(user.getAvatar());
         } else {
             loadAvatarFromWebService();
         }    
+    }
+    
+    private void selectUserRole(Character role) {
+        EventHandler<ActionEvent> eventHandler = comboRole.getOnAction();
+        comboRole.setOnAction(null);
+        comboRole.getSelectionModel().select(UserRole.valueOf(role));
+        comboRole.setOnAction(eventHandler);
     }
     
     private void loadAvatarFromWebService() {
@@ -399,12 +406,16 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     
     @FXML
     void onRoleSelected(ActionEvent event) {
-        if (userRoleChangedHandlerEnabled) {
+        UserRole selectedRole = comboRole.getSelectionModel().getSelectedItem();    
+        if (selectedRole.isHighestPriority()) {
+            selectUserRole(user.getRole());
+            displayMessage(new MessageContainer(MessageCodes.INFO, localizedValueProvider.getString("messageUserRoleRoot")));
+        } else {
             disableControls(true);
             try {          
                 temporaryUser = new User();
                 temporaryUser.setUsername(user.getUsername());
-                temporaryUser.setRole(comboRole.getSelectionModel().getSelectedItem().getValue());
+                temporaryUser.setRole(selectedRole.getValue());
                 if (!communicator.requestSetUserRole(this, temporaryUser)) {
                     disableControls(false);
                 }
@@ -502,11 +513,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             notifyUserDataChangedListener(user);
             displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageUserRoleSuccessfullySet")));
         } else {
-            Platform.runLater(() -> {
-                userRoleChangedHandlerEnabled = false;
-                comboRole.getSelectionModel().select(UserRole.valueOf(user.getRole()));
-                userRoleChangedHandlerEnabled = true;
-            });
+            Platform.runLater(() -> selectUserRole(user.getRole()));
             displayMessage(result.getMessageContainer());
         }
     }
