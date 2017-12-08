@@ -2,6 +2,8 @@ package at.tutoringtrain.adminclient.datamapper;
 
 import at.tutoringtrain.adminclient.data.BlockRequest;
 import at.tutoringtrain.adminclient.data.Gender;
+import at.tutoringtrain.adminclient.data.Offer;
+import at.tutoringtrain.adminclient.data.Request;
 import at.tutoringtrain.adminclient.data.Subject;
 import at.tutoringtrain.adminclient.data.User;
 import at.tutoringtrain.adminclient.io.network.Credentials;
@@ -105,6 +107,54 @@ public class DataMapper {
         return mapper.writerWithView(jsonView).forType(Subject.class).writeValueAsString(subject);
     }
 
+    public Offer toOffer(String json) throws IOException {
+        return mapper.readValue(json, Offer.class);
+    }
+    
+    public Offer toOffer(String json, Class jsonView) throws IOException {
+        return mapper.readerWithView(jsonView).forType(Offer.class).readValue(json);
+    }
+
+    public ArrayList<Offer> toOfferArrayList(String json) throws IOException {
+        return mapper.readValue(json, new TypeReference<ArrayList<Offer>>(){});
+    }
+    
+    public ArrayList<Offer> toOfferArrayList(String json, Class jsonView) throws IOException {
+        return mapper.readerWithView(jsonView).forType(new TypeReference<ArrayList<Offer>>(){}).readValue(json);
+    }
+    
+    public String toJSON(Offer offer) throws JsonProcessingException  {
+        return mapper.writeValueAsString(offer);
+    }
+    
+    public String toJSON(Offer offer, Class jsonView) throws JsonProcessingException  {
+        return mapper.writerWithView(jsonView).forType(Offer.class).writeValueAsString(offer);
+    }
+    
+    public Request toRequest(String json) throws IOException {
+        return mapper.readValue(json, Request.class);
+    }
+    
+    public Request toRequest(String json, Class jsonView) throws IOException {
+        return mapper.readerWithView(jsonView).forType(Request.class).readValue(json);
+    }
+
+    public ArrayList<Request> toRequestArrayList(String json) throws IOException {
+        return mapper.readValue(json, new TypeReference<ArrayList<Request>>(){});
+    }
+    
+    public ArrayList<Request> toRequestArrayList(String json, Class jsonView) throws IOException {
+        return mapper.readerWithView(jsonView).forType(new TypeReference<ArrayList<Request>>(){}).readValue(json);
+    }
+    
+    public String toJSON(Request request) throws JsonProcessingException  {
+        return mapper.writeValueAsString(request);
+    }
+    
+    public String toJSON(Request request, Class jsonView) throws JsonProcessingException  {
+        return mapper.writerWithView(jsonView).forType(Offer.class).writeValueAsString(request);
+    }
+    
     public MessageContainer toMessageContainer(String json) {
         MessageContainer messageContainer;
         try {
