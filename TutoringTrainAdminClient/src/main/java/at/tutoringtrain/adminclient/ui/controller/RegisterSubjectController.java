@@ -1,6 +1,6 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.Subject;
+import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;

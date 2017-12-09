@@ -1,7 +1,7 @@
 package at.tutoringtrain.adminclient.main;
 
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.SubjectListItemController;
 import at.tutoringtrain.adminclient.ui.controller.UserListItemController;

@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.Gender;
-import at.tutoringtrain.adminclient.datamapper.DataMapper;
-import at.tutoringtrain.adminclient.datamapper.JsonUserViews;
+import at.tutoringtrain.adminclient.data.user.Gender;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.Credentials;
@@ -187,6 +187,15 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
         }
     }
     
+    @FXML
+    void onBtnDebugSettings(ActionEvent event) {
+        try {
+            windowService.openSettingsWindow(true);
+        } catch (Exception ex) {
+            logger.error("Login failed", ex);
+        }
+    }
+    
     @Override
     public void requestAuthenticateFinished(RequestResult result) {
         if (result.isSuccessful()) {
@@ -250,7 +259,7 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
     public void requestOwnUserFinished(RequestResult result) {
         if (result.isSuccessful()) {
             try {
-                applicationManager.setCurrentUser(ApplicationManager.getDataMapper().toUser(result.getData(), JsonUserViews.In.Get.class));
+                applicationManager.setCurrentUser(ApplicationManager.getDataMapper().toUser(result.getData(), DataMappingViews.User.In.Get.class));
                 loadedOwnUser = true;
             } catch (IOException ex) {
                 logger.error("Mapping own user failed");

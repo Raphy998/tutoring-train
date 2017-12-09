@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.User;
-import at.tutoringtrain.adminclient.datamapper.DataMapper;
-import at.tutoringtrain.adminclient.datamapper.JsonUserViews;
+import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
@@ -147,7 +147,7 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
                 try {
                     dataStorage.clearUsers();
                     listItems.clear();
-                    for (User user : dataMapper.toUserArrayList(result.getData(), JsonUserViews.In.Get.class)) {
+                    for (User user : dataMapper.toUserArrayList(result.getData(), DataMappingViews.User.In.Get.class)) {
                         dataStorage.addUser(user);
                         listItems.add(listItemFactory.generateUserListItem(user, this));
                     } 

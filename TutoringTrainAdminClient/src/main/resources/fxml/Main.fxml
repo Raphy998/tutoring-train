@@ -55,7 +55,7 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnAllOffers" alignment="CENTER" buttonType="RAISED" disable="true" onAction="#onBtnAllOffers" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%allOffers">
+            <JFXButton fx:id="btnAllOffers" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllOffers" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%allOffers">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>

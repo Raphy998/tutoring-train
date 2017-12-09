@@ -1,6 +1,8 @@
-package at.tutoringtrain.adminclient.data;
+package at.tutoringtrain.adminclient.data.entry;
 
-import at.tutoringtrain.adminclient.datamapper.DataMappingViews;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.math.BigDecimal;
@@ -42,7 +44,7 @@ public abstract class Entry {
         DataMappingViews.Entry.In.Get.class,
         DataMappingViews.Entry.In.Create.class
     })
-    private Character isactive;
+    private boolean isactive;
        
     @JsonView({
         DataMappingViews.Entry.In.Get.class,
@@ -96,11 +98,11 @@ public abstract class Entry {
         this.postedon = postedon;
     }
 
-    public Character getIsactive() {
+    public boolean getIsactive() {
         return isactive;
     }
 
-    public void setIsactive(Character isactive) {
+    public void setIsactive(boolean isactive) {
         this.isactive = isactive;
     }
 

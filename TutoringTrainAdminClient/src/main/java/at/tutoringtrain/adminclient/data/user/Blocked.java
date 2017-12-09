@@ -1,6 +1,6 @@
-package at.tutoringtrain.adminclient.data;
+package at.tutoringtrain.adminclient.data.user;
 
-import at.tutoringtrain.adminclient.datamapper.JsonUserViews;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.io.Serializable;
 import java.util.Date;
@@ -8,11 +8,11 @@ import java.util.Date;
 public class Blocked implements Serializable {
     private static final long serialVersionUID = 1L;
     @JsonView({
-        JsonUserViews.In.Get.class
+        DataMappingViews.User.In.Get.class
     })
     private String reason;
     @JsonView({
-        JsonUserViews.In.Get.class
+        DataMappingViews.User.In.Get.class
     })
     private Date duedate;
 

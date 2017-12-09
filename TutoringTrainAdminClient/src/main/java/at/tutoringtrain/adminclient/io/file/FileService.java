@@ -1,6 +1,6 @@
 package at.tutoringtrain.adminclient.io.file;
 
-import at.tutoringtrain.adminclient.datamapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.exception.InitializationFailedException;
 import at.tutoringtrain.adminclient.main.ApplicationConfiguration;
 import at.tutoringtrain.adminclient.main.ApplicationManager;

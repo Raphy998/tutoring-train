@@ -1,4 +1,4 @@
-package at.tutoringtrain.adminclient.data;
+package at.tutoringtrain.adminclient.data.user;
 
 import at.tutoringtrain.adminclient.user.BlockDuration;
 import com.fasterxml.jackson.annotation.JsonFormat;

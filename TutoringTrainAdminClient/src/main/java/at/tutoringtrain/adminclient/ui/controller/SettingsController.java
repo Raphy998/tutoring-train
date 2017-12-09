@@ -56,7 +56,7 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     private IpFieldValidator validatorServerIPField;
     private TextFieldValidator validatorServerPortField;
     
-    
+    private boolean writeImmediately;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -119,18 +119,31 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     private int getServerPort() {
         return Integer.parseInt(txtServerPort.getText());
     }
+
+    public void setWriteImmediately(boolean writeImmediately) {
+        this.writeImmediately = writeImmediately;
+        comboLanguage.setDisable(writeImmediately);
+    }
+
+    public boolean isWriteImmediately() {
+        return writeImmediately;
+    }
     
     @FXML
     void onBtnSave(ActionEvent event) {
         if (validateInputControls()) {
             try {
-                ApplicationConfiguration temporaryApplicationConfiguration = new ApplicationConfiguration();  
+                ApplicationConfiguration temporaryApplicationConfiguration = new ApplicationConfiguration();
                 temporaryApplicationConfiguration.setLanguage(getLanguage());
                 temporaryApplicationConfiguration.setServerIp(getServerIp());
-                temporaryApplicationConfiguration.setServerPort(getServerPort());
-                applicationManager.setTemporaryApplicationConfiguration(temporaryApplicationConfiguration);
-                applicationManager.writeTemporaryConfigFile();
-                displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageSettingsSaved")));
+                temporaryApplicationConfiguration.setServerPort(getServerPort());           
+                if (writeImmediately) {
+                    applicationManager.getApplicationConfiguration().apply(temporaryApplicationConfiguration);
+                } else {
+                    applicationManager.setTemporaryApplicationConfiguration(temporaryApplicationConfiguration);
+                    applicationManager.writeTemporaryConfigFile();
+                }
+                displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString(writeImmediately ? "messageSettingsSavedWI" : "messageSettingsSaved")));
             } catch (IOException ioex) {
                 logger.error("onBtnUpdate: excpetion occurred", ioex);
             }

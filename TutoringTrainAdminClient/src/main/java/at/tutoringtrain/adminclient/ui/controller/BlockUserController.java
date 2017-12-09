@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.BlockRequest;
-import at.tutoringtrain.adminclient.data.Blocked;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.BlockRequest;
+import at.tutoringtrain.adminclient.data.user.Blocked;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;

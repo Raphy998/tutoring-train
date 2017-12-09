@@ -1,10 +1,10 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
-import at.tutoringtrain.adminclient.io.network.UserRole;
+import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetAvatarListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DataStorage;

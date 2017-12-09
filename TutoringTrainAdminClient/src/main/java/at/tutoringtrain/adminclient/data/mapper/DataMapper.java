@@ -1,11 +1,11 @@
-package at.tutoringtrain.adminclient.datamapper;
+package at.tutoringtrain.adminclient.data.mapper;
 
-import at.tutoringtrain.adminclient.data.BlockRequest;
-import at.tutoringtrain.adminclient.data.Gender;
-import at.tutoringtrain.adminclient.data.Offer;
-import at.tutoringtrain.adminclient.data.Request;
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.BlockRequest;
+import at.tutoringtrain.adminclient.data.user.Gender;
+import at.tutoringtrain.adminclient.data.entry.Offer;
+import at.tutoringtrain.adminclient.data.entry.Request;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.io.network.Credentials;
 import at.tutoringtrain.adminclient.main.ApplicationConfiguration;
 import at.tutoringtrain.adminclient.main.MessageCodes;

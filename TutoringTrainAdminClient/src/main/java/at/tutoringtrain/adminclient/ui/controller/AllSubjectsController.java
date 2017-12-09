@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.datamapper.DataMapper;
-import at.tutoringtrain.adminclient.datamapper.JsonSubjectViews;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
@@ -151,7 +151,7 @@ public class AllSubjectsController implements Initializable, TutoringTrainWindow
                 try {
                     dataStorage.clearSubjects();
                     listItems.clear();
-                    for (Subject subject : dataMapper.toSubjectArrayList(result.getData(), JsonSubjectViews.In.Get.class)) {
+                    for (Subject subject : dataMapper.toSubjectArrayList(result.getData(), DataMappingViews.Subject.In.Get.class)) {
                         dataStorage.addSubject(subject);
                         listItems.add(listItemFactory.generateSubjectListItem(subject, this, this));
                     } 

@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.main;
 
-import at.tutoringtrain.adminclient.data.Gender;
+import at.tutoringtrain.adminclient.data.user.Gender;
 import at.tutoringtrain.adminclient.internationalization.Language;
-import at.tutoringtrain.adminclient.io.network.UserRole;
+import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.security.HashAlgorithm;
 import at.tutoringtrain.adminclient.ui.validators.ValidationPattern;
 import at.tutoringtrain.adminclient.user.BlockDuration;

@@ -1,6 +1,6 @@
-package at.tutoringtrain.adminclient.data;
+package at.tutoringtrain.adminclient.data.subject;
 
-import at.tutoringtrain.adminclient.datamapper.JsonSubjectViews;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.math.BigDecimal;
 
@@ -10,32 +10,35 @@ import java.math.BigDecimal;
  */
 public class Subject {
     @JsonView({
-        JsonSubjectViews.In.Register.class,
-        JsonSubjectViews.In.Get.class,
-        JsonSubjectViews.Out.Update.class,
-        JsonSubjectViews.Out.UpdateState.class
+        DataMappingViews.Subject.In.Register.class,
+        DataMappingViews.Subject.In.Get.class,
+        DataMappingViews.Subject.Out.Update.class,
+        DataMappingViews.Subject.Out.UpdateState.class,
+        DataMappingViews.Entry.In.Get.class
     })
     private BigDecimal id;
     @JsonView({
-        JsonSubjectViews.In.Get.class,
-        JsonSubjectViews.Out.Register.class,
-        JsonSubjectViews.Out.Update.class
+        DataMappingViews.Subject.In.Get.class,
+        DataMappingViews.Subject.Out.Register.class,
+        DataMappingViews.Subject.Out.Update.class
     })
     private String dename;
     @JsonView({
-        JsonSubjectViews.In.Get.class,
-        JsonSubjectViews.Out.Register.class,
-        JsonSubjectViews.Out.Update.class
+        DataMappingViews.Subject.In.Get.class,
+        DataMappingViews.Subject.Out.Register.class,
+        DataMappingViews.Subject.Out.Update.class
     })
     private String enname;
     @JsonView({
-        JsonSubjectViews.In.Get.class,
+        DataMappingViews.Subject.In.Get.class,
+        DataMappingViews.Entry.In.Get.class
     })
     private String name;
     @JsonView({
-        JsonSubjectViews.In.Get.class,
-        JsonSubjectViews.Out.Update.class,
-        JsonSubjectViews.Out.UpdateState.class
+        DataMappingViews.Subject.In.Get.class,
+        DataMappingViews.Subject.Out.Update.class,
+        DataMappingViews.Subject.Out.UpdateState.class,
+        DataMappingViews.Entry.In.Get.class
     })
     private boolean isactive;
 
@@ -89,5 +92,10 @@ public class Subject {
 
     public void setIsactive(boolean isactive) {
         this.isactive = isactive;
+    }
+
+    @Override
+    public String toString() {
+        return "Subject{" + "id=" + id + ", dename=" + dename + ", enname=" + enname + ", name=" + name + ", isactive=" + isactive + '}';
     }
 }

@@ -1,4 +1,4 @@
-package at.tutoringtrain.adminclient.data;
+package at.tutoringtrain.adminclient.data.entry;
 
 /**
  *

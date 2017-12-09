@@ -1,6 +1,6 @@
-package at.tutoringtrain.adminclient.data;
+package at.tutoringtrain.adminclient.data.user;
 
-import at.tutoringtrain.adminclient.datamapper.JsonUserViews;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.security.PasswordHashGenerator;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -13,64 +13,67 @@ import java.math.BigDecimal;
  */
 public final class User {
     @JsonView ({
-        JsonUserViews.Out.Register.class, 
-        JsonUserViews.In.Register.class, 
-        JsonUserViews.In.Get.class, 
-        JsonUserViews.Out.Update.class,
-        JsonUserViews.Out.UpdatePassowrd.class
+        DataMappingViews.User.Out.Register.class, 
+        DataMappingViews.User.In.Register.class, 
+        DataMappingViews.User.In.Get.class, 
+        DataMappingViews.User.Out.Update.class,
+        DataMappingViews.User.Out.UpdatePassowrd.class,
+        DataMappingViews.Entry.In.Get.class
     })
     private String username;
     
     @JsonView ({
-        JsonUserViews.Out.Register.class,
-        JsonUserViews.In.Register.class,
-        JsonUserViews.In.Get.class,
-        JsonUserViews.Out.Update.class,
-        JsonUserViews.Out.UpdateOwn.class
+        DataMappingViews.User.Out.Register.class,
+        DataMappingViews.User.In.Register.class,
+        DataMappingViews.User.In.Get.class,
+        DataMappingViews.User.Out.Update.class,
+        DataMappingViews.User.Out.UpdateOwn.class,
+        DataMappingViews.Entry.In.Get.class,
+        DataMappingViews.Entry.In.Create.class
     })
     private String name;
     
     @JsonView ({
-        JsonUserViews.Out.Register.class,
-        JsonUserViews.In.Register.class,
-        JsonUserViews.In.Get.class,
-        JsonUserViews.Out.Update.class,
-        JsonUserViews.Out.UpdateOwn.class
+        DataMappingViews.User.Out.Register.class,
+        DataMappingViews.User.In.Register.class,
+        DataMappingViews.User.In.Get.class,
+        DataMappingViews.User.Out.Update.class,
+        DataMappingViews.User.Out.UpdateOwn.class
     })
     private Character gender;
     
     @JsonView ({
-        JsonUserViews.Out.UpdateOwn.class
+        DataMappingViews.User.Out.UpdateOwn.class
     })
     private String password;
     
     @JsonView ({
-        JsonUserViews.Out.Register.class,
-        JsonUserViews.In.Register.class,
-        JsonUserViews.In.Get.class,
-        JsonUserViews.Out.Update.class,
-        JsonUserViews.Out.UpdateOwn.class
+        DataMappingViews.User.Out.Register.class,
+        DataMappingViews.User.In.Register.class,
+        DataMappingViews.User.In.Get.class,
+        DataMappingViews.User.Out.Update.class,
+        DataMappingViews.User.Out.UpdateOwn.class
     })
     private String email;
     
     @JsonView ({
-        JsonUserViews.In.Register.class,
-        JsonUserViews.In.Get.class,
-        JsonUserViews.Out.UpdateRole.class
+        DataMappingViews.User.In.Register.class,
+        DataMappingViews.User.In.Get.class,
+        DataMappingViews.User.Out.UpdateRole.class
     })
     private Character role;
     
     @JsonView ({
-       JsonUserViews.Out.Register.class,
-       JsonUserViews.In.Register.class,
-       JsonUserViews.In.Get.class,
-       JsonUserViews.Out.Update.class,
-       JsonUserViews.Out.UpdateOwn.class
+       DataMappingViews.User.Out.Register.class,
+       DataMappingViews.User.In.Register.class,
+       DataMappingViews.User.In.Get.class,
+       DataMappingViews.User.Out.Update.class,
+       DataMappingViews.User.Out.UpdateOwn.class
     })
     private String education;
     
     @JsonView ({
-        JsonUserViews.In.Get.class
+        DataMappingViews.User.In.Get.class
     })
     private Blocked block;
     
@@ -169,14 +172,14 @@ public final class User {
 
     public void setBlock(Blocked block) {
         this.block = block;
+    }  
+    
+    public boolean isCurrentUser() {
+        return ApplicationManager.getInstance().isCurrentUser(username);
     }
 
     @Override
     public String toString() {
-        return super.toString() + ": " + username + ", " + name + ", " + gender + ", " + education + ", " + email;
-    }    
-    
-    public boolean isCurrentUser() {
-        return ApplicationManager.getInstance().isCurrentUser(username);
+        return "User {" + "username=" + username + ", name=" + name + ", gender=" + gender + ", email=" + email + ", role=" + role + ", education=" + education + ", averagerating=" + averagerating + '}';
     }
 }

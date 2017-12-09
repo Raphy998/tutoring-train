@@ -1,7 +1,7 @@
 package at.tutoringtrain.adminclient.ui;
 
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
@@ -258,6 +258,10 @@ public class WindowService {
     }
     
     public void openSettingsWindow() throws Exception {
+        openSettingsWindow(false);
+    }
+    
+    public void openSettingsWindow(boolean immediately) throws Exception {
         Parent root;
         Stage stage;
         FXMLLoader loader;
@@ -270,6 +274,7 @@ public class WindowService {
         stage.getIcons().add(defaultValueProvider.getDefaultIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
+        controller.setWriteImmediately(immediately);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
     }

@@ -1,6 +1,6 @@
 package at.tutoringtrain.adminclient.ui.listener;
 
-import at.tutoringtrain.adminclient.data.Subject;
+import at.tutoringtrain.adminclient.data.subject.Subject;
 
 /**
  *

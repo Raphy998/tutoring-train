@@ -1,12 +1,12 @@
 package at.tutoringtrain.adminclient.main;
 
-import at.tutoringtrain.adminclient.data.User;
-import at.tutoringtrain.adminclient.datamapper.DataMapper;
+import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.file.FileService;
 import at.tutoringtrain.adminclient.io.network.Communicator;
-import at.tutoringtrain.adminclient.io.network.UserRole;
+import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.ApplicationExitListener;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;

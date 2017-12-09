@@ -1,4 +1,4 @@
-package at.tutoringtrain.adminclient.io.network;
+package at.tutoringtrain.adminclient.data.user;
 
 /**
  *

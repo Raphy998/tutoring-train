@@ -1,10 +1,15 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.entry.Request;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
+import at.tutoringtrain.adminclient.io.network.RequestResult;
 import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
@@ -20,6 +25,7 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -36,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindowWithReauthentication, ReauthenticationListener, UserDataChangedListner {
+public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindowWithReauthentication, ReauthenticationListener, UserDataChangedListner, RequestNewestRequestsListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -107,7 +113,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     void onBtnAllOffers(ActionEvent event) {
         try {
-            
+
         } catch (Exception ex) {
             logger.error("Exception", ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
@@ -233,6 +239,31 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @Override
     public void closeWindow() {
         windowService.closeWindow(pane);
+    }
+
+    @Override
+    public void requestFailed(RequestResult result) {
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
+        logger.error("Request failed with status code:" + result.getStatusCode());
+        logger.error(result.getMessageContainer().toString());
+    }
+
+    @Override
+    public void requestGetNewestRequestsFinished(RequestResult result) {
+        if (result.isSuccessful()) {
+            Platform.runLater(() -> {
+                try {
+                    
+                    for (Request offer : DataMapper.getINSTANCE().toRequestArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
+                        logger.debug(offer);
+                    } 
+                } catch (IOException ioex) {
+                    logger.error("requestGetNewestOffersFinished: loading users failed", ioex);
+                }
+            });         
+        } else {      
+            displayMessage(result.getMessageContainer());
+        }    
     }
 
     @Override
