@@ -113,7 +113,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     void onBtnAllOffers(ActionEvent event) {
         try {
-
+            windowService.openShowAllOffersWindow();
         } catch (Exception ex) {
             logger.error("Exception", ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));

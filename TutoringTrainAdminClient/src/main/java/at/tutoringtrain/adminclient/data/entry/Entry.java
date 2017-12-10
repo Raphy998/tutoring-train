@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.data.entry;
 
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.data.user.User;
-import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.math.BigDecimal;
@@ -39,6 +39,12 @@ public abstract class Entry {
     })
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date postedon;
+    
+    @JsonView({
+        DataMappingViews.Entry.In.Get.class
+    })
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+    private Date duedate;
     
     @JsonView({
         DataMappingViews.Entry.In.Get.class,
@@ -120,6 +126,14 @@ public abstract class Entry {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Date getDuedate() {
+        return duedate;
+    }
+
+    public void setDuedate(Date duedate) {
+        this.duedate = duedate;
     }
 
     @Override

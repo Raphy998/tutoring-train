@@ -9,6 +9,7 @@ import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageContainer;
+import at.tutoringtrain.adminclient.ui.controller.AllOffersController;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
 import at.tutoringtrain.adminclient.ui.controller.AuthenticationController;
@@ -77,7 +78,7 @@ public class WindowService {
         root = loader.load();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.show();
@@ -94,7 +95,7 @@ public class WindowService {
         controller = (AuthenticationController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -118,7 +119,7 @@ public class WindowService {
         controller.setReauthenticationListener(listener);
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -135,7 +136,7 @@ public class WindowService {
         controller = (RegisterUserController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -152,7 +153,7 @@ public class WindowService {
         controller = (RegisterSubjectController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -169,7 +170,7 @@ public class WindowService {
         controller = (UpdateSubjectController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));   
         controller.setSubject(subject);
@@ -192,7 +193,7 @@ public class WindowService {
         controller = (UpdateUserController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));          
         controller.setUser(user);
@@ -213,7 +214,7 @@ public class WindowService {
         controller = (BlockUserController) loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         controller.setUser(user);
@@ -233,7 +234,7 @@ public class WindowService {
         controller = (AllUsersController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -250,7 +251,24 @@ public class WindowService {
         controller = (AllSubjectsController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openShowAllOffersWindow() throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        AllOffersController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/AllOffers.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (AllOffersController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -271,7 +289,7 @@ public class WindowService {
         controller = (SettingsController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         controller.setWriteImmediately(immediately);
@@ -293,7 +311,7 @@ public class WindowService {
     
     public Optional<ButtonType> openConfirmDialog(String headerKey, String contentKey, StringPlaceholder... placeholders) {
         Alert alert = new Alert(AlertType.CONFIRMATION);
-        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultValueProvider.getDefaultIcon());
+        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         alert.setTitle(localizedValueProvider.getString("titleApplication"));
         alert.setHeaderText(localizedValueProvider.getString(headerKey, placeholders));
         alert.setContentText(localizedValueProvider.getString(contentKey, placeholders));

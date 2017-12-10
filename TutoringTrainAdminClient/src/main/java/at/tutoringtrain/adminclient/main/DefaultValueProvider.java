@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.main;
 
 import at.tutoringtrain.adminclient.data.user.Gender;
-import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.data.user.UserRole;
+import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.security.HashAlgorithm;
 import at.tutoringtrain.adminclient.ui.validators.ValidationPattern;
 import at.tutoringtrain.adminclient.user.BlockDuration;
@@ -56,7 +56,10 @@ public final class DefaultValueProvider {
     private final TreeMap<String, ValidationPattern> defaultValidationPatterns;
     
     private BufferedImage defaultAvatar;
-    private Image defaultIcon;
+    private BufferedImage defaultSubjectIcon;
+    private BufferedImage defaultOfferIcon;
+    private BufferedImage defaultRequestIcon;
+    private Image defaultApplicationIcon;
     
     private DefaultValueProvider() {
         this.logger = LogManager.getLogger(this);
@@ -80,7 +83,10 @@ public final class DefaultValueProvider {
         this.defaultValidationPatterns = new TreeMap<>();
         this.initializeDefaultValidationPatterns();
         this.initializeDefaultAvatar();
-        this.initializeDefaultIcon();
+        this.initializeDefaultApplicationIcon();
+        this.initializeDefaultSubjectIcon();
+        this.initializeDefaultRequestIcon();
+        this.initializeDefaultOfferIcon();
         this.initializeDefaultGenders();
         this.initializeDefaultBlockDurations();
         this.logger.debug("DefaultValueProvider initialized");
@@ -119,8 +125,41 @@ public final class DefaultValueProvider {
         }
     }
     
-    private void initializeDefaultIcon() {
-        this.defaultIcon = new Image(getClass().getResource("/images/logo_white.png").toString());
+    private void initializeDefaultSubjectIcon() {
+        BufferedImage tmpImage = null;
+        try {   
+            tmpImage = ImageIO.read(getClass().getResource("/images/default_subject.png"));
+        } catch (IOException ioex) {
+            logger.error("Loading default subject icon failed", ioex);
+        } finally {
+            this.defaultSubjectIcon = tmpImage;
+        }
+    }
+    
+    private void initializeDefaultOfferIcon() {
+        BufferedImage tmpImage = null;
+        try {   
+            tmpImage = ImageIO.read(getClass().getResource("/images/default_offer.png"));
+        } catch (IOException ioex) {
+            logger.error("Loading default offer icon failed", ioex);
+        } finally {
+            this.defaultOfferIcon = tmpImage;
+        }
+    }
+    
+    private void initializeDefaultRequestIcon() {
+        BufferedImage tmpImage = null;
+        try {   
+            tmpImage = ImageIO.read(getClass().getResource("/images/default_request.png"));
+        } catch (IOException ioex) {
+            logger.error("Loading default request icon failed", ioex);
+        } finally {
+            this.defaultRequestIcon = tmpImage;
+        }
+    }
+    
+    private void initializeDefaultApplicationIcon() {
+        this.defaultApplicationIcon = new Image(getClass().getResource("/images/logo_white.png").toString());
         
     }
     
@@ -204,7 +243,19 @@ public final class DefaultValueProvider {
         return defaultValidationPatterns.get(key);
     }
 
-    public Image getDefaultIcon() {
-        return defaultIcon;
+    public Image getDefaultApplicationIcon() {
+        return defaultApplicationIcon;
+    }
+
+    public BufferedImage getDefaultSubjectIcon() {
+        return defaultSubjectIcon;
+    }
+
+    public BufferedImage getDefaultOfferIcon() {
+        return defaultOfferIcon;
+    }
+
+    public BufferedImage getDefaultRequestIcon() {
+        return defaultRequestIcon;
     }
 }
