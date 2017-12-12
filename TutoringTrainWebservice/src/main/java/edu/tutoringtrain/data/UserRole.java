@@ -16,7 +16,8 @@ import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 public enum UserRole {
     USER('U'),
     MODERATOR('M'),
-    ADMIN('A');
+    ADMIN('A'),
+    ROOT('R');
     
     private final Character abbrev;
 
@@ -30,10 +31,35 @@ public enum UserRole {
     
     public static boolean isValidRole(Character role) {
         boolean isValid = false;
-        if (role.equals(USER.getChar()) || role.equals(MODERATOR.getChar())  || role.equals(ADMIN.getChar())) {
+        if (role.equals(USER.getChar()) || role.equals(MODERATOR.getChar())  || role.equals(ADMIN.getChar()) || role.equals(ROOT.getChar())) {
             isValid = true;
         }
         return isValid;
+    }
+    
+    public boolean isAdmin() {
+        return this == ADMIN || this == ROOT;
+    }
+    
+    public boolean hasPermission(UserRole requiredRole) {
+        boolean hasP = false;
+        
+        switch (requiredRole) {
+            case ROOT:
+                if (this == ROOT) hasP = true;
+                break;
+            case ADMIN:
+                if (this == ROOT || this == ADMIN) hasP = true;
+                break;
+            case MODERATOR:
+                if (this == ROOT || this == ADMIN || this == MODERATOR) hasP = true;
+                break;
+            case USER:
+                if (this == ROOT || this == ADMIN || this == MODERATOR || this == USER) hasP = true;
+                break;
+        }
+        
+        return hasP;
     }
     
     public static UserRole toUserRole(Character role) throws InvalidArgumentException {
@@ -46,6 +72,9 @@ public enum UserRole {
         }
         else if (role.equals(ADMIN.getChar())) {
             ur = ADMIN;
+        }
+        else if (role.equals(ROOT.getChar())) {
+            ur = ROOT;
         }
         else {
             throw new InvalidArgumentException(new ErrorBuilder(Error.ILLEGAL_ROLE).withParams(role));

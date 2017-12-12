@@ -40,5 +40,6 @@
     "39": "Cannot change own role",
     "40": "Request (id=%s) of User '%s' not found",
     "41": "Request (id=%s) not found",
-    "42": "An unexpected error with the chat server occoured"
+    "42": "An unexpected error with the chat server occoured",
+    "43": "Cannot set role 'ROOT'"
 }

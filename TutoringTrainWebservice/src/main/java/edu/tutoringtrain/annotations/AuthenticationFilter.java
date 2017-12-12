@@ -13,6 +13,7 @@ import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
+import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.entities.User;
 import java.io.IOException;
@@ -150,6 +151,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
         catch (BlockedException e) {
             abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getError().withLang(lang).build());
+        }
+        catch (InvalidArgumentException e) {
+            abortWithStatus(requestContext, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getError().withLang(lang).build());
         }
     }
     

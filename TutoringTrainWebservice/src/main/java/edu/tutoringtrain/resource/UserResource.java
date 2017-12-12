@@ -435,13 +435,18 @@ public class UserResource extends AbstractResource {
     public Response setAvatarB64(@Context HttpServletRequest httpServletRequest,
                     InputStream uploadedInputStream,
                     @Context SecurityContext securityContext) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
         try {
             userService.setAvatar(securityContext.getUserPrincipal().getName(), uploadedInputStream, "jpg");
-            return Response.ok().build();
         }      
-        finally {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        catch (Exception ex) {
+            response.status(Response.Status.BAD_REQUEST);
         }
+ 
+        return response.build();
     }
 
     
@@ -619,16 +624,25 @@ public class UserResource extends AbstractResource {
         
         try {
             UserRole role = UserRole.toUserRole(((User)getMapper().readerWithView(Views.User.In.Promote.class).forType(User.class).readValue(newRole)).getRole());
-            User user2update = userService.getUserByUsername(username);
-            
-            if (username.equals(securityContext.getUserPrincipal().getName())) {
-                throw new UnauthorizedException(new ErrorBuilder(Error.DEGRADE_OWN));
-            }
-            if (user2update.getRole().equals(UserRole.ADMIN.getChar())) {
-                throw new UnauthorizedException(new ErrorBuilder(Error.DEGRADE_ADMIN));
+           
+            if (role == UserRole.ROOT) {
+                throw new UnauthorizedException(new ErrorBuilder(Error.SET_ROOT_ROLE));
             }
             else {
-                userService.setRole(username, role);
+            
+                User user2update = userService.getUserByUsername(username);
+                User thisUser = userService.getUserByUsername(securityContext.getUserPrincipal().getName());
+
+                if (username.equals(securityContext.getUserPrincipal().getName())) {
+                    throw new UnauthorizedException(new ErrorBuilder(Error.DEGRADE_OWN));
+                }
+                //if other user is a admin and logged in user is not root
+                if (user2update.getRole().equals(UserRole.ADMIN.getChar()) && !thisUser.getRole().equals(UserRole.ROOT.getChar())) {
+                    throw new UnauthorizedException(new ErrorBuilder(Error.DEGRADE_ADMIN));
+                }
+                else {
+                    userService.setRole(username, role);
+                }
             }
         } 
         catch (Exception ex) {
@@ -678,6 +692,33 @@ public class UserResource extends AbstractResource {
         try {
             User u = userService.getUserByUsername(username);
             response.entity(xmppService.getCredentials(username, u.getPassword()));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, Language.EN);
+            }
+            catch (Exception e) {
+                unknownError(e, response, Language.EN);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @POST
+    @Path("/xmpp/add/{username}")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response addXMPPRosterContact(@Context HttpServletRequest httpServletRequest,
+                            @PathParam("username") String username,
+                            @Context SecurityContext securityContext) throws Exception {
+        
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            User thisUser = userService.getUserByUsername(securityContext.getUserPrincipal().getName());
+            User user2add = userService.getUserByUsername(username);
+            xmppService.addToRoster(thisUser.getUsername(), thisUser.getPassword(), user2add.getUsername());
         } 
         catch (Exception ex) {
             try {

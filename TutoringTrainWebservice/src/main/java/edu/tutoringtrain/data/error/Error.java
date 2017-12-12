@@ -55,6 +55,7 @@ public class Error {
     public static final int REQUEST_NOT_FOUND = 40;
     public static final int REQUEST_OF_USER_NOT_FOUND = 41;
     public static final int XMPP_ERROR = 42;
+    public static final int SET_ROOT_ROLE = 43;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -68,7 +69,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return XMPP_ERROR;
+        return SET_ROOT_ROLE;
     }
 
     public Error() {

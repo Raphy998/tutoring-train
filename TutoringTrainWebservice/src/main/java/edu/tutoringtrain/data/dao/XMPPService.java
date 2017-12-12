@@ -20,7 +20,10 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.SASLMechanism;
 import org.jivesoftware.smack.sasl.javax.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -199,5 +202,20 @@ public class XMPPService extends AbstractService {
     
     public XMPPCredentials getCredentials(String username, String password) throws NoSuchAlgorithmException {
         return new XMPPCredentials(username.toLowerCase()+ "@" + DOMAIN, getXMPPPassword(password));
+    }
+    
+    public void addToRoster(String username, String password, String usernameToAdd) throws edu.tutoringtrain.data.exceptions.XMPPException {
+        try {
+            AbstractXMPPConnection conn = getXMPPConnection(username.toLowerCase(), getXMPPPassword(password));
+            conn.login(username.toLowerCase(), getXMPPPassword(password));
+
+            Presence subscribe = new Presence(Presence.Type.subscribe);
+            subscribe.setTo(usernameToAdd + "@" + DOMAIN);
+            conn.sendPacket(subscribe);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            throw new edu.tutoringtrain.data.exceptions.XMPPException(new ErrorBuilder(edu.tutoringtrain.data.error.Error.XMPP_ERROR));
+        }
     }
 }

@@ -139,7 +139,7 @@ public class SubjectResource extends AbstractResource {
             checkConstraints(subjectIn, lang, ConstraintGroups.Create.class);
             
             //if user is admin, activate subject immediately
-            if (userService.getUserByUsername(securityContext.getUserPrincipal().getName()).getRole().equals(UserRole.ADMIN.getChar())) {
+            if (UserRole.toUserRole(userService.getUserByUsername(securityContext.getUserPrincipal().getName()).getRole()).isAdmin()) {
                 subjectIn.setIsactive('1');
             }
             else {
