@@ -61,21 +61,21 @@ public class Subject implements Serializable {
     @NotNull(groups = ConstraintGroups.Update.class)
     @Basic(optional = false)
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class, Views.Subject.Out.Public.class, 
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class, Views.Subject.Out.Public.class, 
         Views.Subject.In.Update.class})
     private BigDecimal id;
     @Size(max = 25)
     @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "DENAME", length = 25)
-    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String dename;
     @Size(max = 25)
     @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "ENNAME", length = 25)
-    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String enname;
     @Column(name = "ISACTIVE")
-    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, 
+    @JsonView({Views.Entry.Out.Public.class, Views.Subject.Out.Public.class, 
         Views.Subject.In.Update.class})
     @JsonSerialize(using=NumericBooleanSerializer.class)
     @JsonDeserialize(using=NumericBooleanDeserializer.class)

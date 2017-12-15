@@ -41,7 +41,7 @@ import javax.validation.ConstraintViolationException;
 @ApplicationScoped
 public class UserService extends AbstractService {
     private static final Character DEFAULT_GENDER = Gender.OTHER;
-    private static final boolean IS_XMPP_ACTIVE = true;
+    private static final boolean IS_XMPP_ACTIVE = false;
     
     @Inject
     private XMPPService xmppService;
@@ -244,7 +244,6 @@ public class UserService extends AbstractService {
         return em.find(Blocked.class, username);
     }
     
-    //TODO: implement duedate
     @Transactional
     public void blockUser(Blocked block, boolean isBlock) throws InvalidArgumentException, NullValueException {
         if (block.getUsername() == null) {

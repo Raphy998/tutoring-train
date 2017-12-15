@@ -74,10 +74,10 @@ public class RequestResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Create.class).forType(Entry.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Entry.In.Create.class).forType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn, lang, ConstraintGroups.Create.class);
             Entry offerOut = entryService.createEntry(type, username, offerIn);
-            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).with(lang.getLocale()).writeValueAsString(offerOut));
+            response.entity(getMapper().writerWithView(Views.Entry.Out.Public.class).with(lang.getLocale()).writeValueAsString(offerOut));
         }
         catch (Exception ex) {
             try {
@@ -103,7 +103,7 @@ public class RequestResource extends AbstractResource {
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {
-            Entry offerIn = getMapper().readerWithView(Views.Offer.In.Update.class).forType(Entry.class).readValue(offerStr);
+            Entry offerIn = getMapper().readerWithView(Views.Entry.In.Update.class).forType(Entry.class).readValue(offerStr);
             checkConstraints(offerIn, lang, ConstraintGroups.Update.class);
             User user = userService.getUserByUsername(securityContext.getUserPrincipal().getName());
             
@@ -145,7 +145,7 @@ public class RequestResource extends AbstractResource {
             checkStartPageSize(start, pageSize);
             
             List<Entry> newestOffers = entryService.getNewestEntries(type, start, pageSize);
-            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).with(lang.getLocale()).writeValueAsString(newestOffers.toArray()));
+            response.entity(getMapper().writerWithView(Views.Entry.Out.Public.class).with(lang.getLocale()).writeValueAsString(newestOffers.toArray()));
         } 
         catch (Exception ex) {
             try {
@@ -181,7 +181,7 @@ public class RequestResource extends AbstractResource {
             }
             
             List<Entry> newestOffers = entryService.getNewestEntiresOfUser(type, username, start, pageSize);
-            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class).with(lang.getLocale()).writeValueAsString(newestOffers.toArray()));
+            response.entity(getMapper().writerWithView(Views.Entry.Out.Public.class).with(lang.getLocale()).writeValueAsString(newestOffers.toArray()));
         } 
         catch (Exception ex) {
             try {
@@ -290,7 +290,7 @@ public class RequestResource extends AbstractResource {
             else offers = entryService.search(type, osIn);
             
             
-            response.entity(getMapper().writerWithView(Views.Offer.Out.Public.class)
+            response.entity(getMapper().writerWithView(Views.Entry.Out.Public.class)
                     .writeValueAsString(offers));
         } 
         catch (Exception ex) {

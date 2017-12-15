@@ -7,6 +7,7 @@ package edu.tutoringtrain.resource;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.tutoringtrain.annotations.Localized;
+import edu.tutoringtrain.annotations.PrincipalInRole;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.Gender;
 import edu.tutoringtrain.data.error.ErrorBuilder;
@@ -27,7 +28,6 @@ import edu.tutoringtrain.data.dao.XMPPService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
-import edu.tutoringtrain.data.exceptions.ConstraintViolationException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.search.SearchCriteria;
@@ -38,7 +38,6 @@ import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
@@ -291,13 +290,14 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(UserRole.ADMIN)
+    @Secured
     @GET
     @Path("/all")
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getUsers(@Context HttpServletRequest httpServletRequest,
                     @QueryParam(value = "start") Integer start,
-                    @QueryParam(value = "pageSize") Integer pageSize) throws Exception {
+                    @QueryParam(value = "pageSize") Integer pageSize,
+                    @Context SecurityContext securityContext) throws Exception {
         
         Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
@@ -312,8 +312,39 @@ public class UserResource extends AbstractResource {
                 userEntities = userService.getUsers();
             }
 
-            response.entity(getMapper().writerWithView(Views.User.Out.Private.class)
+            PrincipalInRole pricipal = (PrincipalInRole) securityContext.getUserPrincipal();
+            
+            response.entity(getMapper().writerWithView(getViewForRole(pricipal.getRole()))
                     .writeValueAsString(userEntities.toArray()));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/single/{username}")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getUser(@Context HttpServletRequest httpServletRequest,
+                    @PathParam("username") String username,
+                    @Context SecurityContext securityContext) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            PrincipalInRole pricipal = (PrincipalInRole) securityContext.getUserPrincipal();
+            
+            response.entity(getMapper().writerWithView(getViewForRole(pricipal.getRole()))
+                    .writeValueAsString(userService.getUserByUsername(username)));
         } 
         catch (Exception ex) {
             try {
@@ -567,7 +598,7 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(UserRole.ADMIN)
+    @Secured
     @POST
     @Path("/search")
     @Consumes(value = MediaType.APPLICATION_JSON)
@@ -575,7 +606,8 @@ public class UserResource extends AbstractResource {
     public Response searchUsers(@Context HttpServletRequest httpServletRequest,
                     @QueryParam(value = "start") Integer start,
                     @QueryParam(value = "pageSize") Integer pageSize,
-                    final String searchStr) throws Exception {
+                    final String searchStr,
+                    @Context SecurityContext securityContext) throws Exception {
         
         Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
@@ -593,8 +625,9 @@ public class UserResource extends AbstractResource {
             if (start != null && pageSize != null) users = userService.search(usIn, start, pageSize);
             else users = userService.search(usIn);
             
+            PrincipalInRole principal = (PrincipalInRole) securityContext.getUserPrincipal();
             
-            response.entity(getMapper().writerWithView(Views.User.Out.Private.class)
+            response.entity(getMapper().writerWithView(getViewForRole(principal.getRole()))
                     .writeValueAsString(users));
         } 
         catch (Exception ex) {
@@ -730,6 +763,16 @@ public class UserResource extends AbstractResource {
         }
  
         return response.build();
+    }
+    
+    private Class getViewForRole(UserRole role) {
+        Class view;
+        if (role != null && role.isAdmin())
+            view = Views.User.Out.Private.class;
+        else
+            view = Views.User.Out.Public.class;
+        
+        return view;
     }
     
     //TODO: Unused until static IP

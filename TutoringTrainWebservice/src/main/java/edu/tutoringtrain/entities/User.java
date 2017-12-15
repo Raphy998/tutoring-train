@@ -57,7 +57,7 @@ public class User implements Serializable {
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "USERNAME", nullable = false, length = 20)
-    @JsonView({Views.Offer.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class})
     private String username;
     @Size(max = 64)
     @Column(name = "PASSWORD", length = 64)
@@ -99,7 +99,7 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     private Collection<Entry> entryCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-    @JsonView({Views.User.Out.Private.class})
+    @JsonView({Views.User.Out.Public.class})
     @JsonProperty("block")
     private Blocked blocked;
 

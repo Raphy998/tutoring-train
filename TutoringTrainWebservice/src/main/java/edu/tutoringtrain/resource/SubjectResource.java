@@ -6,6 +6,7 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Localized;
+import edu.tutoringtrain.annotations.PrincipalInRole;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
@@ -138,8 +139,10 @@ public class SubjectResource extends AbstractResource {
             subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).forType(Subject.class).readValue(subjectStr);
             checkConstraints(subjectIn, lang, ConstraintGroups.Create.class);
             
+            PrincipalInRole principal = (PrincipalInRole) securityContext.getUserPrincipal();
+            
             //if user is admin, activate subject immediately
-            if (UserRole.toUserRole(userService.getUserByUsername(securityContext.getUserPrincipal().getName()).getRole()).isAdmin()) {
+            if (principal.getRole().isAdmin()) {
                 subjectIn.setIsactive('1');
             }
             else {
@@ -154,9 +157,19 @@ public class SubjectResource extends AbstractResource {
                 handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
+                String param;
+                if (subjectIn.getDename() != null && subjectIn.getEnname() != null) 
+                    param = subjectIn.getEnname() + "/" + subjectIn.getDename();
+                else if (subjectIn.getEnname() != null)
+                    param = subjectIn.getEnname();
+                else if (subjectIn.getDename() != null)
+                    param = subjectIn.getDename();
+                else        //should never happen
+                    param = "-";
+                
                 response.status(Response.Status.CONFLICT);
                 response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
-                        .withParams(subjectIn.getEnname() + "/" + subjectIn.getDename())
+                        .withParams(param)
                         .withLang(lang)
                         .build());
             }

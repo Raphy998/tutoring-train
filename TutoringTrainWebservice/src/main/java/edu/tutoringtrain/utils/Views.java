@@ -10,7 +10,7 @@ package edu.tutoringtrain.utils;
  * @author Elias
  */
 public interface Views {
-    public static interface Offer {
+    public static interface Entry {
         public static interface In {
             public static interface Create {};
             public static interface Update extends Create {};

@@ -111,6 +111,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 throw new NotAuthorizedException(ex.getMessage());
             }
             final String username = user != null ? user.getUsername() : null;
+            final UserRole role = user != null ? UserRole.toUserRole(user.getRole()): null;
 
             final SecurityContext currentSecurityContext = requestContext.getSecurityContext();
                 requestContext.setSecurityContext(new SecurityContext() {
@@ -118,13 +119,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     @Override
                     public Principal getUserPrincipal() {
 
-                        return new Principal() {
-
-                            @Override
-                            public String getName() {
-                                return username;
-                            }
-                        };
+                        return new PrincipalInRole(username, role);
                     }
 
                     @Override

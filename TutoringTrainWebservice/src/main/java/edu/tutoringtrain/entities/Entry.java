@@ -8,7 +8,6 @@ package edu.tutoringtrain.entities;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import edu.tutoringtrain.data.EntryType;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.misc.NumericBooleanDeserializer;
 import edu.tutoringtrain.misc.NumericBooleanSerializer;
@@ -67,42 +66,42 @@ public class Entry implements Serializable {
     @NotNull(groups = ConstraintGroups.Update.class)
     @Basic(optional = false)
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
-    @JsonView({Views.Offer.In.Update.class, Views.Offer.Out.Public.class})
+    @JsonView({Views.Entry.In.Update.class, Views.Entry.Out.Public.class})
     private BigDecimal id;
     @Column(name = "POSTEDON")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonView(Views.Offer.Out.Public.class)
+    @JsonView(Views.Entry.Out.Public.class)
     private Date postedon;
     @Column(name = "DUEDATE")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private Date duedate;
     @Column(name = "ISACTIVE")
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Update.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Update.class})
     @JsonSerialize(using=NumericBooleanSerializer.class)
     @JsonDeserialize(using=NumericBooleanDeserializer.class)
     private Character isactive;
     @Size(max = 500)
     @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "DESCRIPTION", length = 500)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private String description;
     @Column(name = "FLAG")
     private Character flag;
     @NotNull(groups = ConstraintGroups.Create.class)
     @JoinColumn(name = "SUBJECT", referencedColumnName = "ID")
     @ManyToOne
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private Subject subject;
     @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")
     @ManyToOne
     @XmlTransient
-    @JsonView(Views.Offer.Out.Public.class)
+    @JsonView(Views.Entry.Out.Public.class)
     private User user;
     @Size(max = 50)
     //@NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "HEADLINE", length = 50)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private String headline;
 
     public Entry() {
