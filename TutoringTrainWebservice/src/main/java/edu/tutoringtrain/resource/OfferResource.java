@@ -108,12 +108,10 @@ public class OfferResource extends AbstractResource {
             User user = userService.getUserByUsername(securityContext.getUserPrincipal().getName());
             
             //if user is Admin, he can reset properties of any offer, if not only of the ones the user created
-            if (UserRole.toUserRole(user.getRole()).isAdmin()) {
+            if (UserRole.toUserRole(user.getRole()).isAdmin())
                 entryService.updateEntry(type, offerIn);
-            }
-            else {
+            else
                 entryService.updateEntry(type, offerIn, securityContext.getUserPrincipal().getName());
-            }
         } 
         catch (Exception ex) {
             try {

@@ -21,12 +21,14 @@ import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.exceptions.XMPPException;
 import edu.tutoringtrain.data.search.user.UserQueryGenerator;
 import edu.tutoringtrain.data.search.user.UserSearch;
+import edu.tutoringtrain.entities.Location;
 import edu.tutoringtrain.entities.QUser;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
 import edu.tutoringtrain.utils.ImageUtils;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -213,6 +215,14 @@ public class UserService extends AbstractService {
         User user = em.find(User.class, username);
         if (user == null) {
             throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
+        }
+        
+        try {
+            Location loc = em.find(Location.class, new BigDecimal(1));
+            System.out.println("------------- " + loc.getPoint());
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
         }
         
         return user;
