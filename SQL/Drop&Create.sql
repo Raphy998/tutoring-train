@@ -4,12 +4,16 @@ DROP TABLE Subject CASCADE CONSTRAINTS;
 DROP TABLE Blocked CASCADE CONSTRAINTS;
 DROP TABLE Rating CASCADE CONSTRAINTS;
 DROP TABLE Entry CASCADE CONSTRAINTS;
+DROP TABLE TComment CASCADE CONSTRAINTS;
 
 DROP SEQUENCE seq_subject;
+DROP SEQUENCE seq_comment;
 DROP SEQUENCE seq_entry;
+
 
 CREATE SEQUENCE seq_entry;
 CREATE SEQUENCE seq_subject;
+CREATE SEQUENCE seq_comment;
 
 
 Create Table Subject(
@@ -73,11 +77,22 @@ Create Table Entry (
     isActive CHAR(1),
     description VARCHAR2(500),
     username VARCHAR2(20),
-	flag CHAR(1),
-	headline VARCHAR2(50)
+    flag CHAR(1),
+    headline VARCHAR2(50),
     CONSTRAINT pk_entry PRIMARY KEY (id),
     CONSTRAINT fk_entry_user FOREIGN KEY (username) references TUser (username),
     CONSTRAINT fk_entry_subject FOREIGN KEY (subject) references Subject (id)
+);
+
+create Table Tcomment(
+    id NUMBER,
+    username VARCHAR2(20),
+    postedOn TIMESTAMP,
+    text VARCHAR2(300),
+    entryID NUMBER,
+    CONSTRAINT pk_tcomment PRIMARY KEY (id),
+    CONSTRAINT fk_tcomment_user FOREIGN KEY (username) references TUser (username),
+    CONSTRAINT fk_tcomment_entry FOREIGN KEY (entryId) references Entry (id)
 );
 
 
