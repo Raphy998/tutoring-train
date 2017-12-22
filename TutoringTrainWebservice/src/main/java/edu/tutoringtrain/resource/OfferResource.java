@@ -302,4 +302,30 @@ public class OfferResource extends AbstractResource {
  
         return response.build();
     }
+    
+    @Secured
+    @GET
+    @Path("/{id}/comments")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getCommentsOfOffer(@Context HttpServletRequest httpServletRequest,
+            @PathParam(value = "id") String id) throws Exception {
+
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            Entry entry = entryService.getEntry(EntryType.OFFER, new BigDecimal(id));
+            response.entity(getMapper().writerWithView(Views.Comment.Out.Public.class).with(lang.getLocale()).writeValueAsString(entry.getComments().toArray()));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+
+        return response.build();
+    }
 }

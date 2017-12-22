@@ -20,6 +20,16 @@ public interface Views {
         };
     }
     
+    public static interface Comment {
+        public static interface In {
+            public static interface Create {};
+            public static interface Update extends Create {};
+        };
+        public static interface Out {
+            public static interface Public {};
+        };
+    }
+    
     public static interface User {
         public static interface In {
             public static interface Register {};

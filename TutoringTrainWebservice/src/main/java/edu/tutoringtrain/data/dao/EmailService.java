@@ -141,7 +141,7 @@ public class EmailService extends AbstractService {
                     Message message = new MimeMessage(getSMTPSession());
                     setNewsletterEmailContents(message, user);
                     Transport.send(message);
-                    System.out.println("Send email to: " + user.getEmail());
+                    logger.info("Send newsletter to: " + user.getEmail());
 
                 } catch (MessagingException e) {
                     e.printStackTrace();

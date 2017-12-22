@@ -44,7 +44,7 @@ public class AuthenticationService extends AbstractService {
     @Transactional(dontRollbackOn = Exception.class)
     public void authenticate(String username, String password, Character requiredRole) throws UnauthorizedException, ForbiddenException, BlockedException, InvalidArgumentException {
         TypedQuery<User> query =
-        em.createNamedQuery("User.findByUsernameAndPassword", User.class);
+        (TypedQuery<User>) em.createNamedQuery("User.findByUsernameAndPassword");
         query.setParameter("username", username);
         query.setParameter("password", password);
         List<User> results = query.getResultList();
@@ -154,7 +154,7 @@ public class AuthenticationService extends AbstractService {
         User u = null;
         
         TypedQuery<Session> query =
-        em.createNamedQuery("Session.findByAuthkey", Session.class);
+        (TypedQuery<Session>) em.createNamedQuery("Session.findByAuthkey");
         query.setParameter("authkey", token);
         
         List<Session> results = query.getResultList();

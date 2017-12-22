@@ -14,6 +14,7 @@ import edu.tutoringtrain.misc.NumericBooleanSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -21,9 +22,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,12 +35,16 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import oracle.spatial.geometry.JGeometry;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.StructConverter;
 
 /**
  *
  * @author Elias
  */
 @Entity
+@StructConverter(name = "JGeometry", converter = "org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter")
 @Table(name = "ENTRY", catalog = "")
 @XmlRootElement
 @NamedQueries({
@@ -58,6 +65,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Entry.findRequestNewestOfUser", query = "SELECT e FROM Entry e WHERE e.flag = 'R' AND e.user.username = :username ORDER BY e.postedon DESC")
     , @NamedQuery(name = "Entry.countRequestAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'R'")})
 public class Entry implements Serializable {
+    
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Id
@@ -103,6 +111,11 @@ public class Entry implements Serializable {
     @Column(name = "HEADLINE", length = 50)
     @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private String headline;
+    @Convert("JGeometry")
+    @Column(name = "LOCATION")
+    private JGeometry location;
+    @OneToMany(mappedBy = "entryid")
+    private Collection<Comment> tcommentCollection;
 
     public Entry() {
     }
@@ -206,6 +219,23 @@ public class Entry implements Serializable {
 
     public void setHeadline(String headline) {
         this.headline = headline;
+    }
+
+    public JGeometry getLocation() {
+        return location;
+    }
+
+    public void setLocation(JGeometry location) {
+        this.location = location;
+    }
+
+    @XmlTransient
+    public Collection<Comment> getComments() {
+        return tcommentCollection;
+    }
+
+    public void setComments(Collection<Comment> tcommentCollection) {
+        this.tcommentCollection = tcommentCollection;
     }
     
 }

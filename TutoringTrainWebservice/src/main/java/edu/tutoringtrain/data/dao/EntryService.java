@@ -59,8 +59,8 @@ public class EntryService extends AbstractService {
     public List<Entry> getNewestEntries(EntryType type, int start, int pageSize) {
         List<Entry> results;
         TypedQuery<Entry> query;
-        if (type == EntryType.OFFER) query = em.createNamedQuery("Entry.findOfferNewest", Entry.class);
-        else query = em.createNamedQuery("Entry.findRequestNewest", Entry.class);
+        if (type == EntryType.OFFER) query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findOfferNewest");
+        else query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findRequestNewest");
         
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
@@ -85,8 +85,8 @@ public class EntryService extends AbstractService {
         }
         
         TypedQuery<Entry> query;
-        if (type == EntryType.OFFER) query = em.createNamedQuery("Entry.findOfferNewestOfUser", Entry.class);
-        else query = em.createNamedQuery("Entry.findRequestNewestOfUser", Entry.class);
+        if (type == EntryType.OFFER) query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findOfferNewestOfUser");
+        else query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findRequestNewestOfUser");
         
         query.setParameter("username", username);
         query.setFirstResult(start);
@@ -238,7 +238,6 @@ public class EntryService extends AbstractService {
         }
     }
     
-    //TODO
     @Transactional
     public List<Entry> search(EntryType type, EntrySearch searchCriteria) throws ParseException {
         EntryQueryGenerator gen = new EntryQueryGenerator();
