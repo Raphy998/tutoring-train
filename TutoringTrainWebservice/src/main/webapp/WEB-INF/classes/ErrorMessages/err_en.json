@@ -41,5 +41,8 @@
     "40": "Request (id=%s) of User '%s' not found",
     "41": "Request (id=%s) not found",
     "42": "An unexpected error with the chat server occoured",
-    "43": "Cannot set role 'ROOT'"
+    "43": "Cannot set role 'ROOT'",
+    "44": "Comment (id=%s) of %s (id=%s) not found",
+    "45": "Comment (id=%s) by '%s' of %s (id=%s) not found",
+    "46": "Invalid Value: '%s'"
 }

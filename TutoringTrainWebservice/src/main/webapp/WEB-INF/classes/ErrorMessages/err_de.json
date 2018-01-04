@@ -41,5 +41,8 @@
     "40": "Nachfrage (id=%s) von Benutzer '%s' nicht gefunden",
     "41": "Nachfrage (id=%s) nicht gefunden",
     "42": "Es ist ein unerwarteter Fehler mit dem Chatserver aufgetreten",
-    "43": "Die Rolle 'ROOT' kann nicht gesetzt werden"
+    "43": "Die Rolle 'ROOT' kann nicht gesetzt werden",
+    "44": "Kommentar (id=%s) bei %s (id=%s) nicht gefunden",
+    "45": "Kommentar (id=%s) von '%s' bei %s (id=%s) nicht gefunden",
+    "46": "Ungültiger Wert: '%s'"
 }

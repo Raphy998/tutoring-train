@@ -114,7 +114,7 @@ public class Entry implements Serializable {
     @Convert("JGeometry")
     @Column(name = "LOCATION")
     private JGeometry location;
-    @OneToMany(mappedBy = "entryid")
+    @OneToMany(mappedBy = "entry")
     private Collection<Comment> tcommentCollection;
 
     public Entry() {

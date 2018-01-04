@@ -20,4 +20,5 @@ public abstract class CustomHttpStatusCodes {
     public static final int SUBJECT_NOT_ACTIVE = 457;
     public static final int UNPROCESSABLE_ENTITY = 422;
     public static final int SUBJECT_USED = 458;
+    public static final int COMMENT_NOT_FOUND = 459;
 }

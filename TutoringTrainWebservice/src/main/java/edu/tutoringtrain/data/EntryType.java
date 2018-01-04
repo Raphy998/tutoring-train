@@ -45,4 +45,11 @@ public enum EntryType {
         
         return et;
     }
+
+    @Override
+    public String toString() {
+        return (this == OFFER) ? "Offer" : "Request";
+    }
+    
+    
 }

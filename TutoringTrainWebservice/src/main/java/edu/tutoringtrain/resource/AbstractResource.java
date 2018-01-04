@@ -20,6 +20,7 @@ import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.error.LocaleSpecificMessageInterpolator;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.BlockedException;
+import edu.tutoringtrain.data.exceptions.CommentNotFoundException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.EntryNotFoundException;
@@ -97,6 +98,14 @@ public abstract class AbstractResource {
         try {
             throw exception;
         }
+        catch (NumberFormatException ex) {
+            ErrorBuilder err = new ErrorBuilder(Error.VALUE_INVALID);
+            err.withParams(ex.getMessage());
+            response.status(CustomHttpStatusCodes.UNPROCESSABLE_ENTITY);
+            response.entity(err
+                    .withLang(lang)
+                    .build());
+        }
         catch (ConstraintViolationException ex) {
             ErrorBuilder err = new ErrorBuilder(Error.CONSTRAINT_VIOLATION);
             
@@ -134,6 +143,10 @@ public abstract class AbstractResource {
         }
         catch (SubjectNotFoundException ex) {
             response.status(CustomHttpStatusCodes.SUBJECT_NOT_FOUND);
+            response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (CommentNotFoundException ex) {
+            response.status(CustomHttpStatusCodes.COMMENT_NOT_FOUND);
             response.entity(ex.getError().withLang(lang).build());
         }
         catch (UserNotFoundException ex) {
