@@ -4,14 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -21,7 +18,7 @@ import android.widget.Toast;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginListener {
 
     // TODO: 19.11.2017 change Output to res/values
-    private String url = "http://10.0.0.14:9999/TutoringTrainWebservice/services";
+    private String url = "http://10.0.0.22:9999/TutoringTrainWebservice/services";
 
     // UI references.
     private EditText mEmailView;
@@ -29,7 +26,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private View mProgressView;
     private ScrollView mLoginFormView;
     private Button bttnLogin;
-    private OkHttpLoginHandler handler;
+    private OkHttpAsyncHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +64,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 changeStatusOfLoginForm(false);
                 String username = mEmailView.getText().toString();
                 String password = mPasswordView.getText().toString();
-                handler = new OkHttpLoginHandler(url, username, password, this);
+                OkHttpAsyncHandler.performLogin(url,username,Encrypter.md5(password), this);
+                //handler = new OkHttpAsyncHandler(url, username, Encrypter.md5(password), this);
                 mProgressView.setVisibility(View.VISIBLE);
-                handler.execute();
             }
         }
     }

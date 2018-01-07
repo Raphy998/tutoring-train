@@ -9,15 +9,20 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * @author moserr
  */
-public class StartActivity extends AppCompatActivity implements OnClickListener{
+public class StartActivity extends AppCompatActivity implements OnClickListener,LoginListener{
 
     // UI references.
     private Button btnRegister;
     private Button btnLogin;
+
+    // TODO: 19.11.2017 change Output to res/values
+    private String url = "http://10.0.0.22:9999/TutoringTrainWebservice/services";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +42,12 @@ public class StartActivity extends AppCompatActivity implements OnClickListener{
         btnLogin.setOnClickListener(this);
 
         //if an session key is already stored, the main activity will be started directly
-        // TODO: 19.11.2017  Check for valid session key
         Database db = Database.getInstance();
         db.initSharedPrefs(this);
         String sessionKey = db.getSessionKey();
         if(sessionKey != null && !sessionKey.isEmpty()){
-            Intent myIntent = new Intent(this, MainActivity.class);
-            this.startActivity(myIntent);
-            this.finish();
+            // TODO: 19.11.2017  Check for valid session key
+            OkHttpAsyncHandler.performSessionCheck(url,this);
         }
     }
 
@@ -58,6 +61,19 @@ public class StartActivity extends AppCompatActivity implements OnClickListener{
             Intent myIntent = new Intent(this, MainActivity.class);
             this.startActivity(myIntent);
         }
+    }
+
+    @Override
+    public void loginFailure(String errorMessage) {
+        Toast.makeText(this,errorMessage,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void loginSuccess() {
+        Toast.makeText(this,"ok alles cool",Toast.LENGTH_SHORT).show();
+        Intent myIntent = new Intent(this, MainActivity.class);
+        this.startActivity(myIntent);
+        this.finish();
     }
 }
 

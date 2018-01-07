@@ -2,7 +2,6 @@ package at.train.tutorial.tutoringtrainapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInstaller;
 
 /**
  * @author moserr
