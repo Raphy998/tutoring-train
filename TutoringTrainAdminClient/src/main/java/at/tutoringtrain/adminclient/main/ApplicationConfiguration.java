@@ -1,7 +1,7 @@
 package at.tutoringtrain.adminclient.main;
 
 import at.tutoringtrain.adminclient.internationalization.Language;
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,15 +14,15 @@ public final class ApplicationConfiguration {
     private final DefaultValueProvider defaultValueProvider;
     
     private Language language;
-    private String serverIp;
-    private int serverPort;
+    private WebserviceHostInfo webserviceHostInfo;
+    private ArrayList<WebserviceHostInfo> webserviceFallbackHostsInfo;
 
     public ApplicationConfiguration() {
         this.logger = LogManager.getLogger(this);
         this.defaultValueProvider = DefaultValueProvider.getINSTANCE();      
         this.language = defaultValueProvider.getDefaultLanguage();
-        this.serverIp = defaultValueProvider.getDefaultWebServiceIpAddress();
-        this.serverPort = defaultValueProvider.getDefaultWebServicePort();
+        this.webserviceHostInfo = defaultValueProvider.getDefaultWebserviceHostInfo();
+        this.webserviceFallbackHostsInfo = defaultValueProvider.getDefaultWebserviceHostFallbacks();
         this.logger.debug("ApplicationConfiguration initialized");
     }
 
@@ -30,8 +30,8 @@ public final class ApplicationConfiguration {
         this.logger = LogManager.getLogger(this);
         this.defaultValueProvider = DefaultValueProvider.getINSTANCE();      
         this.language = language;
-        this.serverIp = defaultValueProvider.getDefaultWebServiceIpAddress();
-        this.serverPort = defaultValueProvider.getDefaultWebServicePort();
+        this.webserviceHostInfo = defaultValueProvider.getDefaultWebserviceHostInfo();
+        this.webserviceFallbackHostsInfo = defaultValueProvider.getDefaultWebserviceHostFallbacks();
         this.logger.debug("ApplicationConfiguration initialized");    
     }
 
@@ -44,36 +44,32 @@ public final class ApplicationConfiguration {
         logger.debug("language set to " + this.language.getLocale());
     }
 
-    public String getServerIp() {
-        return serverIp;
+    public WebserviceHostInfo getWebserviceHostInfo() {
+        return webserviceHostInfo;
     }
 
-    public void setServerIp(String serverIp) {
-        if (StringUtils.isBlank(serverIp)) {
-            this.serverIp = defaultValueProvider.getDefaultWebServiceIpAddress();
-        } else {
-            this.serverIp = serverIp;
-        }
-        logger.debug("server ip set to " + this.serverIp);
+    public ArrayList<WebserviceHostInfo> getWebserviceFallbackHostsInfo() {
+        return webserviceFallbackHostsInfo;
+    }
+
+    public void setWebserviceHostInfo(WebserviceHostInfo webserviceHostInfo) {
+        this.webserviceHostInfo = webserviceHostInfo;
+    }
+
+    private void setWebserviceFallbackHostsInfo(ArrayList<WebserviceHostInfo> webserviceFallbackHostsInfo) {
+        this.webserviceFallbackHostsInfo = webserviceFallbackHostsInfo;
     }
     
-    public int getServerPort() {
-        return serverPort;
-    }
-
-    public void setServerPort(int serverPort) {
-        if (serverPort >= 0) {
-            this.serverPort = serverPort;
-        }
-        logger.debug("server port set to " + this.serverPort);
+    public void addWebserviceFallbackHost(WebserviceHostInfo fallbackHostInfo) {
+        webserviceFallbackHostsInfo.add(fallbackHostInfo);
     }
     
     public boolean apply(ApplicationConfiguration config) {
         boolean success = false;
         if (config != null) {
             setLanguage(config.getLanguage());
-            setServerPort(config.getServerPort());
-            setServerIp(config.getServerIp());
+            setWebserviceHostInfo(config.getWebserviceHostInfo());
+            setWebserviceFallbackHostsInfo(config.getWebserviceFallbackHostsInfo());
             success = true;
         }
         return success;

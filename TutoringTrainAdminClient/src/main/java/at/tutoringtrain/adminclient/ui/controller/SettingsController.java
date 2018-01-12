@@ -7,6 +7,7 @@ import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
+import at.tutoringtrain.adminclient.main.WebserviceHostInfo;
 import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.validators.IpFieldValidator;
@@ -84,8 +85,8 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     }
     
     private void loadApplicationConfiguration() {
-        txtServerIp.setText(applicationManager.getApplicationConfiguration().getServerIp());
-        txtServerPort.setText(Integer.toString(applicationManager.getApplicationConfiguration().getServerPort()));
+        txtServerIp.setText(applicationManager.getApplicationConfiguration().getWebserviceHostInfo().getHost());
+        txtServerPort.setText(Integer.toString(applicationManager.getApplicationConfiguration().getWebserviceHostInfo().getPort()));
         comboLanguage.getSelectionModel().select(applicationManager.getApplicationConfiguration().getLanguage());
     }
 
@@ -135,8 +136,7 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
             try {
                 ApplicationConfiguration temporaryApplicationConfiguration = new ApplicationConfiguration();
                 temporaryApplicationConfiguration.setLanguage(getLanguage());
-                temporaryApplicationConfiguration.setServerIp(getServerIp());
-                temporaryApplicationConfiguration.setServerPort(getServerPort());           
+                temporaryApplicationConfiguration.setWebserviceHostInfo(new WebserviceHostInfo(getServerIp(), getServerPort()));          
                 if (writeImmediately) {
                     applicationManager.getApplicationConfiguration().apply(temporaryApplicationConfiguration);
                 } else {
