@@ -47,7 +47,7 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
     private OkHttpAsyncHandler(String url,String postBody, LoginListener listener,URLExtensions method){
         this.method = method;
         System.out.println(method.toString().toLowerCase());
-        this.url = (url + "/" + method.toString().toLowerCase());
+        this.url = (Database.getInstance().getUrl() + "/" + method.toString().toLowerCase());
         this.listener = listener;
         this.postBody = postBody;
     }
@@ -63,9 +63,9 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
                 .post(body)
                 .build();
         if(method != URLExtensions.AUTHENTICATION) {
-            String sessionkey;
-            if ((sessionkey =Database.getInstance().getSessionKey()) != null) {
-                request = request.newBuilder().addHeader("Authorization","Bearer " + sessionkey).build();
+            String sessionKey;
+            if ((sessionKey =Database.getInstance().getSessionKey()) != null) {
+                request = request.newBuilder().addHeader("Authorization","Bearer " + sessionKey).build();
             }
         }
 

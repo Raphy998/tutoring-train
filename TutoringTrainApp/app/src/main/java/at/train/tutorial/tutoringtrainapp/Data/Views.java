@@ -10,4 +10,9 @@ public interface Views {
          public static interface Login{};
      };
     }
+    public static interface Entry{
+        public static interface In{
+            public static interface loadNewest{};
+        }
+    }
 }

@@ -21,7 +21,7 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
     private Button btnLogin;
 
     // TODO: 19.11.2017 change Output to res/values
-    private String url = "http://10.0.0.22:9999/TutoringTrainWebservice/services";
+    private String url = "http://tutoringtrain.zapto.org:8080/TutoringTrainWebservice/services";
 
 
     @Override
@@ -43,6 +43,7 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
 
         //if an session key is already stored, the main activity will be started directly
         Database db = Database.getInstance();
+        db.setUrl(url);
         db.initSharedPrefs(this);
         String sessionKey = db.getSessionKey();
         if(sessionKey != null && !sessionKey.isEmpty()){

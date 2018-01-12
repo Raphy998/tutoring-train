@@ -18,7 +18,7 @@ import android.widget.Toast;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginListener {
 
     // TODO: 19.11.2017 change Output to res/values
-    private String url = "http://10.0.0.22:9999/TutoringTrainWebservice/services";
+    private String url = "http://tutoringtrain.zapto.org:8080/TutoringTrainWebservice/services";
 
     // UI references.
     private EditText mEmailView;

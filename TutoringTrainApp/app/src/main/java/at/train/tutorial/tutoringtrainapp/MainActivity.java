@@ -8,7 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -74,7 +76,16 @@ public class MainActivity extends AppCompatActivity {
 
         recView.setAdapter(adapter);
 
+        try{
+            OkHttpHandler.loadEntries();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this,"failed",Toast.LENGTH_LONG).show();
+        }
+
     }
+
+
 
 
 

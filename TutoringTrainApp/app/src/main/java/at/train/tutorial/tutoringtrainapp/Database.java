@@ -12,6 +12,7 @@ public class Database {
     private SharedPreferences prefs;
     private String sharedPrefsSessionKey = "tutoring.train.session.key";
     private String sessionKey = null;
+    private String url = null;
 
     private Database(){
 
@@ -41,5 +42,13 @@ public class Database {
         return sessionKey;
     }
 
+    public void setUrl(String url){
+        if(this.url == null) {
+            this.url = url;
+        }
+    }
 
+    public String getUrl() {
+        return url;
+    }
 }
