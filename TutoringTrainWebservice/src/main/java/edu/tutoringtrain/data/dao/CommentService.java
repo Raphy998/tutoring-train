@@ -16,7 +16,6 @@ import edu.tutoringtrain.entities.Entry;
 import edu.tutoringtrain.utils.DateUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -44,7 +43,7 @@ public class CommentService extends AbstractService {
         }
         
         if (em.find(Entry.class, new BigDecimal(entryID)) == null) {
-            throw new NullValueException(new ErrorBuilder(edu.tutoringtrain.data.error.Error.OFFER_NOT_FOUND));
+            throw new NullValueException(new ErrorBuilder(edu.tutoringtrain.data.error.Error.ENTRY_NOT_FOUND).withParams(entryID));
         }
         
         TypedQuery<Comment> query = (TypedQuery<Comment>) em.createNamedQuery("Comment.findByEntryId");

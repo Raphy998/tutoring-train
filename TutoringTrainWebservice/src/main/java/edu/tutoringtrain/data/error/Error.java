@@ -59,6 +59,7 @@ public class Error {
     public static final int COMMENT_NOT_FOUND = 44;
     public static final int COMMENT_OF_USER_NOT_FOUND = 45;
     public static final int VALUE_INVALID = 46;
+    public static final int ENTRY_NOT_FOUND = 47;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -72,7 +73,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return VALUE_INVALID;
+        return ENTRY_NOT_FOUND;
     }
 
     public Error() {

@@ -44,5 +44,6 @@
     "43": "Die Rolle 'ROOT' kann nicht gesetzt werden",
     "44": "Kommentar (id=%s) bei %s (id=%s) nicht gefunden",
     "45": "Kommentar (id=%s) von '%s' bei %s (id=%s) nicht gefunden",
-    "46": "Ungültiger Wert: '%s'"
+    "46": "Ungültiger Wert: '%s'",
+    "47": "Eintrag (id=%s) nicht gefunden"
 }

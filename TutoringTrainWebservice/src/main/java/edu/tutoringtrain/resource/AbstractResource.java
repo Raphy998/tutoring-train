@@ -24,6 +24,7 @@ import edu.tutoringtrain.data.exceptions.CommentNotFoundException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.EntryNotFoundException;
+import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
@@ -167,6 +168,10 @@ public abstract class AbstractResource {
         }
         catch (SubjectNotActiveException ex) {
             response.status(CustomHttpStatusCodes.SUBJECT_NOT_ACTIVE);
+            response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (NullValueException ex) {
+            response.status(Response.Status.NOT_FOUND);
             response.entity(ex.getError().withLang(lang).build());
         }
         catch (XMPPException ex) {

@@ -44,5 +44,6 @@
     "43": "Cannot set role 'ROOT'",
     "44": "Comment (id=%s) of %s (id=%s) not found",
     "45": "Comment (id=%s) by '%s' of %s (id=%s) not found",
-    "46": "Invalid Value: '%s'"
+    "46": "Invalid Value: '%s'",
+    "47": "Entry (id=%s) not found"
 }
