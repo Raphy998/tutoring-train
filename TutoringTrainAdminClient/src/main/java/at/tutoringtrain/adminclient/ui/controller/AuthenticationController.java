@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.user.Gender;
 import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
+import at.tutoringtrain.adminclient.data.user.Gender;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.Credentials;
@@ -183,15 +183,6 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
             }
         } catch (Exception ex) {
             disableControls(false);
-            logger.error("Login failed", ex);
-        }
-    }
-    
-    @FXML
-    void onBtnDebugSettings(ActionEvent event) {
-        try {
-            windowService.openSettingsWindow(true);
-        } catch (Exception ex) {
             logger.error("Login failed", ex);
         }
     }
