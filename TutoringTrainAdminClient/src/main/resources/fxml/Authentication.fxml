@@ -18,9 +18,14 @@
    <children>
       <HBox alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="230.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
          <children>
-            <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <Label fx:id="lblTitle" alignment="CENTER" contentDisplay="CENTER" text="%titleAuthentication" textAlignment="CENTER" textFill="#084c61" VBox.vgrow="ALWAYS">
+                  <ImageView fitHeight="150.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@../images/logo.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="lblTitle" alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="299.0" text="%titleAuthentication" textAlignment="CENTER" textFill="#084c61" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -31,11 +36,6 @@
                         <Font name="System Bold" size="21.0" />
                      </font>
                   </Label>
-                  <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/logo.png" />
-                     </image>
-                  </ImageView>
                </children>
             </VBox>
          </children>
