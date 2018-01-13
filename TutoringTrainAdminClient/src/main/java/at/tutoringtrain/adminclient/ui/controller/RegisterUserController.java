@@ -69,7 +69,6 @@ public class RegisterUserController implements Initializable, TutoringTrainWindo
     private TextFieldValidator validatorNameField;
     private EmailFieldValidator validatorEmailField;
     private TextFieldValidator validatorEducationField;
-
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
