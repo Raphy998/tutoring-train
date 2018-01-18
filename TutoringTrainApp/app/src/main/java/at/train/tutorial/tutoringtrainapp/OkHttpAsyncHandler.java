@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
+import at.train.tutorial.tutoringtrainapp.Data.URLExtension;
 import at.train.tutorial.tutoringtrainapp.Data.User;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -25,22 +26,21 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
     private String postBody;
     private LoginListener listener;
     private Response response;
-    private URLExtensions method;
+    private String method;
 
-    public static void performLogin(String url,String username, String password, LoginListener listener){
-        new OkHttpAsyncHandler(url,JSONConverter.userToJson(new User(username,password)),
-                listener,URLExtensions.AUTHENTICATION).execute();
+    public static void performLogin(String username, String password, LoginListener listener){
+        new OkHttpAsyncHandler(JSONConverter.userToJson(new User(username,password)),
+                listener, URLExtension.AUTHENTICATION).execute();
     }
 
-    public static void performSessionCheck(String url,LoginListener listener){
-        new OkHttpAsyncHandler(url + "/" + URLExtensions.AUTHENTICATION.toString().toLowerCase(),"",
-                listener,URLExtensions.CHECK).execute();
+    public static void performSessionCheck(LoginListener listener){
+        new OkHttpAsyncHandler("", listener,URLExtension.AUTHENTICATION + URLExtension.CHECK).execute();
     }
 
-    private OkHttpAsyncHandler(String url,String postBody, LoginListener listener,URLExtensions method){
+    private OkHttpAsyncHandler(String postBody, LoginListener listener,String method){
         this.method = method;
-        System.out.println(method.toString().toLowerCase());
-        this.url = (Database.getInstance().getUrl() + "/" + method.toString().toLowerCase());
+        System.out.println(method);
+        this.url = (Database.getInstance().getUrl() + method);
         this.listener = listener;
         this.postBody = postBody;
     }
@@ -55,7 +55,7 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
                 .url(url)
                 .post(body)
                 .build();
-        if(method != URLExtensions.AUTHENTICATION) {
+        if(!URLExtension.AUTHENTICATION.equals(method)) {
             String sessionKey;
             if ((sessionKey =Database.getInstance().getSessionKey()) != null) {
                 request = request.newBuilder().addHeader("Authorization","Bearer " + sessionKey).build();
@@ -79,7 +79,7 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
                 System.out.println(code + " <-- Code");
                 if (code == HttpURLConnection.HTTP_OK) {
                     listener.loginSuccess();
-                    if(method == URLExtensions.AUTHENTICATION) {
+                    if(method == URLExtension.AUTHENTICATION) {
                         Database.getInstance().saveSessionKey(response.body().string());
                     }
                     System.out.println("alles ok");
@@ -90,7 +90,7 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
                     System.out.println("user is blocked");
                     listener.loginFailure("blocked");
                 } else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                    if(method == URLExtensions.AUTHENTICATION) {
+                    if(method == URLExtension.AUTHENTICATION) {
                         System.out.println("wrong user or password");
                         listener.loginFailure("falscher user oder passwort");
                     }
@@ -99,6 +99,7 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
                         listener.loginFailure("invalid sessionkey");
                     }
                 } else {
+                    System.out.println(url);
                     System.out.println(code);
                     System.out.println(response.body().toString());
                     listener.loginFailure(response.body().toString());

@@ -76,13 +76,19 @@ public class MainActivity extends AppCompatActivity {
 
         recView.setAdapter(adapter);
 
+        //try{
+        //    //OkHttpHandler.loadEntries();
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //    Toast.makeText(this,"failed",Toast.LENGTH_LONG).show();
+        //}
         try{
-            OkHttpHandler.loadEntries();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"failed",Toast.LENGTH_LONG).show();
+            Database.getInstance().getEntries();
         }
-
+        catch(Exception e){
+            e.printStackTrace();
+        }
+//
     }
 
 

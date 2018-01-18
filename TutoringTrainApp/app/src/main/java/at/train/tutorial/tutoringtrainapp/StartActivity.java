@@ -47,8 +47,7 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
         db.initSharedPrefs(this);
         String sessionKey = db.getSessionKey();
         if(sessionKey != null && !sessionKey.isEmpty()){
-            // TODO: 19.11.2017  Check for valid session key
-            OkHttpAsyncHandler.performSessionCheck(url,this);
+            OkHttpAsyncHandler.performSessionCheck(this);
         }
     }
 

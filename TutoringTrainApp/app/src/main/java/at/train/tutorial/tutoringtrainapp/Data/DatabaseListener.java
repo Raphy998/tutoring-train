@@ -5,5 +5,6 @@ package at.train.tutorial.tutoringtrainapp.Data;
  */
 
 public interface DatabaseListener {
-
+    void onFailure();
+    void onSuccess();
 }

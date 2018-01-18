@@ -3,11 +3,20 @@ package at.train.tutorial.tutoringtrainapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
+import at.train.tutorial.tutoringtrainapp.Data.Entry;
+import at.train.tutorial.tutoringtrainapp.Data.EntryType;
+import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
+import okhttp3.Response;
+import okhttp3.internal.http.HttpMethod;
+
 /**
  * @author moserr
  */
 
-public class Database {
+public class Database implements okHttpHandlerListener {
     private static Database instance;
     private SharedPreferences prefs;
     private String sharedPrefsSessionKey = "tutoring.train.session.key";
@@ -50,5 +59,30 @@ public class Database {
 
     public String getUrl() {
         return url;
+    }
+
+    public void getEntries() throws Exception{
+       OkHttpHandler.loadEntries(EntryType.OFFER,this,0,5);
+    }
+
+    @Override
+    public void onFailure(String response) {
+
+    }
+
+    @Override
+    public void onSuccess(Response response) {
+        System.out.println("Success from database");
+        if(response.code() == HttpURLConnection.HTTP_OK){
+            try {
+                String s = response.body().string();
+                System.out.println(s);
+                for(Entry e : JSONConverter.JsonToEntry(s)){
+                    System.out.println(e.toString());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

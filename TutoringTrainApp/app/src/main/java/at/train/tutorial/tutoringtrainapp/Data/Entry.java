@@ -1,5 +1,6 @@
 package at.train.tutorial.tutoringtrainapp.Data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import java.util.Date;
@@ -19,6 +20,7 @@ public class Entry {
     @JsonView({Views.Entry.In.loadNewest.class})
     private String description;
     @JsonView({Views.Entry.In.loadNewest.class})
+    //@JsonIgnoreProperties
     private Subject subject;
     @JsonView({Views.Entry.In.loadNewest.class})
     private String headline;

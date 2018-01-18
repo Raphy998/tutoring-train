@@ -17,9 +17,6 @@ import android.widget.Toast;
  */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginListener {
 
-    // TODO: 19.11.2017 change Output to res/values
-    private String url = "http://tutoringtrain.zapto.org:8080/TutoringTrainWebservice/services";
-
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -64,8 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 changeStatusOfLoginForm(false);
                 String username = mEmailView.getText().toString();
                 String password = mPasswordView.getText().toString();
-                OkHttpAsyncHandler.performLogin(url,username,Encrypter.md5(password), this);
-                //handler = new OkHttpAsyncHandler(url, username, Encrypter.md5(password), this);
+                OkHttpAsyncHandler.performLogin(username,Encrypter.md5(password), this);
                 mProgressView.setVisibility(View.VISIBLE);
             }
         }
