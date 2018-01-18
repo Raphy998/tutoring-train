@@ -2,16 +2,10 @@ package at.train.tutorial.tutoringtrainapp;
 
 import android.os.AsyncTask;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import at.train.tutorial.tutoringtrainapp.Data.User;
-import at.train.tutorial.tutoringtrainapp.Data.Views;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -22,7 +16,6 @@ import okhttp3.Response;
  * @author moserr
  *
  */
-
 
 //todo optimize
 public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
