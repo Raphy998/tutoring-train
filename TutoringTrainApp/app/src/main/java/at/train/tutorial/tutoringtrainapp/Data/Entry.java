@@ -35,4 +35,32 @@ public class Entry {
     public String toString() {
         return id + " - " + postedOn + " - " + isActive + " - " + description + " - " + subject + " - " + headline + " - " + user;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public Date getPostedOn() {
+        return postedOn;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public String getHeadline() {
+        return headline;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

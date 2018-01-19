@@ -39,6 +39,31 @@ public class User {
         this.password = password;
     }
 
+    public String getUsername() {
+        return username;
+    }
 
+    public String getEmail() {
+        return email;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getEducation() {
+        return education;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
 }

@@ -3,16 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="5dp"
+    android:paddingEnd="5dp"
     android:background="@drawable/recycler_view_border"
     android:orientation="vertical">
 
     <TextView
+        android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
-        android:text="Angebot 1"
         android:textColor="@color/colorAccent"
         android:id="@+id/txt_headline"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:id="@+id/txt_subject"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,9 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:layout_marginStart="5dp"
             android:textColor="@color/colorPrimary"
-            android:text="admin"
             android:layout_marginBottom="10dp"
             android:id="@+id/txt_user"/>
 
@@ -34,19 +39,11 @@
             android:textSize="14sp"
             android:paddingEnd="5dp"
             android:layout_marginStart="5dp"
-            android:text="01.01.2018"
             android:layout_marginBottom="10dp"
             android:id="@+id/txt_date"/>
 
     </RelativeLayout>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:text="Beschreibung..."
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/txt_description"/>
+
 </LinearLayout>

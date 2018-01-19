@@ -22,4 +22,24 @@ public class Subject {
     public String toString() {
         return "++++++++++++++++++++++++++++++++++++++++++++++++ " + id + " " + dename;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public String getDename() {
+        return dename;
+    }
+
+    public String getEnname() {
+        return enname;
+    }
 }

@@ -8,15 +8,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
+import at.train.tutorial.tutoringtrainapp.Data.Entry;
+
+public class MainActivity extends AppCompatActivity implements DatabaseListener {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<String> planetList=new ArrayList();
+    private ArrayList<Entry> entries =new ArrayList();
+    private RecyclerView recView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
 
-        RecyclerView recView = (RecyclerView) findViewById(R.id.lv_test);
+        recView = (RecyclerView) findViewById(R.id.lv_test);
 
         Window window = this.getWindow();
 
@@ -39,62 +41,40 @@ public class MainActivity extends AppCompatActivity {
         // finally change the color
         window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary));
 
-
-        // This is the array adapter, it takes the context of the activity as a
-        // first parameter, the type of list view as a second parameter and your
-        // array as a third parameter.
-
-        layoutManager = new LinearLayoutManager(this);
-        recView.setLayoutManager(layoutManager);
-        adapter = new CustomAdapter(this.planetList,getApplicationContext());
-
-        planetList.add("foo");
-        planetList.add("bar");
-        planetList.add("test");
-        planetList.add("test");
-        planetList.add("lol");
-        planetList.add("foo");
-        planetList.add("bar");
-        planetList.add("test");
-        planetList.add("test");
-        planetList.add("lol");
-        planetList.add("foo");
-        planetList.add("bar");
-        planetList.add("test");
-        planetList.add("test");
-        planetList.add("lol");
-        planetList.add("foo");
-        planetList.add("bar");
-        planetList.add("test");
-        planetList.add("test");
-        planetList.add("lol");
-        planetList.add("foo");
-        planetList.add("bar");
-        planetList.add("test");
-        planetList.add("test");
-        planetList.add("lol");
-
-        recView.setAdapter(adapter);
-
-        //try{
-        //    //OkHttpHandler.loadEntries();
-        //} catch (IOException e) {
-        //    e.printStackTrace();
-        //    Toast.makeText(this,"failed",Toast.LENGTH_LONG).show();
-        //}
         try{
+            layoutManager = new LinearLayoutManager(this);
+            recView.setLayoutManager(layoutManager);
+            Database db = Database.getInstance();
+            db.setListener(this);
+            db.loadEntries();
+
+            entries = db.getEntries();
+            adapter = new CustomEntryAdapter(this.entries,getApplicationContext());
+
+            recView.setAdapter(adapter);
             Database.getInstance().getEntries();
         }
         catch(Exception e){
             e.printStackTrace();
         }
-//
+
     }
 
 
+    @Override
+    public void onFailure() {
 
+    }
 
-
-
-
+    @Override
+    public void onSuccess() {
+        entries = Database.getInstance().getEntries();
+        System.out.println("lel2");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
 }

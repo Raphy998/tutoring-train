@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
+import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
 import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
@@ -19,12 +21,14 @@ import okhttp3.internal.http.HttpMethod;
 public class Database implements okHttpHandlerListener {
     private static Database instance;
     private SharedPreferences prefs;
+    private ArrayList<Entry> entries;
     private String sharedPrefsSessionKey = "tutoring.train.session.key";
     private String sessionKey = null;
     private String url = null;
+    private DatabaseListener listener = null;
 
     private Database(){
-
+        entries = new ArrayList<>();
     }
 
     public static Database getInstance(){
@@ -44,6 +48,10 @@ public class Database implements okHttpHandlerListener {
         prefs.edit().putString(sharedPrefsSessionKey,sessionKey).apply();
     }
 
+    public void setListener(DatabaseListener listener){
+        this.listener = listener;
+    }
+
     public String getSessionKey(){
         if(sessionKey == null){
             sessionKey = prefs.getString(sharedPrefsSessionKey,null);
@@ -61,8 +69,18 @@ public class Database implements okHttpHandlerListener {
         return url;
     }
 
-    public void getEntries() throws Exception{
+    public void loadEntries() throws Exception{
        OkHttpHandler.loadEntries(EntryType.OFFER,this,0,5);
+    }
+
+    public ArrayList<Entry> getEntries(){
+        return entries;
+    }
+
+    private void notifySuccessToListener(){
+        if(listener != null){
+            listener.onSuccess();
+        }
     }
 
     @Override
@@ -75,11 +93,9 @@ public class Database implements okHttpHandlerListener {
         System.out.println("Success from database");
         if(response.code() == HttpURLConnection.HTTP_OK){
             try {
-                String s = response.body().string();
-                System.out.println(s);
-                for(Entry e : JSONConverter.JsonToEntry(s)){
-                    System.out.println(e.toString());
-                }
+                entries.addAll(JSONConverter.JsonToEntry(response.body().string()));
+                System.out.println("lel");
+                notifySuccessToListener();
             } catch (IOException e) {
                 e.printStackTrace();
             }
