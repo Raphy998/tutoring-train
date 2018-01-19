@@ -118,12 +118,18 @@ public class EntryService extends AbstractService {
             throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(username));
         }
 
-        offerReq.setSubject(s);
-        offerReq.setUser(user);
-        offerReq.setIsactive('1');
-        offerReq.setFlag(type.getChar());
-        offerReq.setPostedon(DateUtils.toDate(LocalDateTime.now()));
-        em.persist(offerReq);
+        try {
+            offerReq.setSubject(s);
+            offerReq.setUser(user);
+            offerReq.setIsactive('1');
+            offerReq.setFlag(type.getChar());
+            offerReq.setPostedon(DateUtils.toDate(LocalDateTime.now()));
+            em.persist(offerReq);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
         
         return offerReq;
     }
@@ -180,6 +186,7 @@ public class EntryService extends AbstractService {
         if (dataEntry.getDuedate() != null) dbEntry.setDuedate(dataEntry.getDuedate());
         if (dataEntry.getPostedon() != null) dbEntry.setPostedon(dataEntry.getPostedon());
         if (dataEntry.getIsactive() != null) dbEntry.setIsactive(dataEntry.getIsactive());
+        if (dataEntry.getLocation()!= null) dbEntry.setLocation(dataEntry.getLocation());
         if (dataEntry.getSubject() != null) {
             Subject s = subjectService.getSubject(dataEntry.getSubject().getId());
             if (s == null) {
@@ -234,6 +241,9 @@ public class EntryService extends AbstractService {
         switch (prop) {
             case DUEDATE:
                 offer.setDuedate(null);
+                break;
+            case LOCATION:
+                offer.setLocation(null);
                 break;
         }
     }

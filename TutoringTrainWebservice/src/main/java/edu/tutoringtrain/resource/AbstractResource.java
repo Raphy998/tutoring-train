@@ -58,6 +58,7 @@ public abstract class AbstractResource {
         mapper.setVisibility(GETTER, Visibility.PROTECTED_AND_PUBLIC);
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"));
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     }
     
     protected ObjectMapper getMapper() {

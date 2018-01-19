@@ -77,6 +77,7 @@ public class OfferResource extends AbstractResource {
         
         Language lang = getLang(httpServletRequest);
         String username = securityContext.getUserPrincipal().getName();
+        
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
 
         try {

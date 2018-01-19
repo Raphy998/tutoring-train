@@ -9,8 +9,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.misc.JGeometryDeserializer;
+import edu.tutoringtrain.misc.JGeometrySerializer;
 import edu.tutoringtrain.misc.NumericBooleanDeserializer;
 import edu.tutoringtrain.misc.NumericBooleanSerializer;
+import edu.tutoringtrain.misc.SubjectLocalizeSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -22,7 +25,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -44,6 +46,7 @@ import org.eclipse.persistence.annotations.StructConverter;
  * @author Elias
  */
 @Entity
+//Converter for Oracle Spatials' SDO_GEOMETRY_TYPE
 @StructConverter(name = "JGeometry", converter = "org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter")
 @Table(name = "ENTRY", catalog = "")
 @XmlRootElement
@@ -113,6 +116,9 @@ public class Entry implements Serializable {
     private String headline;
     @Convert("JGeometry")
     @Column(name = "LOCATION")
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
+    @JsonSerialize(using = JGeometrySerializer.class)
+    @JsonDeserialize(using = JGeometryDeserializer.class)
     private JGeometry location;
     @OneToMany(mappedBy = "entry")
     private Collection<Comment> tcommentCollection;

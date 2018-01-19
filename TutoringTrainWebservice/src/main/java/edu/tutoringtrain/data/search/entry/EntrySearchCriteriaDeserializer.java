@@ -76,6 +76,7 @@ public class EntrySearchCriteriaDeserializer extends StdDeserializer<SearchCrite
                 throw new IOException("invalid value '" + subNode.textValue() + "' for key");
             }
             catch (InvalidFormatException ex) {
+                ex.printStackTrace();
                 throw new IOException("operation '" + ex.getValue() + "' not possible on type " + prop.getDataType() + " of key " + prop);
             }
         }

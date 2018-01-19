@@ -10,5 +10,6 @@ package edu.tutoringtrain.data;
  * @author Elias
  */
 public enum ResettableEntryProp {
-    DUEDATE
+    DUEDATE,
+    LOCATION
 }

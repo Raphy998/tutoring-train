@@ -324,24 +324,42 @@ public class UserService extends AbstractService {
     public List<User> search(UserSearch searchCriteria) {
         UserQueryGenerator gen = new UserQueryGenerator();
         JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        List<User> users;
         
-        return query.from(QUser.user)
-            .where(gen.getPredicates(searchCriteria))
-            .orderBy(gen.getOrders(searchCriteria))
-            .list(QUser.user);
+        try {
+            users = query.from(QUser.user)
+                .where(gen.getPredicates(searchCriteria))
+                .orderBy(gen.getOrders(searchCriteria))
+                .list(QUser.user);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+         
+         return users;
     }
     
     @Transactional
     public List<User> search(UserSearch searchCriteria, int start, int pageSize) {
         UserQueryGenerator gen = new UserQueryGenerator();
         JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        List<User> users;
         
-        return query.from(QUser.user)
-            .where(gen.getPredicates(searchCriteria))
-            .orderBy(gen.getOrders(searchCriteria))
-            .offset(start)
-            .limit(pageSize)
-            .list(QUser.user);
+        try {
+            users = query.from(QUser.user)
+                .where(gen.getPredicates(searchCriteria))
+                .orderBy(gen.getOrders(searchCriteria))
+                .offset(start)
+                .limit(pageSize)
+                .list(QUser.user);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+         
+         return users;
     }
     
     /*

@@ -20,10 +20,8 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.SASLMechanism;
 import org.jivesoftware.smack.sasl.javax.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -39,8 +37,8 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
  */
 @ApplicationScoped
 public class XMPPService extends AbstractService {
-    private static final String DOMAIN = "tutoringtrain.hopto.org";     //The domain set in XMPP Server
-    private static final String HOST = "tutoringtrain.hopto.org";             //The IP Address of the XMPP Server 
+    private static final String DOMAIN = "tutoringtrain.zapto.org";     //The domain set in XMPP Server
+    private static final String HOST = "tutoringtrain.zapto.org";             //The IP Address of the XMPP Server 
     private static final int PORT = 5222;                       //The Port for XMPP Connections (Default: 5222)
     private static final String ADMIN_USERNAME = "admin";       //The Username of the XNPP Server Admin (for creating new users)
     private static final String ADMIN_PASSWORD = "tutoringtrain";       //The Password of the XNPP Server Admin (for creating new users)
