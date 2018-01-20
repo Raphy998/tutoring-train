@@ -18,12 +18,16 @@ export default class LoginRegisterSelector extends React.Component {
     this.state = {
       tabVal : 'login',
       snackbarMessage: '',
-      showSnackbarMessage: false
+      showSnackbarMessage: false,
     }
   }
 
   showSnackbar = (value) => {
     this.setState({snackbarMessage: value, showSnackbarMessage: true});
+  }
+
+  onSnackbarRequestClose = () => {
+    this.setState({showSnackbarMessage: false});
   }
 
   handleTabChange = (value) => {
@@ -62,6 +66,7 @@ export default class LoginRegisterSelector extends React.Component {
     <Snackbar
       open={this.state.showSnackbarMessage}
       message={this.state.snackbarMessage}
+      onRequestClose={this.onSnackbarRequestClose}
       autoHideDuration={4000}/>
     </div>
     );

@@ -14,6 +14,7 @@ import NewOfferDialog from './NewOfferDialog';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import SearchBar from 'material-ui-search-bar';
 import Snackbar from 'material-ui/Snackbar';
+import { addOffers } from 'app/entities/redux/ActionCreators';
 import {
   Table,
   TableBody,
@@ -24,7 +25,9 @@ import {
 } from 'material-ui/Table';
 import moment from 'moment';
 require("app/styles/offergridstyle.less");
-
+import getStore from 'app/entities/redux/StoreProvider';
+let store = getStore();
+import { SET_OFFERS, ADD_OFFERS } from 'app/entities/redux/ActionCreators.jsx';
 
 export default class GridListOffers extends React.Component {
   constructor(props) {
@@ -36,7 +39,18 @@ export default class GridListOffers extends React.Component {
       value: 3,
       showNewOfferDialog: false
     };
+    store.subscribe(() => {
+      //New offers have been loaded -> add to offer collection
+      if(store.getState().type == ADD_OFFERS) {
+        if(store.getState().offers.length) {
+          let pOffers = this.state.offers;
+          Array.prototype.push.apply(pOffers, store.getState().offers);
+          this.setState({offers: pOffers});
+        }
+      }
+    })
   }
+
 
   componentWillMount = () => {
     this.fetchData();
@@ -54,22 +68,22 @@ export default class GridListOffers extends React.Component {
 
   //responsible for loading offers from the webservice.
   fetchData = () => {
+    let mOffers = [];
     let itemsPerPage = 5;
     OfferService.getNewestOffers(localStorage.getItem('session-key'), this.state.startIndex, itemsPerPage)
     .then((ro) => {
       if(ro.code == 200) {
         let parsedJSON = JSON.parse(ro.message);
+        //console.log("parsed JSON" +  parsedJSON);
         if((parsedJSON && parsedJSON.length)) {
-          for (var i=0; i < parsedJSON.length; i++) {
-               this.state.offers.push(parsedJSON[i]);
-           }
-           this.setState({startIndex: this.state.startIndex + itemsPerPage});
+          store.dispatch(addOffers(parsedJSON));
+          this.setState({startIndex: this.state.startIndex + itemsPerPage});
         }
         else {
-          this.setState({hasMoreItems: false});
+          //this.setState({hasMoreItems: false});
         }
       }
-      }
+    }
     );
     }
 
@@ -81,10 +95,14 @@ export default class GridListOffers extends React.Component {
 
     //Callback function for the Tab subcomponents in order to display the snackbar.
     showSnackbar = (message) => {
-      this.setState({messageSnackbarState: true, messageSnackbarMessage: message});
+      this.setState({messageSnackbarMessage: message});
+      this.setState({messageSnackbarState: true});
     }
 
-
+  //Called when a certain offer is being clicked.
+  onOfferClicked = (ev) => {
+    //ev.preventDefault();
+  }
   render() {
     return(
       <div>
@@ -106,7 +124,7 @@ export default class GridListOffers extends React.Component {
                </ToolbarGroup>
              </Toolbar>
             <InfiniteScroll
-                   pageStart={0}
+                   pageStart={5}
                    loadMore={this.fetchData.bind(this)}
                    hasMore={this.state.hasMoreItems}
                    loader={<p style={{textAlign: 'center'}}>
@@ -119,9 +137,10 @@ export default class GridListOffers extends React.Component {
                      </p>
                    }>
                    <div>
-                 <Table>
+                 <Table onCellClick={this.onOfferClicked}>
                   <TableHeader>
                     <TableRow>
+                      <TableHeaderColumn>headline</TableHeaderColumn>
                       <TableHeaderColumn>date</TableHeaderColumn>
                       <TableHeaderColumn>description</TableHeaderColumn>
                       <TableHeaderColumn>username</TableHeaderColumn>
@@ -130,15 +149,18 @@ export default class GridListOffers extends React.Component {
                   </TableHeader>
                   <TableBody>
                     {
-                      this.state.offers.map((val, index) => {
-                        return(<TableRow key={val + index}>
-                          <TableRowColumn>{moment(val.postedon).format('DD/MM/YYYY')}</TableRowColumn>
-                          <TableRowColumn>{val.description}</TableRowColumn>
-                          <TableRowColumn>{val['user']['username']}</TableRowColumn>
-                          <TableRowColumn>{val['subject']['enname']}</TableRowColumn>
-                        </TableRow>)
-                      })
-                    }
+                        this.state.offers.map((val,index) => {
+                          return(<TableRow>
+                            <TableRowColumn>{val.headline}</TableRowColumn>
+                            <TableRowColumn>{moment(val.postedon).format('DD/MM/YYYY')}</TableRowColumn>
+                            <TableRowColumn>{val.description}</TableRowColumn>
+                            <TableRowColumn>{val.user['username']}</TableRowColumn>
+                            <TableRowColumn>{val.subject['dename']}</TableRowColumn>
+                          </TableRow>
+                        )
+                        })
+                      }
+
                   </TableBody>
                 </Table>
                    </div>

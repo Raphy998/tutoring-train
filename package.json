@@ -19,6 +19,7 @@
     "material-ui": "^0.19.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-images-upload": "^1.1.1",
     "webpack": "^3.6.0"
   },
   "devDependencies": {
@@ -39,7 +40,9 @@
     "react-flexbox-grid": "^1.1.5",
     "react-imageloader": "^2.1.0",
     "react-infinite-scroll-component": "^2.4.0",
+    "react-router-dom": "^4.2.2",
     "react-tap-event-plugin": "^3.0.2",
+    "redux": "^3.7.2",
     "style-loader": "^0.18.2",
     "webpack-dev-server": "^2.8.2"
   }

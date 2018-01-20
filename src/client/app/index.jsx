@@ -8,6 +8,10 @@ import EditAccountDetails from 'app/MainApp/Account/components/EditAccountDetail
 import { HashRouter, Route, Link, Redirect, Switch } from 'react-router-dom';
 import customTheme from 'app/styles/customTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+/* Creating redux store */
+import { createStore } from 'redux';
+import tutoringTrainReducer from 'app/entities/redux/ActionReducers.jsx';
+
 
 ReactDOM.render(
   <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
@@ -23,8 +27,10 @@ ReactDOM.render(
   document.getElementById('app')
 );
 let injectTapEventPlugin = require("react-tap-event-plugin");
+/*
 injectTapEventPlugin({
   shouldRejectClick: function (lastTouchEventTimestamp, clickEventTimestamp) {
     return true;
   }
 });
+*/

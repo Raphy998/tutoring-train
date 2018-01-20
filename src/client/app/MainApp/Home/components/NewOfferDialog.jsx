@@ -19,6 +19,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid';
 import OfferService from 'app/wsaccess/OfferService';
 import SubjectService from 'app/wsaccess/SubjectService';
 import Offer from 'app/entities/Offer';
+var Loader = require('halogen/PulseLoader');
 require("app/styles/offergridstyle.less");
 
 //Dialog to enter the details for the new offer and submit the offer creation process.
@@ -30,7 +31,8 @@ export default class NewOfferDialog extends React.Component {
       newOfferDate: new Date(),
       availableSubjects: null,
       onNewOfferDialogClose: this.props.onNewOfferDialogClose,
-      showSnackbar: this.props.showSnackbar
+      showSnackbar: this.props.showSnackbar,
+      subjectsLoaded: false
     };
     this.loadSubjectList();
   }
@@ -45,7 +47,7 @@ export default class NewOfferDialog extends React.Component {
         if(ro.code == 200) {
           console.log(ro.message);
           let parsedJSON = ro.message;
-          this.setState({availableSubjects: parsedJSON});
+          this.setState({availableSubjects: parsedJSON, subjectsLoaded: true});
         }
       });
   }
@@ -65,10 +67,9 @@ export default class NewOfferDialog extends React.Component {
         if(ro.code == 200) {
           this.state.showSnackbar('Offer created successfully')
           this.state.onNewOfferDialogClose();
-
         }
         else {
-          console.log('create offer failure');
+          this.state.showSnackbar("Error creating offer");
         }
       });
     }
@@ -88,38 +89,47 @@ export default class NewOfferDialog extends React.Component {
   }
 
   render() {
-    return(
-      <Dialog
-        title="Create offer"
-        //actions={actions}
-        modal={false}
-        open={this.state.open}
-        onRequestClose={this.btnCancelCreateOffer}>
-          <Grid className="gridNewOfferDialog">
+    if((this.state.subjectsLoaded)) {
+      return(
+        <Dialog
+          title="Create offer"
+          //actions={actions}
+          modal={false}
+          open={this.state.open}
+          onRequestClose={this.btnCancelCreateOffer}>
+            <Grid className="gridNewOfferDialog">
+              <br/>
+              <Row>
+                <Col xs={12} className="colNewOfferGrid">Description <TextField id="tfDescription" fullWidth={false} name="newOfferDescription" hintText="Short description about your offer." multiLine={true} rows={1} rowsMax={4} onChange={this.handleCreateOfferInputChange}/></Col>
+              <br/>
+                <Col xs={12} className="colNewOfferGrid">Subject
+                  <DropDownMenu style={{width: 400, paddingLeft: 0, marginLeft: 0}} autoWidth={false} name="newOfferSubject" value={this.state.selectedSubject} onChange={this.handleSubjectChange}>
+                    {
+                      this.state.availableSubjects != null ? (
+                      this.state.availableSubjects.map((val, index) => {
+                        return(<MenuItem key={val.id} value={val} primaryText={val.name} />)
+                      }))
+                      :
+                      ('')
+                    }
+                  </DropDownMenu>
+                </Col>
+              </Row>
             <br/>
-            <Row>
-              <Col xs={6} md={6} className="colNewOfferGrid">Description <TextField id="tfDescription" fullWidth={true} name="newOfferDescription" hintText="Short description about your offer." multiLine={true} rows={1} rowsMax={4} onChange={this.handleCreateOfferInputChange}/></Col>
-            <br/>
-              <Col xs={6} md={6} className="colNewOfferGrid">Subject
-                <DropDownMenu style={{width: 400, paddingLeft: 0, marginLeft: 0}} autoWidth={false} name="newOfferSubject" value={this.state.selectedSubject} onChange={this.handleSubjectChange}>
-                  {
-                    this.state.availableSubjects != null ? (
-                    this.state.availableSubjects.map((val, index) => {
-                      return(<MenuItem key={val.id} value={val} primaryText={val.enname} />)
-                    }))
-                    :
-                    ('')
-                  }
-                </DropDownMenu>
-              </Col>
-            </Row>
-          <br/>
-            <Col xs={12} className="colNewOfferGrid">
-                <RaisedButton primary label="Create" className="btnCreateOffer" onClick={this.btnCreateOfferClick}/>
-                <RaisedButton primary label="Cancel" className="btnCancelCreateOffer" onClick={this.btnCancelCreateOffer}/>
-              </Col>
-          </Grid>
-    </Dialog>
-    );
+              <Col xs={6} className="colNewOfferGrid">
+                  <RaisedButton primary label="Create" className="btnCreateOffer" onClick={this.btnCreateOfferClick}/>
+                  <RaisedButton primary label="Cancel" className="btnCancelCreateOffer" onClick={this.btnCancelCreateOffer}/>
+                </Col>
+            </Grid>
+      </Dialog>
+      );
+    }
+    else {
+      return(
+        <div id="divPageLoader">
+          <Loader color='#86BAB8' size="3em"/>
+        </div>
+      )
+    }
   }
 }

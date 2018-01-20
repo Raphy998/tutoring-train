@@ -10,6 +10,7 @@ import AccountService from 'app/wsaccess/AccountService.js';
 import LoginUser from 'app/entities/LoginUser.js';
 import {Redirect} from 'react-router-dom';
 
+
 export default class LoginTabComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -20,6 +21,7 @@ export default class LoginTabComponent extends React.Component {
       loginSuccess: false
     };
     this.btnLogin_Click = this.btnLogin_Click.bind(this.btnLogin_Click);
+    //console.log(store.getState())
   }
 
   //Registrating the user with the entered details using the web service.
@@ -66,9 +68,9 @@ export default class LoginTabComponent extends React.Component {
             <Redirect to="/mainapp/home"/> : null
           }
           <div className="divTabsLoginRegister">
-            <TextField className="login-field-mail" name="loginUsername" floatingLabelText="E-mail" onChange={this.handleLoginInputChange}/><br/>
+            <TextField required className="login-field-mail" name="loginUsername" floatingLabelText="Username" onChange={this.handleLoginInputChange}/><br/>
             <br/>
-            <TextField className="login-field-password" name="loginPassword" floatingLabelText="Password" type="Password" onChange={this.handleLoginInputChange}/><br/>
+            <TextField required className="login-field-password" name="loginPassword" floatingLabelText="Password" type="Password" onChange={this.handleLoginInputChange}/><br/>
             <br/>
             <RaisedButton fullWidth={true} label="LOG IN" className="btnLogin" onClick={this.btnLogin_Click}/>
           </div>

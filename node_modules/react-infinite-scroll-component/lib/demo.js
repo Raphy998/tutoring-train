@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4531cafebdc48e398034"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f8bbc09001b053ac2336"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -7426,15 +7426,7 @@
 	          this.props.children,
 	          !this.state.showLoader && !hasChildren && this.props.hasMore && this.props.loader,
 	          this.state.showLoader && this.props.loader,
-	          !this.props.hasMore && _react2['default'].createElement(
-	            'p',
-	            { style: { textAlign: 'center' } },
-	            this.props.endMessage || _react2['default'].createElement(
-	              'b',
-	              null,
-	              'Yay! You have seen it all'
-	            )
-	          )
+	          !this.props.hasMore && this.props.endMessage
 	        )
 	      );
 	    }

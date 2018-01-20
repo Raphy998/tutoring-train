@@ -23,23 +23,12 @@ export default class UpdateOwnUser {
   set gender(value) { this._gender = value }
 
   toJSON() {
-    return JSON.stringify(this.getJson(), this.replacer);
-  }
-
-  getJson() {
     return {
       name: this._name,
       email: this._email,
       password: this._password,
       education: this._education,
-      gender: this._gender.code
+      gender: this._gender
     }
-  }
-
-  replacer = (key, value) => {
-    if (value === null) {
-      return undefined;
-    }
-    return value;
   }
 }

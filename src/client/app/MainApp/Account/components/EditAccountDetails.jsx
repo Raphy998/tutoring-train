@@ -14,6 +14,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import SearchBar from 'material-ui-search-bar';
 import Snackbar from 'material-ui/Snackbar';
 import TextField from 'material-ui/TextField';
+import ImageUploader from 'react-images-upload';
 import {
   Table,
   TableBody,
@@ -41,7 +42,8 @@ export default class EditAccountDetails extends React.Component {
       getOwnUserDetailsFinished: false,
       getValidGendersFinished: false,
       getOwnAvatarFinished: false,
-      showSnackbar: this.props.showSnackbar
+      showSnackbarMessage: false,
+      snackbarMessage: ""
     };
   }
 
@@ -54,13 +56,14 @@ export default class EditAccountDetails extends React.Component {
         this.setState({
           editName: userDetails.name,
           editGender: userDetails.gender,
-          editEmail: userDetails.mail,
+          editEmail: userDetails.email,
           editEducation: userDetails.education,
           editUsername: userDetails.username
         });
+        this.setState({accountGender: userDetails.gender})
         this.setState({getOwnUserDetailsFinished: true}); //Loading data finished.
       }
-    })
+    });
 
     //Loading account avatar
     AccountService.getOwnAvatar(localStorage.getItem('session-key'), localStorage.getItem('username'))
@@ -69,10 +72,10 @@ export default class EditAccountDetails extends React.Component {
         this.setState({avatar: ro.message})
       }
       else if(ro.code == 204) { //User has no avatar
-        this.setState({avatar: new Image('')})
+        this.setState({avatar: require('app/resources/default_avatar.png')});
       }
       this.setState({getOwnAvatarFinished: true});
-    })
+    });
 
       //Loading valid genders.
       AccountService.getValidGenders(localStorage.getItem('session-key'))
@@ -81,11 +84,15 @@ export default class EditAccountDetails extends React.Component {
           let validGenders = JSON.parse(ro.message);
           console.log('genders' + ro.message);
           this.setState({genders: validGenders});
-          this.setState({accountGender: this.state.genders[0]})
           this.setState({getValidGendersFinished: true}); //Loading data finished.
         }
     })
   }
+
+  onSnackbarRequestClose = () => {
+    this.setState({showSnackbarMessage: false});
+  }
+
 
   handleLoginInputChange = (event) => {
     const target = event.target;
@@ -117,68 +124,134 @@ export default class EditAccountDetails extends React.Component {
   */
   btnUpdate_Click = () => {
     AccountService.updateOwnUser(localStorage.getItem('session-key'),
-    new UpdateOwnUser(this.state.accountName, this.state.accountEmail, null, this.state.accountEducation, this.state.accountGender))
+    new UpdateOwnUser(this.state.accountName, this.state.accountEmail, null, this.state.accountEducation, this.state.editGender))
     .then((ro) => {
       if(ro.code == 200) {
-        //this.state.showSnackbar("Details updated successfully.");
+        this.showSnackbar("Details updated successfully.");
       }
       else {
-        //this.state.showSnackbar("Error updating your details. Please try again later.");
+        this.showSnackbar("Error updating your details. Please try again later.");
       }
     });
   }
 
   handleGenderChange = (event, index, value) => {
-    this.setState({accountGender: value});
+    this.setState({editGender: value});
+    console.log("val" + value);
+  }
+  showSnackbar = (value) => {
+    this.setState({snackbarMessage: value, showSnackbarMessage: true});
   }
 
+  sleep = (milliseconds) => {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
+  onImageUpload = ((image) => {
+    let t = this;
+    //File to arraybuffer
+    let fr = new FileReader();
+    fr.onload = function(e) {
+      var arrayBuffer = e.target.result;
+      var bytes = new Uint8Array(arrayBuffer);
+      console.log(bytes);
+      AccountService.uploadProfileImage(localStorage.getItem('session-key'), bytes)
+      .then((ro) => {
+        if(ro.code == 200) {
+          t.showSnackbar("Profile image uploaded successfully!");
+        }
+        else {
+          t.showSnackbar("Error uploading your image. Please try again later.");
+        }
+      })
+      //refreshing image
+      //t.setState({avatar: require('app/resources/default_avatar.png')});
+      t.sleep(2000);
+      AccountService.getOwnAvatar(localStorage.getItem('session-key'), localStorage.getItem('username'))
+      .then((ro) => {
+        if(ro.code == 200) { //Avatar returned
+          t.setState({avatar: ro.message})
+        }
+        else if(ro.code == 204) { //User has no avatar
+          t.setState({avatar: require('app/resources/default_avatar.png')});
+        }
+        //this.setState({getOwnAvatarFinished: true});
+      });
+    }
+    fr.readAsArrayBuffer(image[0]);
+})
 
   render() {
     if((this.state.getOwnUserDetailsFinished) && (this.state.getValidGendersFinished) && (this.state.getOwnAvatarFinished)) {
       return(
         <div id="divMainEditAccountDetails">
           <Card expanded={this.state.expanded} onExpandChange={this.handleExpandChange} id="cardEditAccountDetails">
-          <CardMedia
-            overlay={<CardTitle title={localStorage.getItem('username')} />}>
-            <img src={this.state.avatar} alt="Profile Image" style={{height: 700, marginLeft: "auto", marginRight: "auto"}}/>
-          </CardMedia>
-          {/*<CardTitle title="Card title" subtitle="Card subtitle"/>*/}
-          <CardText>
-            <div id="divEditAccountTextfields">
+            <br/>
             <Row>
-              <Col xs={12}>
-                <TextField name="accountName" fullWidth={true} floatingLabelText="Name" defaultValue={this.state.editName} onChange={this.handleLoginInputChange}/>
+              <Col xs={12} sm={6}>
+                <CardMedia id="profileImageMedia"
+                  overlay={<CardTitle title={localStorage.getItem('username')} />}>
+                  <img src={this.state.avatar} alt="Profile Image" key={this.state.avatar}/>
+                </CardMedia>
+                <ImageUploader
+                  withIcon={true}
+                  buttonText='Upload profile image'
+                  onChange={this.onImageUpload}
+                  imgExtension={['.jpeg', '.jpg', '.png']}
+                  maxFileSize={5242880}
+                  withPreview={false}
+              />
               </Col>
-            <br/>
-              <Col xs={12}>
-                <TextField name="accountEmail" fullWidth={true} floatingLabelText="E-mail" defaultValue={this.state.editEmail} onChange={this.handleLoginInputChange}/>
-              </Col>
-            <br/>
-              <Col xs={12}>
-                <TextField name="accountEducation" fullWidth={true} floatingLabelText="Education" defaultValue={this.state.editEducation} onChange={this.handleLoginInputChange}/>
-              </Col>
-            <br/>
-              <Col xs={12}>
-                {
-                <DropDownMenu value={this.state.accountGender.name} style={{width: "100%", marginLeft: 0, marginRight: 0}} onChange={this.handleGenderChange}>
-                  {
-                    this.state.genders.map((value, index) => {
-                      return <MenuItem key={value.name} value={value.name} primaryText={value.name}/>
-                    })
-                  }
-                </DropDownMenu>
-              }
-              </Col>
+              <Col xs={12} sm={6}>
+            <CardText>
+              <div id="divEditAccountTextfields">
+              <Row>
+                <br/>
+                <br/>
+                <Col xs={12}>
+                  <TextField name="accountName" fullWidth={true} floatingLabelText="Name" defaultValue={this.state.editName} onChange={this.handleLoginInputChange}/>
+                </Col>
+                <br/>
+                <br/>
+                <Col xs={12}>
+                  <TextField name="accountEmail" fullWidth={true} floatingLabelText="E-mail" defaultValue={this.state.editEmail} onChange={this.handleLoginInputChange}/>
+                </Col>
+                <br/>
+                <br/>
+                <Col xs={12}>
+                  <TextField name="accountEducation" fullWidth={true} floatingLabelText="Education" defaultValue={this.state.editEducation} onChange={this.handleLoginInputChange}/>
+                </Col>
               <br/>
-              <Col xs={12}>
-                <RaisedButton label="Update" fullWidth={true} onClick={this.btnUpdate_Click}/>
-              </Col>
-            <br/>
-            </Row>
-          </div>
-          </CardText>
+                <Col xs={12}>
+                  {
+                  <DropDownMenu value={this.state.accountGender.code} style={{width: "100%", marginLeft: 0, marginRight: 0}} onChange={this.handleGenderChange}>
+                    {
+                      this.state.genders.map((value, index) => {
+                        return <MenuItem key={value.code} value={value.code} primaryText={value.name}/>
+                      })
+                    }
+                  </DropDownMenu>
+                }
+                </Col>
+                <br/>
+              </Row>
+              <RaisedButton fullWidth={true} label="Update" id="colUpdateBtn" onClick={this.btnUpdate_Click}/>
+            </div>
+            </CardText>
+          </Col>
+          </Row>
         </Card>
-        </div>
+        <Snackbar
+          open={this.showSnackbar}
+          message={this.state.snackbarMessage}
+          onRequestClose={this.onSnackbarRequestClose}
+          autoHideDuration={4000}/>
+      </div>
       );
     }
     return(

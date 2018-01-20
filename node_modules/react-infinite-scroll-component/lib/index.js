@@ -118,14 +118,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.el = this.props.height ? this._infScroll : window;
 	      this.el.addEventListener('scroll', this.throttledOnScrollListener);
 
-	      if (this.props.pullDownToRefresh) {
-	        document.addEventListener('touchstart', this.onStart);
-	        document.addEventListener('touchmove', this.onMove);
-	        document.addEventListener('touchend', this.onEnd);
+	      if (typeof this.props.initialScrollY === 'number' && this.el.scrollHeight > this.props.initialScrollY) {
+	        this.el.scrollTo(0, this.props.initialScrollY);
+	      }
 
-	        document.addEventListener('mousedown', this.onStart);
-	        document.addEventListener('mousemove', this.onMove);
-	        document.addEventListener('mouseup', this.onEnd);
+	      if (this.props.pullDownToRefresh) {
+	        this.el.addEventListener('touchstart', this.onStart);
+	        this.el.addEventListener('touchmove', this.onMove);
+	        this.el.addEventListener('touchend', this.onEnd);
+
+	        this.el.addEventListener('mousedown', this.onStart);
+	        this.el.addEventListener('mousemove', this.onMove);
+	        this.el.addEventListener('mouseup', this.onEnd);
 
 	        // get BCR of pullDown element to position it above
 	        this.maxPullDownDistance = this._pullDown.firstChild.getBoundingClientRect().height;
@@ -142,13 +146,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.el.removeEventListener('scroll', this.throttledOnScrollListener);
 
 	      if (this.props.pullDownToRefresh) {
-	        document.removeEventListener('touchstart', this.onStart);
-	        document.removeEventListener('touchmove', this.onMove);
-	        document.removeEventListener('touchend', this.onEnd);
+	        this.el.removeEventListener('touchstart', this.onStart);
+	        this.el.removeEventListener('touchmove', this.onMove);
+	        this.el.removeEventListener('touchend', this.onEnd);
 
-	        document.removeEventListener('mousedown', this.onStart);
-	        document.removeEventListener('mousemove', this.onMove);
-	        document.removeEventListener('mouseup', this.onEnd);
+	        this.el.removeEventListener('mousedown', this.onStart);
+	        this.el.removeEventListener('mousemove', this.onMove);
+	        this.el.removeEventListener('mouseup', this.onEnd);
 	      }
 	    }
 	  }, {
@@ -227,6 +231,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onScrollListener',
 	    value: function onScrollListener(event) {
+	      var _this2 = this;
+
+	      if (typeof this.props.onScroll === 'function') {
+	        // Execute this callback in next tick so that it does not affect the
+	        // functionality of the library.
+	        setTimeout(function () {
+	          return _this2.props.onScroll(event);
+	        }, 0);
+	      }
+
 	      var target = this.props.height ? event.target : document.documentElement.scrollTop ? document.documentElement : document.body;
 
 	      // if user scrolls up, remove action trigger lock
@@ -254,7 +268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var style = _extends({
 	        height: this.props.height || 'auto',
@@ -274,7 +288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          {
 	            className: 'infinite-scroll-component',
 	            ref: function (infScroll) {
-	              return _this2._infScroll = infScroll;
+	              return _this3._infScroll = infScroll;
 	            },
 	            style: style
 	          },
@@ -283,7 +297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            {
 	              style: { position: 'relative' },
 	              ref: function (pullDown) {
-	                return _this2._pullDown = pullDown;
+	                return _this3._pullDown = pullDown;
 	              }
 	            },
 	            _react2['default'].createElement(
@@ -341,7 +355,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  pullDownToRefreshContent: _propTypes2['default'].node,
 	  releaseToRefreshContent: _propTypes2['default'].node,
 	  pullDownToRefreshThreshold: _propTypes2['default'].number,
-	  refreshFunction: _propTypes2['default'].func
+	  refreshFunction: _propTypes2['default'].func,
+	  onScroll: _propTypes2['default'].func
 	};
 	module.exports = exports['default'];
 
