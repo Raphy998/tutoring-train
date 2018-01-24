@@ -3,17 +3,17 @@ package at.tutoringtrain.adminclient.ui.controller;
 import at.tutoringtrain.adminclient.data.user.BlockRequest;
 import at.tutoringtrain.adminclient.data.user.Blocked;
 import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.exception.RequiredParameterException;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
-import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestBlockUserListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DataStorage;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
-import at.tutoringtrain.adminclient.ui.TutoringTrainWindowWithReauthentication;
+import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.UserBlockListner;
 import at.tutoringtrain.adminclient.ui.validators.TextFieldValidator;
@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class BlockUserController implements Initializable, TutoringTrainWindowWithReauthentication, RequestBlockUserListener {
+public class BlockUserController implements Initializable, TutoringTrainWindow, RequestBlockUserListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -127,24 +127,21 @@ public class BlockUserController implements Initializable, TutoringTrainWindowWi
     @FXML
     void onBtnBlock(ActionEvent event) {
          try {
-             if (user != null) {
-                 if (validateInputControls()) {
-                     disableControls(true);
-                     BlockRequest blockRequest = new BlockRequest(getUsername(), getReason(), getDuration());
-                     if (!communicator.requestBlockUser(this, blockRequest)) {
-                         disableControls(false);
-                     }
-                     blocked = new Blocked();
-                     blocked.setDuedate(blockRequest.getDuedate());
-                     blocked.setReason(blockRequest.getReason());
-                 }
-             } else {
-                displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
-                logger.error("user is null");
-            }  
+            if (validateInputControls()) {
+                disableControls(true);
+                BlockRequest blockRequest = new BlockRequest(getUsername(), getReason(), getDuration());
+                if (!communicator.requestBlockUser(this, blockRequest)) {
+                    disableControls(false);
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+                }
+                blocked = new Blocked();
+                blocked.setDuedate(blockRequest.getDuedate());
+                blocked.setReason(blockRequest.getReason());
+            }
         } catch (Exception ex) {
             disableControls(false);
-            logger.error("blocking failed", ex);
+            logger.error("onBtnBlock", ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
@@ -155,7 +152,6 @@ public class BlockUserController implements Initializable, TutoringTrainWindowWi
     
     @Override
     public void displayMessage(MessageContainer container) {
-        logger.debug(container.toString());
         windowService.displayMessage(snackbar, container);
     }
     
@@ -168,7 +164,11 @@ public class BlockUserController implements Initializable, TutoringTrainWindowWi
         this.userBlockListner = userBlockListner;
     }
     
-    public void setUser(User user) {
+    public void setUser(User user) throws RequiredParameterException {
+        if (user == null) {
+            closeWindow();
+            throw new RequiredParameterException(user, "must not be null");
+        }
         this.user = user;
         if (user != null) {
             txtUsername.setText(user.getUsername());
@@ -196,11 +196,6 @@ public class BlockUserController implements Initializable, TutoringTrainWindowWi
     }
     
     @Override
-    public void reauthenticateUser(WebserviceOperation webserviceOperation) throws Exception {
-        
-    }
-
-    @Override
     public void requestBlockUserFinished(RequestResult result) {
         disableControls(false);
         if (result.isSuccessful()) {
@@ -215,8 +210,8 @@ public class BlockUserController implements Initializable, TutoringTrainWindowWi
     @Override
     public void requestFailed(RequestResult result) {
         disableControls(false);
-        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
-        logger.error("Request failed with status code:" + result.getStatusCode());
+        ApplicationManager.getHostFallbackService().requestCheck();
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
         logger.error(result.getMessageContainer().toString());
     }
 }

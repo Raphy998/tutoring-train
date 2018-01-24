@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" prefHeight="600.0" prefWidth="600.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController">
+<AnchorPane fx:id="pane" prefHeight="640.0" prefWidth="600.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController">
    <children>
       <VBox alignment="CENTER" layoutX="250.0" layoutY="5.0" prefHeight="50.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -24,23 +24,13 @@
             </Label>
          </children>
       </VBox>
-      <VBox layoutX="90.0" layoutY="310.0" prefHeight="0.0" spacing="30.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="130.0">
+      <VBox layoutX="90.0" layoutY="310.0" prefHeight="0.0" spacing="33.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
          <children>
             <JFXTextField fx:id="txtEName" focusColor="#084c61" labelFloat="true" promptText="%enname" unFocusColor="#86bab8" />
             <JFXTextField fx:id="txtDName" focusColor="#084c61" labelFloat="true" promptText="%dename" unFocusColor="#86bab8" />
          </children>
       </VBox>
-      <JFXButton fx:id="btnRegister" buttonType="RAISED" layoutX="415.0" layoutY="630.0" onAction="#onBtnRegister" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%register" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </JFXButton>
-      <JFXButton fx:id="btnClose" buttonType="RAISED" layoutX="383.0" layoutY="703.0" onAction="#onBtnClose" prefHeight="25.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%close" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="380.0" AnchorPane.rightAnchor="60.0">
-         <font>
-            <Font name="System Bold" size="13.0" />
-         </font>
-      </JFXButton>
-      <HBox alignment="CENTER" layoutX="408.0" layoutY="130.0" prefHeight="200.0" prefWidth="200.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="130.0">
+      <HBox alignment="CENTER" layoutX="408.0" layoutY="130.0" prefHeight="200.0" prefWidth="200.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="100.0">
          <children>
             <StackPane prefHeight="150.0" prefWidth="200.0">
                <children>
@@ -56,6 +46,16 @@
             </StackPane>
          </children>
       </HBox>
-      <JFXSpinner fx:id="spinner" layoutX="435.0" layoutY="638.0" prefHeight="30.0" prefWidth="30.0" radius="15.0" startingAngle="0.0" AnchorPane.bottomAnchor="150.0" AnchorPane.rightAnchor="127.0" />
+      <JFXButton fx:id="btnRegister" buttonType="RAISED" layoutX="415.0" layoutY="630.0" onAction="#onBtnRegister" prefHeight="40.0" prefWidth="200.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%register" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <JFXButton fx:id="btnClose" buttonType="RAISED" layoutX="383.0" layoutY="703.0" onAction="#onBtnClose" prefHeight="30.0" prefWidth="200.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%close" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold Italic" size="13.0" />
+         </font>
+      </JFXButton>
+      <JFXSpinner fx:id="spinner" layoutX="435.0" layoutY="638.0" prefHeight="30.0" prefWidth="30.0" radius="15.0" startingAngle="0.0" AnchorPane.bottomAnchor="155.0" AnchorPane.rightAnchor="127.0" />
    </children>
 </AnchorPane>

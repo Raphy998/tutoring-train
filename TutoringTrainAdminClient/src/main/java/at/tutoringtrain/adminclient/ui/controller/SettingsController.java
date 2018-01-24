@@ -7,7 +7,6 @@ import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
-import at.tutoringtrain.adminclient.main.WebserviceHostInfo;
 import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.validators.IpFieldValidator;
@@ -45,6 +44,8 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     private JFXButton btnSave;
     @FXML
     private JFXButton btnClose;
+    @FXML
+    private JFXButton btnCredits;
     
     private JFXSnackbar snackbar;
     
@@ -132,11 +133,11 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     
     @FXML
     void onBtnSave(ActionEvent event) {
-        if (validateInputControls()) {
+        if (true /*validateInputControls()*/) {
             try {
                 ApplicationConfiguration temporaryApplicationConfiguration = new ApplicationConfiguration();
                 temporaryApplicationConfiguration.setLanguage(getLanguage());
-                temporaryApplicationConfiguration.setWebserviceHostInfo(new WebserviceHostInfo(getServerIp(), getServerPort()));          
+                //temporaryApplicationConfiguration.setWebserviceHostInfo(new WebserviceHostInfo(getServerIp(), getServerPort()));          
                 if (writeImmediately) {
                     applicationManager.getApplicationConfiguration().apply(temporaryApplicationConfiguration);
                 } else {
@@ -147,6 +148,16 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
             } catch (IOException ioex) {
                 logger.error("onBtnUpdate: excpetion occurred", ioex);
             }
+        }
+    }
+    
+    @FXML
+    void onBtnCredits(ActionEvent event) {
+        try {
+            windowService.openCreditsWindow();
+        } catch (Exception ex) {
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
     

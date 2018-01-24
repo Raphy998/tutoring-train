@@ -5,7 +5,6 @@
 <?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
@@ -15,19 +14,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="pane" fx:id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.MainController">
-    <stylesheets>
-        <URL value="@/styles/Styles.css" />
-    </stylesheets>
+<AnchorPane fx:id="pane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="1100.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.MainController">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="210.0" spacing="10.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
-            <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+            <ImageView fitWidth="200.0" pickOnBounds="true" preserveRatio="true" smooth="false" VBox.vgrow="ALWAYS">
                <image>
                   <Image url="@../images/logo.png" />
                </image>
                <VBox.margin>
-                  <Insets bottom="15.0" />
+                  <Insets bottom="10.0" />
                </VBox.margin>
             </ImageView>
             <JFXButton fx:id="btnMyAccount" alignment="CENTER" buttonType="RAISED" onAction="#onBtnOwnAccount" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%myAccount">
@@ -69,6 +65,9 @@
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
             </JFXButton>
             <JFXButton fx:id="btnExit" alignment="CENTER" buttonType="RAISED" onAction="#onBtnExit" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%exit">
                <font>
@@ -81,25 +80,22 @@
                </VBox.margin>
             </JFXSpinner>
          </children>
-         <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </padding>
       </VBox>
-      <VBox AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
-            <Label fx:id="lblWelcome" text="%messageWelcome" textAlignment="CENTER">
+            <Label fx:id="lblWelcome" prefHeight="26.0" prefWidth="870.0" text="%messageWelcome" textAlignment="CENTER">
                <font>
                   <Font name="System Bold" size="17.0" />
                </font>
                <VBox.margin>
-                  <Insets bottom="20.0" />
+                  <Insets bottom="15.0" />
                </VBox.margin>
             </Label>
-            <HBox alignment="CENTER" disable="true" prefHeight="50.0" spacing="5.0">
+            <HBox alignment="CENTER" disable="true" spacing="5.0">
                <children>
-                  <JFXTextField fx:id="txtSearch" editable="false" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="700.0" promptText="%search" unFocusColor="#86bab8" />
+                  <JFXTextField fx:id="txtSearch" editable="false" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="600.0" promptText="%search" unFocusColor="#86bab8" />
                   <JFXComboBox fx:id="comboCategorie" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="150.0" promptText="%searchCategory" unFocusColor="#86bab8" />
-                  <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" onAction="#onBtnSearch" prefHeight="30.0" prefWidth="80.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%search">
+                  <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" onAction="#onBtnSearch" prefHeight="30.0" prefWidth="90.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%search">
                      <font>
                         <Font name="System Bold" size="13.0" />
                      </font>
@@ -108,19 +104,16 @@
                      </padding>
                   </JFXButton>
                </children>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </HBox>
-            <JFXListView fx:id="lvResult" disable="true" prefHeight="550.0">
                <VBox.margin>
-                  <Insets top="5.0" />
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </HBox>
+            <JFXListView fx:id="lvResult" prefHeight="480.0" prefWidth="870.0">
+               <VBox.margin>
+                  <Insets />
                </VBox.margin>
             </JFXListView>
          </children>
-         <padding>
-            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-         </padding>
       </VBox>
    </children>
 </AnchorPane>

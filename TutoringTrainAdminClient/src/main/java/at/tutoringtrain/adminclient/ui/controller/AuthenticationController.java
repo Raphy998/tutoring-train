@@ -3,6 +3,7 @@ package at.tutoringtrain.adminclient.ui.controller;
 import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.data.user.Gender;
+import at.tutoringtrain.adminclient.exception.NoHostException;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.Credentials;
@@ -33,6 +34,8 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,8 +59,7 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
     @FXML
     private JFXToggleButton remember;
     
-    private JFXSnackbar snackbar; 
-    
+    private JFXSnackbar snackbar;     
     private ApplicationManager applicationManager;
     private Logger logger; 
     private Communicator communicator;
@@ -66,7 +68,6 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
     private DataMapper dataMapper;
     private DataStorage dataStorage;
     private DefaultValueProvider defaultValueProvider;
-       
     private TextFieldValidator validatorUsernameField;
     private TextFieldValidator validatorPasswordField;
     private boolean loadedOwnUser;
@@ -82,6 +83,7 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
         dataStorage = ApplicationManager.getDataStorage();
         dataMapper = ApplicationManager.getDataMapper();
         defaultValueProvider = ApplicationManager.getDefaultValueProvider();
+        ApplicationManager.getHostFallbackService().getAvailableHost(); //check for available hosts during initialization to avoid gui freezing
         initializeControls();
         initializeControlValidators();
         logger.debug("AuthenticationController initialized");
@@ -91,6 +93,16 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
     private void initializeControls() {
         snackbar = new JFXSnackbar(pane);       
         spinner.setVisible(false);       
+        txtUsername.setOnKeyReleased((KeyEvent event) -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                btnLogin.fire();
+            }
+        });
+        txtPassword.setOnKeyReleased((KeyEvent event) -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                btnLogin.fire();
+            }
+        });
     }
     
     private void initializeControlValidators() {
@@ -105,6 +117,9 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
         if (applicationManager.isTokenFileAvailable()) {
             try {
                 communicator.requestTokenValidation(this, applicationManager.readTokenFile());
+            } catch (NoHostException nhex) {
+                disableControls(false);
+                logger.error("Token validation failed (no host specified)");
             } catch (Exception ex) {
                 logger.error("Token validation failed", ex);
                 disableControls(false);
@@ -142,10 +157,7 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
 
     @Override
     public void displayMessage(MessageContainer container) {
-        Platform.runLater(() -> {
-            snackbar.enqueue(new JFXSnackbar.SnackbarEvent(container.toString()));
-            logger.debug(container.toString());
-        });
+        windowService.displayMessage(snackbar, container);
     }
     
     @Override
@@ -181,6 +193,10 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
                 disableControls(true);
                 communicator.requestAuthenticate(this, new Credentials(getUsername(), getHashedPassword()), remember.isSelected());
             }
+        } catch (NoHostException nhex) {
+            disableControls(false);
+            displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
+            logger.error("Login failed (no host specified)");
         } catch (Exception ex) {
             disableControls(false);
             logger.error("Login failed", ex);
@@ -268,8 +284,8 @@ public class AuthenticationController implements Initializable, TutoringTrainWin
     @Override
     public void requestFailed(RequestResult result) {
         disableControls(false);
-        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
-        logger.error("Request failed with status code:" + result.getStatusCode());
+        ApplicationManager.getHostFallbackService().requestCheck();
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
         logger.error(result.getMessageContainer().toString());
     }
 }

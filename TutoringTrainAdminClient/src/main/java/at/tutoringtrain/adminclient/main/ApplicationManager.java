@@ -3,6 +3,7 @@ package at.tutoringtrain.adminclient.main;
 import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.data.user.UserRole;
+import at.tutoringtrain.adminclient.exception.NoHostException;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.file.FileService;
@@ -94,13 +95,12 @@ public final class ApplicationManager {
         return WebserviceHostFallbackService.getINSTANCE();
     }
 
-    public String getWebServiceUrl() throws Exception {
-        WebserviceHostInfo host = ApplicationManager.getHostFallbackService().getAvailableHost();
+    public String getWebServiceUrl() throws NoHostException {
+        WebserviceHostInfo host = getHostFallbackService().getAvailableHost();
         if (host == null) {
-            throw new Exception("NO HOST SPECIFIED");
+            throw new NoHostException("NO HOST SPECIFIED");
         }
         return getDefaultValueProvider().getDefaultWebServiceProtokoll() + "://" + host.getHost() + ":" + host.getPort() + getDefaultValueProvider().getDefaultWebServiceRootPath();
-        //return getDefaultValueProvider().getDefaultWebServiceProtokoll() + "://" + applicationConfiguration.getServerIp() + ":" + applicationConfiguration.getServerPort() + getDefaultValueProvider().getDefaultWebServiceRootPath();
     }
 
     public UserRole getMinimumRequiredUserRole() {

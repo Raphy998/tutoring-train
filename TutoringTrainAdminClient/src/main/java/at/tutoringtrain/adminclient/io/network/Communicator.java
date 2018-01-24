@@ -10,6 +10,7 @@ import at.tutoringtrain.adminclient.exception.RequiredParameterException;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferCountListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestResetPropertyOfOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsOfUserListener;
@@ -36,8 +37,11 @@ import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateAvatar
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateOwnUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserCountListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserSearchListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
+import at.tutoringtrain.adminclient.ui.search.entry.EntrySearch;
+import at.tutoringtrain.adminclient.ui.search.user.UserSearch;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +92,7 @@ public class Communicator {
         this.applicationManager = ApplicationManager.getInstance();
         this.dataMapper = ApplicationManager.getDataMapper();
         this.defaultValueProvider = ApplicationManager.getDefaultValueProvider();
-        this.okHttpClient = new OkHttpClient.Builder().connectTimeout(12, TimeUnit.SECONDS).readTimeout(12, TimeUnit.SECONDS).writeTimeout(12, TimeUnit.SECONDS).build();
+        this.okHttpClient = new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS).readTimeout(15, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).build();
         this.currentUsername = "";
         this.sessionToken = "";    
         this.json = defaultValueProvider.getJsonMediaType();
@@ -384,6 +388,30 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/all", requestCallback, new QueryParameter("start", Integer.toString(startIndex)), new QueryParameter("pageSize", Integer.toString(maxCount)));
+    }
+    
+    /**
+     * 
+     * @param listener
+     * @param userSearch
+     * @return
+     * @throws Exception 
+     */
+    public boolean requestUserSearch(RequestUserSearchListener listener, UserSearch userSearch) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (userSearch == null) {
+             throw new RequiredParameterException(userSearch, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestUserSearchListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestUserSearchFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "user/search", requestCallback, json, dataMapper.toJSON(userSearch));
     }
 
     /**
@@ -793,6 +821,23 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.POST, true, "offer/reset/" + offerId, requestCallback, json, dataMapper.toJSON(propertynames));
+    }
+    
+    public boolean requestOfferSearch(RequestOfferSearchListener listener, EntrySearch entrySearch) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (entrySearch == null) {
+             throw new RequiredParameterException(entrySearch, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestOfferSearchListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestOfferSearchFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "offer/search", requestCallback, json, dataMapper.toJSON(entrySearch));
     }
     
     //REQUESTS

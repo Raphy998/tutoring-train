@@ -122,6 +122,10 @@ public class UpdateSubjectController implements Initializable, TutoringTrainWind
         }
     }
 
+    @FXML
+    void onBtnClose(ActionEvent event) {
+        closeWindow();
+    }
 
     private void initializeControls() {
         snackbar = new JFXSnackbar(pane);

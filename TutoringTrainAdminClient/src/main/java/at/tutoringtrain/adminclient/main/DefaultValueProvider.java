@@ -50,6 +50,7 @@ public final class DefaultValueProvider {
     private final ArrayList<WebserviceHostInfo> defaultWebserviceFallbackHosts;
     private final String defaultWebServiceProtokoll;
     private final String defaultWebServiceRootPath;
+    private final String defaultWebServiceContextPath;
     private final MediaType jsonMediaType;
     private final MediaType pngImageMediaType;
     private final MediaType jpgImageMediaType;
@@ -80,6 +81,7 @@ public final class DefaultValueProvider {
         this.defaultWebserviceFallbackHosts = new ArrayList<>();
         this.defaultWebServiceProtokoll = "http";
         this.defaultWebServiceRootPath = "/TutoringTrainWebservice/services/";
+        this.defaultWebServiceContextPath = "/TutoringTrainWebservice/";
         this.minimumRequiredUserRoleForAdminClient = UserRole.ADMIN;
         this.defaultValidationPatterns = new TreeMap<>();
         this.initializeDefaultValidationPatterns();
@@ -102,7 +104,7 @@ public final class DefaultValueProvider {
     
     private void initializeDefaultWebserviceFallbackHosts() {
         defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("tutoringtrain.hopto.org", 8080));
-        defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
+        //defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
     }
 
     private void initializeDefaultBlockDurations() {
@@ -112,6 +114,7 @@ public final class DefaultValueProvider {
     private void initializeDefaultValidationPatterns() {
         this.defaultValidationPatterns.put("username", new ValidationPattern("^.{1,20}$", "messageValidationUsername"));
         this.defaultValidationPatterns.put("password", new ValidationPattern(".+", "messageValidationPassword"));
+        this.defaultValidationPatterns.put("search", new ValidationPattern(".+", "messageValidationSearch"));
         this.defaultValidationPatterns.put("email", new ValidationPattern("^.{1,50}$", "messageValidationEmail"));
         this.defaultValidationPatterns.put("education", new ValidationPattern("^.{1,50}$", "messageValidationEducation"));
         this.defaultValidationPatterns.put("name", new ValidationPattern("^.{1,30}$", "messageValidationName"));
@@ -166,7 +169,7 @@ public final class DefaultValueProvider {
     }
     
     private void initializeDefaultApplicationIcon() {
-        this.defaultApplicationIcon = new Image(getClass().getResource("/images/logo_white.png").toString());
+        this.defaultApplicationIcon = new Image(getClass().getResource("/images/icon.png").toString());
         
     }
     
@@ -232,6 +235,10 @@ public final class DefaultValueProvider {
 
     public String getDefaultWebServiceRootPath() {
         return defaultWebServiceRootPath;
+    }
+
+    public String getDefaultWebServiceContextPath() {
+        return defaultWebServiceContextPath;
     }
 
     public UserRole getMinimumRequiredUserRoleForAdminClient() {
