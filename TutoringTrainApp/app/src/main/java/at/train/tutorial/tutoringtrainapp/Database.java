@@ -69,8 +69,14 @@ public class Database implements okHttpHandlerListener {
         return url;
     }
 
-    public void loadEntries() throws Exception{
+    public void loadOffer() throws Exception{
+        entries.clear();
        OkHttpHandler.loadEntries(EntryType.OFFER,this,0,5);
+    }
+
+    public void loadRequest() throws Exception{
+        entries.clear();
+        OkHttpHandler.loadEntries(EntryType.REQUEST,this,0,5);
     }
 
     public ArrayList<Entry> getEntries(){

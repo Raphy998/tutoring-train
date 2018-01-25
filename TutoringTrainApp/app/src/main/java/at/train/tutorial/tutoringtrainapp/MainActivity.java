@@ -6,19 +6,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 
 import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 
-public class MainActivity extends AppCompatActivity implements DatabaseListener {
+public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Entry> entries =new ArrayList();
     private RecyclerView recView;
+    private Spinner entryTyp;
+    private Database db;
+    String [] entryType = new String[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +51,27 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener 
         try{
             layoutManager = new LinearLayoutManager(this);
             recView.setLayoutManager(layoutManager);
-            Database db = Database.getInstance();
+
+
+
+            //entryType = getResources().getStringArray(R.array.entry_types);
+            entryType[0] = getResources().getString(R.string.offer);
+            entryType[1] = getResources().getString(R.string.request);
+            Spinner spinner = (Spinner) findViewById(R.id.sp_entryTyp);
+            spinner.setOnItemSelectedListener(this);
+            ArrayAdapter<String> spAdapter = new ArrayAdapter<>(this, R.layout.spinner_item,entryType);
+            spinner.setAdapter(spAdapter);
+            entryTyp = spinner;
+
+
+            db = Database.getInstance();
             db.setListener(this);
-            db.loadEntries();
+            if(spinner.getSelectedItem() == getResources().getString(R.string.offer)) {
+                db.loadOffer();
+            }
+            else if(spinner.getSelectedItem() == getResources().getString(R.string.request)){
+                db.loadRequest();
+            }
 
             entries = db.getEntries();
             adapter = new CustomEntryAdapter(this.entries,getApplicationContext());
@@ -76,5 +101,27 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener 
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        try {
+            if (entryTyp.getSelectedItem() == getResources().getString(R.string.offer)) {
+                db.loadOffer();
+            } else if (entryTyp.getSelectedItem() == getResources().getString(R.string.request)) {
+                db.loadRequest();
+            }
+
+            entries = db.getEntries();
+            adapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

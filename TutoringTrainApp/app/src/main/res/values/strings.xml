@@ -20,4 +20,7 @@
 
     <string name="sharedPref_key">at.train.tutoring.train</string>
 
+    <string name="offer">Offer</string>
+    <string name="request">Request</string>
+
 </resources>
