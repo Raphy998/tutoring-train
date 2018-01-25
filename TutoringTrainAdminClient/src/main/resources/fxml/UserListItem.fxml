@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="230.0" prefWidth="925.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.UserListItemController">
+   <children>
+      <HBox alignment="CENTER" layoutX="655.0" layoutY="32.0" prefWidth="220.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <StackPane prefHeight="220.0" prefWidth="220.0">
+               <children>
+                  <ImageView fx:id="ivAvatar" fitHeight="205.0" fitWidth="205.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/default_avatar.png" />
+                     </image></ImageView>
+                  <JFXSpinner fx:id="spinnerAvatar" radius="20.0" startingAngle="0.0" />
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </StackPane>
+         </children>
+      </HBox>
+      <VBox layoutX="25.0" layoutY="25.0" prefHeight="190.0" prefWidth="510.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="lblName" prefHeight="35.0" prefWidth="480.0" text="Name" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="2.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="lblUsername" prefHeight="20.0" prefWidth="480.0" text="Username" textFill="#656464" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="2.0" left="5.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="lblGender" prefHeight="20.0" prefWidth="480.0" text="Gender" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="2.0" left="5.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="lblEducation" prefHeight="20.0" prefWidth="480.0" text="Education" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="2.0" left="5.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="lblEmail" prefHeight="20.0" prefWidth="480.0" text="Email" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="5.0" />
+               </VBox.margin>
+            </Label>
+            <VBox fx:id="boxBlocked" alignment="TOP_CENTER" style="-fx-background-color: yellow; -fx-background-radius: 10 10 10 10;">
+               <children>
+                  <Label fx:id="lblBlocked" alignment="CENTER" contentDisplay="CENTER" text="%blocked" underline="true" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblReason" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="480.0" wrapText="true" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblDue" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="480.0" wrapText="true" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+      </VBox>
+      <VBox alignment="CENTER" layoutX="746.0" layoutY="15.0" prefWidth="150.0" spacing="7.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXButton fx:id="btnEdit" alignment="CENTER" buttonType="RAISED" onAction="#onBtnEdit" prefHeight="30.0" prefWidth="150.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%edit">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </JFXButton>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+   </padding>
+</AnchorPane>

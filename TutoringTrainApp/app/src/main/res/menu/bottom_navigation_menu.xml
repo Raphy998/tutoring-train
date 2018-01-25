@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ic_main"
+        android:icon="@drawable/ic_list_black_24dp"
+        android:title="Main"/>
+
+    <item
+        android:id="@+id/c_users"
+        android:icon="@drawable/ic_people_black_24dp"
+        android:title="Users"/>
+
+    <item
+        android:id="@+id/c_user"
+        android:icon="@mipmap/ic_launcher"
+        android:title="User"/>
+
+    <item
+        android:id="@+id/c_user2"
+        android:icon="@mipmap/ic_launcher"
+        android:title="Test"/>
+
+</menu>
