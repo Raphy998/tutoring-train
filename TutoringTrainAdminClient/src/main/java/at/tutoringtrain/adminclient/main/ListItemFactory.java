@@ -1,8 +1,11 @@
 package at.tutoringtrain.adminclient.main;
 
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.entry.Offer;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
+import at.tutoringtrain.adminclient.ui.controller.MessageListItemController;
+import at.tutoringtrain.adminclient.ui.controller.OfferListItemController;
 import at.tutoringtrain.adminclient.ui.controller.SubjectListItemController;
 import at.tutoringtrain.adminclient.ui.controller.UserListItemController;
 import at.tutoringtrain.adminclient.ui.listener.MessageListener;
@@ -55,6 +58,22 @@ public class ListItemFactory {
         return itemPane;
     }
     
+    public AnchorPane generateMessageListItem(String message, boolean isMessageKey) {
+        AnchorPane itemPane;
+        FXMLLoader loader;
+        MessageListItemController controller;
+        try {
+            loader = new FXMLLoader(getClass().getResource("/fxml/MessageListItem.fxml"), resourceBundle);
+            itemPane = loader.<AnchorPane>load();
+            controller = (MessageListItemController)loader.getController();
+            controller.setText(message, isMessageKey);
+        } catch (IOException ioex) {
+            itemPane = null;
+            logger.error("Generating message-list-item failed", ioex);
+        }
+        return itemPane;
+    }
+    
     public AnchorPane generateSubjectListItem(Subject subject, MessageListener listener, AllSubjectsController parentController) {
         AnchorPane itemPane;
         FXMLLoader loader;
@@ -69,6 +88,23 @@ public class ListItemFactory {
         } catch (IOException ioex) {
             itemPane = null;
             logger.error("Generating subject-list-item failed", ioex);
+        }
+        return itemPane;
+    }
+    
+    public AnchorPane generateOfferListItem(Offer offer, MessageListener listener) {
+        AnchorPane itemPane;
+        FXMLLoader loader;
+        OfferListItemController controller;
+        try {
+            loader = new FXMLLoader(getClass().getResource("/fxml/OfferListItem.fxml"), resourceBundle);
+            itemPane = loader.<AnchorPane>load();
+            controller = (OfferListItemController)loader.getController();
+            controller.setOffer(offer);
+            controller.setMessageListener(listener);
+        } catch (IOException ioex) {
+            itemPane = null;
+            logger.error("Generating offer-list-item failed", ioex);
         }
         return itemPane;
     }

@@ -1,7 +1,7 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.Gender;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.Gender;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
@@ -56,20 +56,17 @@ public class RegisterUserController implements Initializable, TutoringTrainWindo
     @FXML
     private JFXSpinner spinner;
     
-    private JFXSnackbar snackbar;
-    
+    private JFXSnackbar snackbar;    
     private LocalizedValueProvider localizedValueProvider;
     private Logger logger; 
     private DataStorage dataStorage;
     private Communicator communicator;
     private WindowService windowService;
-    private DefaultValueProvider defaultValueProvider;
-    
+    private DefaultValueProvider defaultValueProvider; 
     private TextFieldValidator validatorUsernameField;
     private TextFieldValidator validatorNameField;
     private EmailFieldValidator validatorEmailField;
     private TextFieldValidator validatorEducationField;
-
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -160,12 +157,12 @@ public class RegisterUserController implements Initializable, TutoringTrainWindo
         try {
             if (validateInputControls()) {
                 disableControls(true);
-                communicator.requestRegisterUser(this,  new User(getUsername(), getName(), getGender(), null, getEmail(), getEducation()));            
+                communicator.requestRegisterUser(this, new User(getUsername(), getName(), getGender(), null, getEmail(), getEducation()));            
             }    
         } catch (Exception ex) {
             disableControls(false);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
-            logger.error("onBtnRegister: exception occured", ex);
+            logger.error("onBtnRegister", ex);
         }
     }   
     
@@ -177,7 +174,6 @@ public class RegisterUserController implements Initializable, TutoringTrainWindo
     @Override
     public void displayMessage(MessageContainer container) {
         windowService.displayMessage(snackbar, container);
-        logger.debug(container.toString());
     }
     
     @Override
@@ -196,15 +192,16 @@ public class RegisterUserController implements Initializable, TutoringTrainWindo
                 displayMessage(result.getMessageContainer());
             }
         } catch (Exception ex) {
-            logger.error("requestRegisterUserFinished: Exception occurred", ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+            logger.error("requestRegisterUserFinished", ex);
         }
     }
 
     @Override
     public void requestFailed(RequestResult result) {
         disableControls(false);
-        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
-        logger.error("Request failed with status code:" + result.getStatusCode());
+        ApplicationManager.getHostFallbackService().requestCheck();
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
         logger.error(result.getMessageContainer().toString());
     }
 }

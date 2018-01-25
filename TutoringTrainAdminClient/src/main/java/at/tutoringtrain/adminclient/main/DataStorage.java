@@ -1,8 +1,8 @@
 package at.tutoringtrain.adminclient.main;
 
-import at.tutoringtrain.adminclient.data.Gender;
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.Gender;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.User;
 import java.math.BigDecimal;
 import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;

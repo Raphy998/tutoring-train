@@ -2,16 +2,12 @@ package at.tutoringtrain.adminclient.io.network;
 
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.MessageContainer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
 public class RequestResult {
-    private final static Logger LOGGER = LogManager.getLogger(RequestResult.class);
-    
     private final int statusCode;
     private final String data;
     

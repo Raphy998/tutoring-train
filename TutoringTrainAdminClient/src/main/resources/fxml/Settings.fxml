@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="pane" prefHeight="600.0" prefWidth="600.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.SettingsController">
+   <children>
+      <VBox alignment="CENTER" layoutX="250.0" layoutY="5.0" prefHeight="50.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label alignment="CENTER" text="%titleSettings" textAlignment="CENTER" textFill="#084c61">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox layoutX="90.0" layoutY="310.0" spacing="33.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
+         <children>
+            <JFXComboBox fx:id="comboLanguage" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%language" unFocusColor="#86bab8" />
+            <JFXTextField fx:id="txtServerIp" disable="true" focusColor="#084c61" labelFloat="true" promptText="%serverIP" unFocusColor="#86bab8" />
+            <JFXTextField fx:id="txtServerPort" disable="true" focusColor="#084c61" labelFloat="true" promptText="%serverPort" unFocusColor="#86bab8" />
+            <JFXButton fx:id="btnCredits" buttonType="RAISED" onAction="#onBtnCredits" prefHeight="30.0" prefWidth="280.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%credits">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </JFXButton>
+         </children>
+      </VBox>
+      <JFXButton fx:id="btnSave" buttonType="RAISED" layoutX="415.0" layoutY="630.0" onAction="#onBtnSave" prefHeight="40.0" prefWidth="200.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%save" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <JFXButton fx:id="btnClose" buttonType="RAISED" layoutX="383.0" layoutY="703.0" onAction="#onBtnClose" prefHeight="30.0" prefWidth="200.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%close" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold Italic" size="13.0" />
+         </font>
+      </JFXButton>
+   </children>
+</AnchorPane>

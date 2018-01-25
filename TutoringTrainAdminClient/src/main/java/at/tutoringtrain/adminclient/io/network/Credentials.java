@@ -1,17 +1,17 @@
 package at.tutoringtrain.adminclient.io.network;
 
-import java.io.Serializable;
-
 /**
- *
- * @author Elias
+ * 
+ * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class Credentials implements Serializable {
+public class Credentials {
     private String username;
     private String password;
     private Character requiredRole;
 
-    public Credentials() {}
+    public Credentials() {
+        this(null, null);
+    }
     
     public Credentials(String username, String password) {
         this.username = username;
@@ -45,6 +45,6 @@ public class Credentials implements Serializable {
 
     @Override
     public String toString() {
-        return "Credentials{" + "username=" + username + ", password=" + password + ", requiredRole=" + requiredRole + '}';
+        return "Credentials {" + "username=" + username + ", password=" + password + ", requiredRole=" + requiredRole + '}';
     }
 }

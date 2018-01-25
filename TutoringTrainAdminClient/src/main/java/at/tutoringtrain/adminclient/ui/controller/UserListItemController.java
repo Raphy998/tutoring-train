@@ -1,9 +1,10 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
+import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetAvatarListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DataStorage;
@@ -122,7 +123,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
     
     private void displayUser() {
         if (user != null) {
-            lblUsername.setText("@" + user.getUsername());
+            lblUsername.setText("@" + user.getUsername() + " [" + UserRole.valueOf(user.getRole()) + "]");
             lblName.setText(user.getName() + (user.isCurrentUser() ? (" (" + localizedValueProvider.getString("myAccount") + ")") : ""));
             lblEducation.setText(user.getEducation());
             lblGender.setText(dataStorage.getGender(user.getGender()).getName());

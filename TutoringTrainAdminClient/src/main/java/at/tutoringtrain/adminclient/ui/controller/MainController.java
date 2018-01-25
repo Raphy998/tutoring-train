@@ -1,17 +1,15 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
-import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
-import at.tutoringtrain.adminclient.ui.TutoringTrainWindowWithReauthentication;
+import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.ApplicationExitListener;
-import at.tutoringtrain.adminclient.ui.listener.ReauthenticationListener;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
 import at.tutoringtrain.adminclient.ui.search.SearchCategory;
 import com.jfoenix.controls.JFXButton;
@@ -20,6 +18,7 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -36,7 +35,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindowWithReauthentication, ReauthenticationListener, UserDataChangedListner {
+public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindow, UserDataChangedListner {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -71,14 +70,12 @@ public class MainController implements Initializable, ApplicationExitListener, T
     private JFXSpinner spinner;
     
     private JFXSnackbar snackbar; 
-    
     private ApplicationManager applicationManager;
     private Logger logger;
     private WindowService windowService;
     private LocalizedValueProvider localizedValueProvider;
     private Communicator communicator;
     
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
@@ -89,8 +86,8 @@ public class MainController implements Initializable, ApplicationExitListener, T
         applicationManager.registerMainApplicationExitListener(this);
         applicationManager.addCurrentUserDataChangedListener(this);
         snackbar = new JFXSnackbar(pane);
-        comboCategorie.getItems().addAll(SearchCategory.ALL, SearchCategory.USER, SearchCategory.SUBJECT, SearchCategory.OFFER);
-        comboCategorie.getSelectionModel().select(SearchCategory.ALL);
+        comboCategorie.getItems().addAll(SearchCategory.USER, SearchCategory.SUBJECT, SearchCategory.OFFER);
+        comboCategorie.getSelectionModel().select(SearchCategory.USER);
         setWelcomeMessage(applicationManager.getCurrentUser());
     }
     
@@ -99,32 +96,28 @@ public class MainController implements Initializable, ApplicationExitListener, T
         try {
             windowService.openShowAllUsersWindow();
         } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
     @FXML
     void onBtnAllOffers(ActionEvent event) {
         try {
-            
+            windowService.openShowAllOffersWindow();
         } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
     @FXML
     void onBtnAllSubjects(ActionEvent event) {
         try {
-            windowService.openShowAllSubjectsWindow();
-            
-            
-            
-            
+            windowService.openShowAllSubjectsWindow();  
         } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
@@ -134,8 +127,8 @@ public class MainController implements Initializable, ApplicationExitListener, T
             closeWindow();
             Platform.exit();
         } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }      
     }
 
@@ -145,19 +138,19 @@ public class MainController implements Initializable, ApplicationExitListener, T
             communicator.closeSession();
             closeWindow();
             windowService.openAuthenticationWindow();
-        } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+        } catch (IOException ioex) {
+            logger.error(ioex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }       
     }
 
     @FXML
     void onBtnNewAccount(ActionEvent event) {
         try {
-            windowService.openRegisterUserWindow(this);
-        } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            windowService.openRegisterUserWindow();
+        } catch (IOException ioex) {
+            logger.error(ioex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }      
     }
 
@@ -165,9 +158,9 @@ public class MainController implements Initializable, ApplicationExitListener, T
     void onBtnNewSubject(ActionEvent event) {
         try {
             windowService.openRegisterSubjectWindow();
-        } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+        } catch (IOException ioex) {
+            logger.error(ioex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
@@ -176,8 +169,8 @@ public class MainController implements Initializable, ApplicationExitListener, T
         try {
             windowService.openUpdateUserWindow(applicationManager.getCurrentUser());
         } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
@@ -186,18 +179,18 @@ public class MainController implements Initializable, ApplicationExitListener, T
         try {
             
         } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
     @FXML
     void onBtnSettings(ActionEvent event) {
         try {
-            
+            windowService.openSettingsWindow();
         } catch (Exception ex) {
-            logger.error("Exception", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, "Something unexpected happended! (see log for further information)"));
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
     
@@ -208,20 +201,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
         Platform.exit();
     }
     
-
-    @Override
-    public void reauthenticateUser(WebserviceOperation webserviceOperation) {
-        
-    }
-
-    @Override
-    public void reauthenticationSuccessful(WebserviceOperation webserviceOperation) {
-        
-    }
-    
-    
-    private void setWelcomeMessage(User user) {
-        
+    private void setWelcomeMessage(User user) {       
         Platform.runLater(() -> lblWelcome.setText(localizedValueProvider.getString("messageWelcome", new StringPlaceholder("name", user.getName()))));
     }
     
@@ -238,10 +218,5 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @Override
     public void userDataChanged(User user) {
         setWelcomeMessage(user);
-    }
-
-    @Override
-    public void reauthenticationCanceled() {
-        onBtnLogout(null);
     }
 }

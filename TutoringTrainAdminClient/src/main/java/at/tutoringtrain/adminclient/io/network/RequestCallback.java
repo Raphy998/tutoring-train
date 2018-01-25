@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class RequestCallback<T extends RequestListener> implements Callback {
     private final static Logger LOGGER = LogManager.getLogger(RequestCallback.class);
     
-    private final T listener;
+    protected final T listener;
     
     /**
      * 
@@ -28,14 +28,6 @@ public abstract class RequestCallback<T extends RequestListener> implements Call
     public RequestCallback(T listener) {
         this.listener = listener;
     } 
-
-    /**
-     * 
-     * @return 
-     */
-    public T getListener() {
-        return listener;
-    }
 
     /**
      * 

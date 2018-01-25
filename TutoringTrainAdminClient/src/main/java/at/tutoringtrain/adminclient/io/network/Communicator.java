@@ -1,12 +1,21 @@
 package at.tutoringtrain.adminclient.io.network;
 
-import at.tutoringtrain.adminclient.data.BlockRequest;
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.data.User;
-import at.tutoringtrain.adminclient.datamapper.DataMapper;
-import at.tutoringtrain.adminclient.datamapper.JsonSubjectViews;
-import at.tutoringtrain.adminclient.datamapper.JsonUserViews;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.BlockRequest;
+import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.exception.ParameterValueException;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersOfUserListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferCountListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestResetPropertyOfOfferListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsOfUserListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestCountListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestResetPropertyOfRequestListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestAllSubjectsListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestDeleteSubjectListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestRegisterSubjectListener;
@@ -21,14 +30,18 @@ import at.tutoringtrain.adminclient.io.network.listener.user.RequestOwnUserListe
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestReauthenticateListner;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestRegisterUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetAvatarListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestSetUserRoleListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestTokenValidationListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUnblockUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateOwnUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserCountListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserSearchListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
+import at.tutoringtrain.adminclient.ui.search.entry.EntrySearch;
+import at.tutoringtrain.adminclient.ui.search.user.UserSearch;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +92,7 @@ public class Communicator {
         this.applicationManager = ApplicationManager.getInstance();
         this.dataMapper = ApplicationManager.getDataMapper();
         this.defaultValueProvider = ApplicationManager.getDefaultValueProvider();
-        this.okHttpClient = new OkHttpClient.Builder().connectTimeout(12, TimeUnit.SECONDS).readTimeout(12, TimeUnit.SECONDS).writeTimeout(12, TimeUnit.SECONDS).build();
+        this.okHttpClient = new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS).readTimeout(15, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).build();
         this.currentUsername = "";
         this.sessionToken = "";    
         this.json = defaultValueProvider.getJsonMediaType();
@@ -229,9 +242,9 @@ public class Communicator {
                     } else {
                         applicationManager.deleteTokenFile();
                     }
-                    getListener().requestAuthenticateFinished(new RequestResult(response.code(), "OK"));
+                    listener.requestAuthenticateFinished(new RequestResult(response.code(), "OK"));
                 } else {
-                    getListener().requestAuthenticateFinished(new RequestResult(response.code(), response.body().string())); 
+                    listener.requestAuthenticateFinished(new RequestResult(response.code(), response.body().string())); 
                 }
             }
         };
@@ -253,9 +266,9 @@ public class Communicator {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.code() == 200) {
                     setSessionToken(response.body().string());
-                    getListener().requestReauthenticateFinished(new RequestResult(response.code(), "OK"));
+                    listener.requestReauthenticateFinished(new RequestResult(response.code(), "OK"));
                 } else {
-                    getListener().requestReauthenticateFinished(new RequestResult(response.code(), response.body().string())); 
+                    listener.requestReauthenticateFinished(new RequestResult(response.code(), response.body().string())); 
                 }
             }
         };
@@ -282,9 +295,9 @@ public class Communicator {
                 if (response.code() == 200) {
                     setCurrentUsername("");
                     setSessionToken(StringUtils.remove(token, "Bearer "));
-                    getListener().requestTokenValidationFinished(new RequestResult(response.code(), "VALID"));
+                    listener.requestTokenValidationFinished(new RequestResult(response.code(), "VALID"));
                 } else {
-                    getListener().requestTokenValidationFinished(new RequestResult(response.code(), response.body().string())); 
+                    listener.requestTokenValidationFinished(new RequestResult(response.code(), response.body().string())); 
                 }
             }
         };
@@ -309,10 +322,10 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestRegisterUserListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestRegisterUserFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestRegisterUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.POST, true, "user/register", requestCallback, json, dataMapper.toJSON(user, JsonUserViews.Out.Register.class));
+        return enqueueRequest(HttpMethod.POST, true, "user/register", requestCallback, json, dataMapper.toJSON(user, DataMappingViews.User.Out.Register.class));
     }
     
     /**
@@ -329,7 +342,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestOwnUserListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestOwnUserFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestOwnUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user", requestCallback);
@@ -349,7 +362,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestAllUsersListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestAllUsersFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestAllUsersFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/all", requestCallback);
@@ -371,10 +384,34 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestAllUsersListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestAllUsersFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestAllUsersFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/all", requestCallback, new QueryParameter("start", Integer.toString(startIndex)), new QueryParameter("pageSize", Integer.toString(maxCount)));
+    }
+    
+    /**
+     * 
+     * @param listener
+     * @param userSearch
+     * @return
+     * @throws Exception 
+     */
+    public boolean requestUserSearch(RequestUserSearchListener listener, UserSearch userSearch) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (userSearch == null) {
+             throw new RequiredParameterException(userSearch, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestUserSearchListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestUserSearchFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "user/search", requestCallback, json, dataMapper.toJSON(userSearch));
     }
 
     /**
@@ -391,7 +428,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestUserCountListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestUserCountFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestUserCountFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/count/", requestCallback);
@@ -415,10 +452,10 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestUpdateUserListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestUpdateUserFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestUpdateUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.PUT, true, "user/update", requestCallback, json, dataMapper.toJSON(user, JsonUserViews.Out.Update.class));
+        return enqueueRequest(HttpMethod.PUT, true, "user/update", requestCallback, json, dataMapper.toJSON(user, DataMappingViews.User.Out.Update.class));
     }
     
     /**
@@ -435,10 +472,10 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestUpdateOwnUserListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestUpdateOwnUserFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestUpdateOwnUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.PUT, true, "user/update/own", requestCallback, json, dataMapper.toJSON(applicationManager.getCurrentUser(), JsonUserViews.Out.UpdateOwn.class));
+        return enqueueRequest(HttpMethod.PUT, true, "user/update/own", requestCallback, json, dataMapper.toJSON(applicationManager.getCurrentUser(), DataMappingViews.User.Out.UpdateOwn.class));
     }
     
     public boolean requestUserAvatar(RequestGetAvatarListener listener, String username) throws Exception {
@@ -449,7 +486,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestGetAvatarListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestAvatarFinished(new RequestResult(response.code(), ""), response.body().byteStream());
+                listener.requestAvatarFinished(new RequestResult(response.code(), ""), response.body().byteStream());
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/avatar" + (StringUtils.isBlank(username) ? "" : "/" + username), requestCallback, null, "");
@@ -463,7 +500,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestUpdateAvatarListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestUpdateAvatarFinished(new RequestResult(response.code(), response.body().string()), ImageIO.read(imageFile));
+                listener.requestUpdateAvatarFinished(new RequestResult(response.code(), response.body().string()), ImageIO.read(imageFile));
             }
         };
         return enqueueRequest(HttpMethod.POST, true, "user/avatar", requestCallback, imageFile.getAbsolutePath().endsWith("png") ? png : jpg, imageFile);
@@ -487,7 +524,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestResetAvatarListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestResetAvatarFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestResetAvatarFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.DELTE, true, "user/avatar/" + user.getUsername(), requestCallback);
@@ -511,7 +548,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestBlockUserListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestBlockUserFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestBlockUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.POST, true, "user/block", requestCallback, json, dataMapper.toJSON(blockRequest));
@@ -535,10 +572,27 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestUnblockUserListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestUnblockUserFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestUnblockUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/unblock/" + username, requestCallback);
+    }
+    
+    public boolean requestSetUserRole(RequestSetUserRoleListener listener, User user) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (user == null) {
+            throw new RequiredParameterException(user, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestSetUserRoleListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestSetUserRoleFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.PUT, true, "user/role/" + user.getUsername(), requestCallback, json, dataMapper.toJSON(user, DataMappingViews.User.Out.UpdateRole.class));
     }
     
     /**
@@ -555,7 +609,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestGetGendersListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestGetGendersFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestGetGendersFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/gender/", requestCallback);
@@ -579,10 +633,10 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestRegisterSubjectListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestRegisterSubjectFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestRegisterSubjectFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.POST, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, JsonSubjectViews.Out.Register.class));
+        return enqueueRequest(HttpMethod.POST, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, DataMappingViews.Subject.Out.Register.class));
     }
     
     /**
@@ -603,10 +657,10 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestUpdateSubjectListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestUpdateSubjectFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestUpdateSubjectFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.PUT, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, JsonSubjectViews.Out.Update.class));
+        return enqueueRequest(HttpMethod.PUT, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, DataMappingViews.Subject.Out.Update.class));
     }
     
     public boolean requestUpdateSubjectState(RequestUpdateSubjectListener listener, Subject subject) throws Exception {
@@ -620,10 +674,10 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestUpdateSubjectListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestUpdateSubjectFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestUpdateSubjectFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.PUT, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, JsonSubjectViews.Out.UpdateState.class));
+        return enqueueRequest(HttpMethod.PUT, true, "subject/", requestCallback, json, dataMapper.toJSON(subject, DataMappingViews.Subject.Out.UpdateState.class));
     }
     
     /**
@@ -644,7 +698,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestDeleteSubjectListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestDeleteSubjectFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestDeleteSubjectFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.DELTE, true, "subject/" + subject.getId(), requestCallback);
@@ -664,7 +718,7 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestAllSubjectsListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestGetAllSubjectsFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestGetAllSubjectsFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "subject/all/", requestCallback);
@@ -684,9 +738,185 @@ public class Communicator {
         requestCallback = new RequestCallback<RequestSubjectCountListener>(listener) {  
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                getListener().requestSubjectCountFinished(new RequestResult(response.code(), response.body().string()));
+                listener.requestSubjectCountFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "subject/count/", requestCallback);
+    }
+    
+    //OFFERS
+    
+    public boolean requestNewestOffers(RequestNewestOffersListener listener, int startIndex, int maxCount) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (startIndex < 0) {
+            throw new ParameterValueException(startIndex, "startIndex must be positiv");
+        }
+        if (maxCount < 1) {
+            throw new ParameterValueException(maxCount, "maxCount must be at least one");
+        }
+        requestCallback = new RequestCallback<RequestNewestOffersListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestGetNewestOffersFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.GET, true, "offer/new", requestCallback, new QueryParameter("start", startIndex), new QueryParameter("pageSize", maxCount));
+    }
+    
+    public boolean requestNewestOffers(RequestNewestOffersOfUserListener listener, User user, int startIndex, int maxCount) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (user == null) {
+            throw new RequiredParameterException(user, "must not be null");
+        }
+        if (StringUtils.isBlank(user.getUsername())) {
+            throw new RequiredParameterException(user.getUsername(), "must not be blank");
+        }
+        if (startIndex < 0) {
+            throw new ParameterValueException(startIndex, "startIndex must be positiv");
+        }
+        if (maxCount < 1) {
+            throw new ParameterValueException(maxCount, "maxCount must be at least one");
+        }
+        requestCallback = new RequestCallback<RequestNewestOffersOfUserListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestGetNewestOffersOfUserFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.GET, true, "offer/new/" + user.getUsername(), requestCallback, new QueryParameter("start", startIndex), new QueryParameter("pageSize", maxCount));
+    }
+    
+    public boolean requestOfferCount(RequestOfferCountListener listener) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestOfferCountListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestOfferCountFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.GET, true, "offer/count/", requestCallback);
+    }
+    
+    public boolean requestResetPropertyOfOffer(RequestResetPropertyOfOfferListener listener, int offerId, String... propertynames) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (propertynames == null || propertynames.length < 1) {
+            throw new RequiredParameterException(propertynames, "must not be empty");
+        } 
+        requestCallback = new RequestCallback<RequestResetPropertyOfOfferListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestResetPropertyOfOfferFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "offer/reset/" + offerId, requestCallback, json, dataMapper.toJSON(propertynames));
+    }
+    
+    public boolean requestOfferSearch(RequestOfferSearchListener listener, EntrySearch entrySearch) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (entrySearch == null) {
+             throw new RequiredParameterException(entrySearch, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestOfferSearchListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestOfferSearchFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "offer/search", requestCallback, json, dataMapper.toJSON(entrySearch));
+    }
+    
+    //REQUESTS
+    
+    public boolean requestNewestRequests(RequestNewestRequestsListener listener, int startIndex, int maxCount) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (startIndex < 0) {
+            throw new ParameterValueException(startIndex, "startIndex must be positiv");
+        }
+        if (maxCount < 1) {
+            throw new ParameterValueException(maxCount, "maxCount must be at least one");
+        }
+        requestCallback = new RequestCallback<RequestNewestRequestsListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestGetNewestRequestsFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.GET, true, "request/new", requestCallback, new QueryParameter("start", startIndex), new QueryParameter("pageSize", maxCount));
+    }
+    
+    public boolean requestNewestRequests(RequestNewestRequestsOfUserListener listener, User user, int startIndex, int maxCount) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (user == null) {
+            throw new RequiredParameterException(user, "must not be null");
+        }
+        if (StringUtils.isBlank(user.getUsername())) {
+            throw new RequiredParameterException(user.getUsername(), "must not be blank");
+        }
+        if (startIndex < 0) {
+            throw new ParameterValueException(startIndex, "startIndex must be positiv");
+        }
+        if (maxCount < 1) {
+            throw new ParameterValueException(maxCount, "maxCount must be at least one");
+        }
+        requestCallback = new RequestCallback<RequestNewestRequestsOfUserListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestGetNewestRequestsOfUserFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.GET, true, "request/new/" + user.getUsername(), requestCallback, new QueryParameter("start", startIndex), new QueryParameter("pageSize", maxCount));
+    }
+    
+    public boolean requestRequestCount(RequestRequestCountListener listener) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestRequestCountListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestRequestCountFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        
+        return enqueueRequest(HttpMethod.GET, true, "request/count/", requestCallback);
+    }
+    
+    public boolean requestResetPropertyOfRequest(RequestResetPropertyOfRequestListener listener, int requestId, String... propertynames) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (propertynames == null || propertynames.length < 1) {
+            throw new RequiredParameterException(propertynames, "must not be empty");
+        } 
+        requestCallback = new RequestCallback<RequestResetPropertyOfRequestListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestResetPropertyOfRequestFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "request/reset/" + requestId, requestCallback, json, dataMapper.toJSON(propertynames));
     }
 } 

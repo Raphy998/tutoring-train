@@ -20,7 +20,7 @@ public class EmailFieldValidator extends TextFieldValidator {
     protected void eval() {
         TextInputControl textField;
         RegexValidator regexValidator;
-        setMessage(validationPattern.getMessageKey());
+        setMessage(localizedValueProvider.getString(validationPattern.getMessageKey()));
         setIcon(GlyphsBuilder.create(FontAwesomeIconView.class).glyph(FontAwesomeIcon.WARNING).build());    
         if (srcControl.get() instanceof TextInputControl) {
             textField = (TextInputControl) srcControl.get();

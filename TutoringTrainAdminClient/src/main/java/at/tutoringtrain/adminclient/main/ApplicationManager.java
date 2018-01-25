@@ -1,12 +1,13 @@
 package at.tutoringtrain.adminclient.main;
 
-import at.tutoringtrain.adminclient.data.User;
-import at.tutoringtrain.adminclient.datamapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
+import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.user.UserRole;
+import at.tutoringtrain.adminclient.exception.NoHostException;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.file.FileService;
 import at.tutoringtrain.adminclient.io.network.Communicator;
-import at.tutoringtrain.adminclient.io.network.UserRole;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.ApplicationExitListener;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
@@ -42,6 +43,7 @@ public final class ApplicationManager {
     private final ArrayList<UserDataChangedListner> currentUserDataChangedListeners;
     private final Stack<User> currentUser;
     
+    private ApplicationConfiguration temporaryApplicationConfiguration;
     private ApplicationExitListener mainApplicationExitListener;
     
     private ApplicationManager() {
@@ -88,9 +90,17 @@ public final class ApplicationManager {
     public static ListItemFactory getListItemFactory() {
         return ListItemFactory.getINSTANCE();
     }
+    
+    public static WebserviceHostFallbackService getHostFallbackService() {
+        return WebserviceHostFallbackService.getINSTANCE();
+    }
 
-    public String getWebServiceUrl() {
-        return getDefaultValueProvider().getDefaultWebServiceProtokoll() + "://" + applicationConfiguration.getServerIp() + ":" + applicationConfiguration.getServerPort() + getDefaultValueProvider().getDefaultWebServiceRootPath();
+    public String getWebServiceUrl() throws NoHostException {
+        WebserviceHostInfo host = getHostFallbackService().getAvailableHost();
+        if (host == null) {
+            throw new NoHostException("NO HOST SPECIFIED");
+        }
+        return getDefaultValueProvider().getDefaultWebServiceProtokoll() + "://" + host.getHost() + ":" + host.getPort() + getDefaultValueProvider().getDefaultWebServiceRootPath();
     }
 
     public UserRole getMinimumRequiredUserRole() {
@@ -153,6 +163,10 @@ public final class ApplicationManager {
     public void setLanguage(Language language) {
         applicationConfiguration.setLanguage(language);
     }
+
+    public void setTemporaryApplicationConfiguration(ApplicationConfiguration temporaryApplicationConfiguration) {
+        this.temporaryApplicationConfiguration = temporaryApplicationConfiguration;
+    }
     
     public boolean isTokenFileAvailable() {
         return getFileService().isTokenFileAvailable();
@@ -185,6 +199,12 @@ public final class ApplicationManager {
     
     public void writeConfigFile() throws IOException {
         getFileService().writeConfig(applicationConfiguration);
+    }
+    
+    public void writeTemporaryConfigFile() throws IOException {
+        if (temporaryApplicationConfiguration != null) {
+            getFileService().writeConfig(temporaryApplicationConfiguration);
+        }
     }
     
     public boolean deleteConfigFile() {

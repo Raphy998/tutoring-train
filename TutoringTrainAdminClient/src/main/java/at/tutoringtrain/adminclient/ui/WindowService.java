@@ -1,25 +1,24 @@
 package at.tutoringtrain.adminclient.ui;
 
-import at.tutoringtrain.adminclient.data.Subject;
-import at.tutoringtrain.adminclient.data.User;
-import at.tutoringtrain.adminclient.exception.RequiredParameterException;
+import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
-import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageContainer;
+import at.tutoringtrain.adminclient.ui.controller.AllOffersController;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
 import at.tutoringtrain.adminclient.ui.controller.AuthenticationController;
 import at.tutoringtrain.adminclient.ui.controller.BlockUserController;
-import at.tutoringtrain.adminclient.ui.controller.ReauthenticationController;
+import at.tutoringtrain.adminclient.ui.controller.CreditsController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterUserController;
+import at.tutoringtrain.adminclient.ui.controller.SettingsController;
 import at.tutoringtrain.adminclient.ui.controller.SubjectListItemController;
 import at.tutoringtrain.adminclient.ui.controller.UpdateSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.UpdateUserController;
-import at.tutoringtrain.adminclient.ui.listener.ReauthenticationListener;
 import at.tutoringtrain.adminclient.ui.listener.UserAvatarChangedListner;
 import at.tutoringtrain.adminclient.ui.listener.UserBlockListner;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
@@ -66,6 +65,7 @@ public class WindowService {
         this.resourceBundle = applicationManager.getLanguageResourceBundle();
         this.localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
         this.defaultValueProvider = ApplicationManager.getDefaultValueProvider();
+        logger.debug("WindowService initialized");
     }
 
     
@@ -76,7 +76,7 @@ public class WindowService {
         root = loader.load();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.show();
@@ -93,38 +93,14 @@ public class WindowService {
         controller = (AuthenticationController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
     }
     
-    public void openReauthenticationWindow(WebserviceOperation webserviceOperation, ReauthenticationListener listener) throws Exception {
-        Parent root;
-        Stage stage;
-        FXMLLoader loader;
-        ReauthenticationController controller;
-        
-        if (listener == null) {
-             throw new RequiredParameterException(listener, "must not be null");
-        }
-        
-        loader = new FXMLLoader(getClass().getResource("/fxml/Reauthentication.fxml"), resourceBundle);
-        root = loader.load();
-        controller = (ReauthenticationController)loader.getController();
-        controller.setWebserviceOperation(webserviceOperation);
-        controller.setReauthenticationListener(listener);
-        stage = new Stage();
-        stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
-        stage.setResizable(false);
-        stage.setScene(new Scene(root));      
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-    }
-    
-    public void openRegisterUserWindow(ReauthenticationListener listener) throws IOException {
+    public void openRegisterUserWindow() throws IOException {
         Parent root;
         Stage stage;
         FXMLLoader loader;
@@ -134,7 +110,7 @@ public class WindowService {
         controller = (RegisterUserController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -151,7 +127,7 @@ public class WindowService {
         controller = (RegisterSubjectController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));      
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -168,7 +144,7 @@ public class WindowService {
         controller = (UpdateSubjectController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));   
         controller.setSubject(subject);
@@ -191,7 +167,7 @@ public class WindowService {
         controller = (UpdateUserController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));          
         controller.setUser(user);
@@ -202,7 +178,7 @@ public class WindowService {
         stage.showAndWait();
     }
     
-    public void openBlockUserWindow(UserBlockListner listener, User user) throws IOException {
+    public void openBlockUserWindow(UserBlockListner listener, User user) throws Exception {
         Parent root;
         Stage stage;
         FXMLLoader loader;
@@ -212,7 +188,7 @@ public class WindowService {
         controller = (BlockUserController) loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         controller.setUser(user);
@@ -232,7 +208,7 @@ public class WindowService {
         controller = (AllUsersController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -249,7 +225,63 @@ public class WindowService {
         controller = (AllSubjectsController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
-        stage.getIcons().add(defaultValueProvider.getDefaultIcon());
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openShowAllOffersWindow() throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        AllOffersController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/AllOffers.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (AllOffersController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openSettingsWindow() throws Exception {
+        openSettingsWindow(false);
+    }
+    
+    public void openSettingsWindow(boolean immediately) throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        SettingsController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/Settings.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (SettingsController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        controller.setWriteImmediately(immediately);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openCreditsWindow() throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        CreditsController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/Credits.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (CreditsController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -266,11 +298,12 @@ public class WindowService {
         Platform.runLater(() -> {
             snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message.toString()));
         });
+        logger.info(message.toString());
     }
     
     public Optional<ButtonType> openConfirmDialog(String headerKey, String contentKey, StringPlaceholder... placeholders) {
         Alert alert = new Alert(AlertType.CONFIRMATION);
-        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultValueProvider.getDefaultIcon());
+        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         alert.setTitle(localizedValueProvider.getString("titleApplication"));
         alert.setHeaderText(localizedValueProvider.getString(headerKey, placeholders));
         alert.setContentText(localizedValueProvider.getString(contentKey, placeholders));

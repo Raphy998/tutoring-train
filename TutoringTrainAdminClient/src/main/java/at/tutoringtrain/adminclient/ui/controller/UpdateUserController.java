@@ -1,14 +1,15 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.Gender;
-import at.tutoringtrain.adminclient.data.User;
+import at.tutoringtrain.adminclient.data.user.Gender;
+import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
-import at.tutoringtrain.adminclient.io.network.WebserviceOperation;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetAvatarListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestSetUserRoleListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUnblockUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateOwnUserListener;
@@ -19,9 +20,8 @@ import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.security.PasswordGenerator;
-import at.tutoringtrain.adminclient.ui.TutoringTrainWindowWithReauthentication;
+import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
-import at.tutoringtrain.adminclient.ui.listener.ReauthenticationListener;
 import at.tutoringtrain.adminclient.ui.listener.UserAvatarChangedListner;
 import at.tutoringtrain.adminclient.ui.listener.UserBlockListner;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
@@ -43,6 +43,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -59,7 +60,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class UpdateUserController implements Initializable, TutoringTrainWindowWithReauthentication, ReauthenticationListener, UserBlockListner, RequestUpdateUserListener, RequestUpdateOwnUserListener, RequestGetAvatarListener, RequestUpdateAvatarListener, RequestUnblockUserListener, RequestResetAvatarListener {
+public class UpdateUserController implements Initializable, TutoringTrainWindow, UserBlockListner, RequestUpdateUserListener, RequestUpdateOwnUserListener, RequestGetAvatarListener, RequestUpdateAvatarListener, RequestUnblockUserListener, RequestResetAvatarListener, RequestSetUserRoleListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -98,26 +99,23 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     private JFXButton btnSelectAvatar;
     @FXML
     private JFXButton btnRemoveAvatar;
+    @FXML
+    private JFXComboBox<UserRole> comboRole;
 
-    private JFXSnackbar snackbar;
-    
+    private JFXSnackbar snackbar;    
     private LocalizedValueProvider localizedValueProvider;
     private DefaultValueProvider defaultValueProvider;
     private Logger logger; 
     private DataStorage dataStorage;
     private Communicator communicator;
     private WindowService windowService;
-    private ApplicationManager applicationManager;
-    
+    private ApplicationManager applicationManager; 
     private TextFieldValidator validatorNameField;
     private EmailFieldValidator validatorEmailField;
-    private TextFieldValidator validatorEducationField;
-    
-    private ReauthenticationListener reauthenticationListener;
+    private TextFieldValidator validatorEducationField; 
     private UserDataChangedListner userDataChangedListner;
     private UserAvatarChangedListner userAvatarChangedListner;
     private UserBlockListner userBlockListner;
-   
     private User user, temporaryUser;
 
     @Override
@@ -138,12 +136,14 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     private void initializeControls() {
         snackbar = new JFXSnackbar(pane);
         comboGender.setItems(FXCollections.observableArrayList(dataStorage.getGenders().values()));
+        comboRole.setItems(FXCollections.observableArrayList(UserRole.values()));
         initializeControls(false);
     }
 
     private void initializeControls(boolean isOwnUser) {
         spinner.setVisible(false);
         spinnerAvatar.setVisible(false);
+        comboRole.setDisable(isOwnUser);
         txtPassword.setVisible(isOwnUser);
         btnRandomPassword.setVisible(isOwnUser);
         btnBlock.setVisible(!isOwnUser);
@@ -187,8 +187,12 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             btnUnblock.setDisable(disable);
             btnSelectAvatar.setDisable(disable);
             btnRemoveAvatar.setDisable(disable);
+            comboRole.setDisable(user.isCurrentUser() || disable);
             ivAvatar.setDisable(disable);
             spinner.setVisible(disable);
+            lblRandomPassword.setDisable(disable);
+            ivAvatar.setOpacity(disable ? 0.5 : 1);
+            lblTitle.setDisable(disable);
         });
     }
 
@@ -234,28 +238,37 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         txtName.setText(user.getName());
         txtEmail.setText(user.getEmail());
         txtEducation.setText(user.getEducation());
-        comboGender.getSelectionModel().select(dataStorage.getGender(user.getGender()));
+        comboGender.getSelectionModel().select(dataStorage.getGender(user.getGender()));  
+        if (!UserRole.valueOf(user.getRole()).isHighestPriority()) {
+            comboRole.getItems().remove(UserRole.ROOT);
+        }
+        selectUserRole(user.getRole());
         initializeControls(user.isCurrentUser());
         if (user.getAvatar() != null) {
             displayAvatar(user.getAvatar());
         } else {
             loadAvatarFromWebService();
-        }
+        }    
+    }
+    
+    private void selectUserRole(Character role) {
+        EventHandler<ActionEvent> eventHandler = comboRole.getOnAction();
+        comboRole.setOnAction(null);
+        comboRole.getSelectionModel().select(UserRole.valueOf(role));
+        comboRole.setOnAction(eventHandler);
     }
     
     private void loadAvatarFromWebService() {
         try {
             spinnerAvatar.setVisible(true);
-            communicator.requestUserAvatar(this, user.getUsername());
+            if (!communicator.requestUserAvatar(this, user.getUsername())) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            }
         } catch (Exception ex) {
             spinnerAvatar.setVisible(false);
             displayDefaultAvatar();
-            logger.error("loading avatar for " + user.getUsername() + " failed", ex);
+            logger.error("loadAvatarFromWebService", ex);
         }
-    }
-
-    public void setReauthenticationListener(ReauthenticationListener reauthenticationListener) {
-        this.reauthenticationListener = reauthenticationListener;
     }
 
     public void setUserDataChangedListner(UserDataChangedListner userDataChangedListner) {
@@ -300,14 +313,14 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         FileChooser fileChooser;
         try {
             fileChooser = new FileChooser();
-            fileChooser.setTitle("Choose an avatar for this account");
+            fileChooser.setTitle(localizedValueProvider.getString("messageChooseAvatar"));
             fileChooser.getExtensionFilters().add(defaultValueProvider.getDefaultImageFileExtensionFilter());
             file = fileChooser.showOpenDialog(ivAvatar.getScene().getWindow());
             if (file != null) {
                 spinnerAvatar.setVisible(true);
                 if (!communicator.requestUpdateUserAvatar(this, user, file)) {
                     spinnerAvatar.setVisible(false);
-                    reauthenticateUser(WebserviceOperation.UPDATE_USER_AVATAR);
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
                 }
             }
         } catch (Exception ex) {
@@ -315,7 +328,7 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             user.setAvatar(null);
             displayDefaultAvatar();
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
-            logger.error("onBtnSelectAvatar: exception occurred", ex);
+            logger.error("onBtnSelectAvatar", ex);
         }
     }
 
@@ -325,12 +338,12 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             spinnerAvatar.setVisible(true);
             if (!communicator.requestResetUserAvatar(this, user)) {
                 spinnerAvatar.setVisible(false);
-                reauthenticateUser(WebserviceOperation.DELETE_USER_AVATAR);
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
             } 
         } catch (Exception ex) {
             spinnerAvatar.setVisible(false);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
-            logger.error("onBtnRemoveAvatar: exception occurred", ex);
+            logger.error("onBtnRemoveAvatar", ex);
         }
     }
 
@@ -338,8 +351,9 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     void onBtnBlock(ActionEvent event) {
         try {
             windowService.openBlockUserWindow(this, user);
-        } catch (IOException ioex) {
-            logger.error("onBtnBlock: exception occurred", ioex);
+        } catch (Exception ex) {
+            logger.error("onBtnBlock", ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
@@ -348,7 +362,8 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         try {
             communicator.requestUnblockUser(this, getUsername());
         } catch (Exception ex) {
-            logger.error("onBtnUnblock: exception occurred", ex);
+            logger.error("onBtnUnblock", ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
 
@@ -366,22 +381,48 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             disableControls(true);
             try {
                 temporaryUser = new User(getUsername(), getName(), getGender(), StringUtils.isEmpty(getPassword()) ? null : getPassword(), getEmail(), getEducation());            
+                temporaryUser.setRole(comboRole.getSelectionModel().getSelectedItem().getValue());
                 if (user.isCurrentUser()) {
                     applicationManager.setCurrentUser(temporaryUser);
                     if (!communicator.requestUpdateOwnUser(this)) {
                         disableControls(false);
                         applicationManager.restoreToPreviousCurrentUser();
-                        reauthenticateUser(WebserviceOperation.UPDATE_OWN_USER);
+                        displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
                     }
                 } else {
                     if (!communicator.requestUpdateUser(this, temporaryUser)) {
                         disableControls(false);
-                        reauthenticateUser(WebserviceOperation.UPDATE_USER);
+                        displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
                     }
                 }
             } catch (Exception ex) {
                 disableControls(false);
-                logger.error("onBtnUpdate: excpetion occurred", ex);
+                logger.error("onBtnUpdate", ex);
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+            }
+        }
+    }
+    
+    @FXML
+    void onRoleSelected(ActionEvent event) {
+        UserRole selectedRole = comboRole.getSelectionModel().getSelectedItem();    
+        if (selectedRole.isHighestPriority()) {
+            selectUserRole(user.getRole());
+            displayMessage(new MessageContainer(MessageCodes.INFO, localizedValueProvider.getString("messageUserRoleRoot")));
+        } else {
+            disableControls(true);
+            try {          
+                temporaryUser = new User();
+                temporaryUser.setUsername(user.getUsername());
+                temporaryUser.setRole(selectedRole.getValue());
+                if (!communicator.requestSetUserRole(this, temporaryUser)) {
+                    disableControls(false);
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+                }
+            } catch (Exception ex) {
+                disableControls(false);
+                logger.error("onRoleSelected", ex);
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
             }
         }
     }
@@ -399,10 +440,15 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             user.setEducation(temporaryUser.getEducation());
             user.setEmail(temporaryUser.getEmail());
             user.setGender(temporaryUser.getGender());
+            user.setRole(temporaryUser.getRole());
             notifyUserDataChangedListener(user);
             displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageUserSuccessfullyUpdated")));
         } else {
-            displayMessage(result.getMessageContainer());
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
         }
     }
 
@@ -416,8 +462,12 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
                 applicationManager.deleteTokenFile();
             }
         } else {
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
             applicationManager.restoreToPreviousCurrentUser();
-            displayMessage(result.getMessageContainer());
         }
     }
 
@@ -429,10 +479,16 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
                 user.setAvatar(ImageIO.read(iStream));
                 iStream.close();
                 displayAvatar(user.getAvatar());
+            } else {
+                if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+                } else {
+                    displayMessage(result.getMessageContainer());
+                }
             }
         } catch (IOException ioex) {
             displayMessage(new MessageContainer(MessageCodes.LOADING_FAILED, localizedValueProvider.getString("messageUserAvatarLoadingFailed")));
-            logger.error("requestAvatarFinished: exception ocurred", ioex);
+            logger.error("requestAvatarFinished", ioex);
         }
     }
 
@@ -443,6 +499,12 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             user.setAvatar(avatar);
             displayAvatar(user.getAvatar());
             notifyUserAvatarChangedListener(user);
+        } else {
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
         }
     }
     
@@ -453,6 +515,12 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
             user.setAvatar(null);
             displayDefaultAvatar();
             notifyUserAvatarChangedListener(user);
+        } else {
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
         }
     }
 
@@ -461,14 +529,38 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
         if (result.isSuccessful()) {
             user.setBlock(null);
             userUnblocked();
+        } else {
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
+        }
+    }
+    
+    @Override
+    public void requestSetUserRoleFinished(RequestResult result) {
+        disableControls(false);
+        if (result.isSuccessful()) {   
+            user.setRole(temporaryUser.getRole());
+            temporaryUser = null;
+            notifyUserDataChangedListener(user);
+            displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageUserRoleSuccessfullySet")));
+        } else {
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
+            Platform.runLater(() -> selectUserRole(user.getRole()));
         }
     }
 
     @Override
     public void requestFailed(RequestResult result) {
         disableControls(false);
-        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
-        logger.error("Request failed with status code:" + result.getStatusCode());
+        ApplicationManager.getHostFallbackService().requestCheck();
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
         logger.error(result.getMessageContainer().toString());
     }
 
@@ -486,48 +578,11 @@ public class UpdateUserController implements Initializable, TutoringTrainWindowW
     
     @Override
     public void displayMessage(MessageContainer container) {
-        logger.debug(container.toString());
         windowService.displayMessage(snackbar, container);
     }
     
     @Override
     public void closeWindow() {
         windowService.closeWindow(pane);
-    }
-    
-    @Override
-    public void reauthenticateUser(WebserviceOperation webserviceOperation) throws Exception {
-        //windowService.openReauthenticationWindow(webserviceOperation, this);
-    }
-    
-    @Override
-    public void reauthenticationCanceled() {
-        closeWindow();
-        reauthenticationListener.reauthenticationCanceled();
-    }
-
-    @Override
-    public void reauthenticationSuccessful(WebserviceOperation webserviceOperation) {
-        if (null != webserviceOperation) {
-            switch (webserviceOperation) {
-                case UPDATE_USER:
-                    
-                    break;
-                case UPDATE_OWN_USER:
-                    
-                    break;
-                case GET_USER_AVATAR:
-                    
-                    break;
-                case UPDATE_USER_AVATAR:
-                    
-                    break;
-                case DELETE_USER_AVATAR:
-                    
-                    break;
-                default:
-                    break;
-            }
-        } 
     }
 }
