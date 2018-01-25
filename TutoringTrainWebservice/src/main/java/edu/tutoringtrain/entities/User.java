@@ -57,14 +57,14 @@ public class User implements Serializable {
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "USERNAME", nullable = false, length = 20)
-    @JsonView({Views.Offer.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class, Views.Comment.Out.Public.class})
     private String username;
     @Size(max = 64)
     @Column(name = "PASSWORD", length = 64)
     @JsonView({Views.User.In.Register.class})
     private String password;
     @Column(name = "ROLE")
-    @JsonView({Views.User.Out.Public.class})
+    @JsonView({Views.User.Out.Public.class, Views.User.In.Promote.class})
     private Character role;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @NotNull(groups = ConstraintGroups.Create.class)
@@ -76,9 +76,6 @@ public class User implements Serializable {
     @Column(name = "NAME", length = 30)
     @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private String name;
-    @Lob
-    @Column(name = "AVATAR")
-    private Serializable avatar;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "AVERAGERATING", precision = 2, scale = 1)
     @JsonView({Views.User.Out.Public.class})
@@ -99,9 +96,14 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     private Collection<Entry> entryCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-    @JsonView({Views.User.Out.Private.class})
+    @JsonView({Views.User.Out.Public.class})
     @JsonProperty("block")
     private Blocked blocked;
+    @OneToMany(mappedBy = "user")
+    private Collection<Comment> commentCollection;
+    @Lob
+    @Column(name = "AVATAR")
+    private byte[] avatar;
 
     public User() {
     }
@@ -150,13 +152,6 @@ public class User implements Serializable {
         this.name = name;
     }
 
-    public Serializable getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(Serializable avatar) {
-        this.avatar = avatar;
-    }
 
     public BigDecimal getAveragerating() {
         return averagerating;
@@ -249,6 +244,23 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "edu.tutoringtrain.entities.User[ username=" + username + " ]";
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
+    }
+
+    @XmlTransient
+    public Collection<Comment> getCommentCollection() {
+        return commentCollection;
+    }
+
+    public void setCommentCollection(Collection<Comment> commentCollection) {
+        this.commentCollection = commentCollection;
     }
     
 }

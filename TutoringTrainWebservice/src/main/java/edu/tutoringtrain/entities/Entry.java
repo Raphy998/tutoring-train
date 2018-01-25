@@ -9,11 +9,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.misc.JGeometryDeserializer;
+import edu.tutoringtrain.misc.JGeometrySerializer;
 import edu.tutoringtrain.misc.NumericBooleanDeserializer;
 import edu.tutoringtrain.misc.NumericBooleanSerializer;
+import edu.tutoringtrain.misc.SubjectLocalizeSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -24,6 +28,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,12 +37,17 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import oracle.spatial.geometry.JGeometry;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.StructConverter;
 
 /**
  *
  * @author Elias
  */
 @Entity
+//Converter for Oracle Spatials' SDO_GEOMETRY_TYPE
+@StructConverter(name = "JGeometry", converter = "org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter")
 @Table(name = "ENTRY", catalog = "")
 @XmlRootElement
 @NamedQueries({
@@ -51,11 +61,14 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Entry.findOfferByIdAndUsername", query = "SELECT e FROM Entry e WHERE e.flag = 'O' AND e.id = :id AND e.user.username = :username")
     , @NamedQuery(name = "Entry.findOfferNewest", query = "SELECT e FROM Entry e WHERE e.flag = 'O' ORDER BY e.postedon DESC")
     , @NamedQuery(name = "Entry.findOfferNewestOfUser", query = "SELECT e FROM Entry e WHERE e.flag = 'O' AND e.user.username = :username ORDER BY e.postedon DESC")
-    , @NamedQuery(name = "Entry.countOfferAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'O'")})
+    , @NamedQuery(name = "Entry.countOfferAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'O'")
+        
+    , @NamedQuery(name = "Entry.findRequestByIdAndUsername", query = "SELECT e FROM Entry e WHERE e.flag = 'R' AND e.id = :id AND e.user.username = :username")
+    , @NamedQuery(name = "Entry.findRequestNewest", query = "SELECT e FROM Entry e WHERE e.flag = 'R' ORDER BY e.postedon DESC")
+    , @NamedQuery(name = "Entry.findRequestNewestOfUser", query = "SELECT e FROM Entry e WHERE e.flag = 'R' AND e.user.username = :username ORDER BY e.postedon DESC")
+    , @NamedQuery(name = "Entry.countRequestAll", query = "SELECT count(e) FROM Entry e WHERE e.flag = 'R'")})
 public class Entry implements Serializable {
-    public static final Character FLAG_OFFER = 'O';
-    public static final Character FLAG_REQUEST = 'R';
-
+    
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Id
@@ -64,43 +77,51 @@ public class Entry implements Serializable {
     @NotNull(groups = ConstraintGroups.Update.class)
     @Basic(optional = false)
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
-    @JsonView({Views.Offer.In.Update.class, Views.Offer.Out.Public.class})
+    @JsonView({Views.Entry.In.Update.class, Views.Entry.Out.Public.class})
     private BigDecimal id;
     @Column(name = "POSTEDON")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonView(Views.Offer.Out.Public.class)
+    @JsonView(Views.Entry.Out.Public.class)
     private Date postedon;
     @Column(name = "DUEDATE")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private Date duedate;
     @Column(name = "ISACTIVE")
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Update.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Update.class})
     @JsonSerialize(using=NumericBooleanSerializer.class)
     @JsonDeserialize(using=NumericBooleanDeserializer.class)
     private Character isactive;
     @Size(max = 500)
     @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "DESCRIPTION", length = 500)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private String description;
     @Column(name = "FLAG")
     private Character flag;
     @NotNull(groups = ConstraintGroups.Create.class)
     @JoinColumn(name = "SUBJECT", referencedColumnName = "ID")
     @ManyToOne
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private Subject subject;
     @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")
     @ManyToOne
     @XmlTransient
-    @JsonView(Views.Offer.Out.Public.class)
+    @JsonView(Views.Entry.Out.Public.class)
     private User user;
     @Size(max = 50)
     //@NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "HEADLINE", length = 50)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private String headline;
+    @Convert("JGeometry")
+    @Column(name = "LOCATION")
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
+    @JsonSerialize(using = JGeometrySerializer.class)
+    @JsonDeserialize(using = JGeometryDeserializer.class)
+    private JGeometry location;
+    @OneToMany(mappedBy = "entry")
+    private Collection<Comment> tcommentCollection;
 
     public Entry() {
     }
@@ -204,6 +225,23 @@ public class Entry implements Serializable {
 
     public void setHeadline(String headline) {
         this.headline = headline;
+    }
+
+    public JGeometry getLocation() {
+        return location;
+    }
+
+    public void setLocation(JGeometry location) {
+        this.location = location;
+    }
+
+    @XmlTransient
+    public Collection<Comment> getComments() {
+        return tcommentCollection;
+    }
+
+    public void setComments(Collection<Comment> tcommentCollection) {
+        this.tcommentCollection = tcommentCollection;
     }
     
 }

@@ -13,21 +13,24 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.tutoringtrain.data.CustomHttpStatusCodes;
+import edu.tutoringtrain.data.error.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.error.LocaleSpecificMessageInterpolator;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.BlockedException;
+import edu.tutoringtrain.data.exceptions.CommentNotFoundException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
-import edu.tutoringtrain.data.exceptions.OfferNotFoundException;
+import edu.tutoringtrain.data.exceptions.EntryNotFoundException;
+import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.exceptions.XMPPException;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +58,7 @@ public abstract class AbstractResource {
         mapper.setVisibility(GETTER, Visibility.PROTECTED_AND_PUBLIC);
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"));
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     }
     
     protected ObjectMapper getMapper() {
@@ -96,6 +100,14 @@ public abstract class AbstractResource {
         try {
             throw exception;
         }
+        catch (NumberFormatException ex) {
+            ErrorBuilder err = new ErrorBuilder(Error.VALUE_INVALID);
+            err.withParams(ex.getMessage());
+            response.status(CustomHttpStatusCodes.UNPROCESSABLE_ENTITY);
+            response.entity(err
+                    .withLang(lang)
+                    .build());
+        }
         catch (ConstraintViolationException ex) {
             ErrorBuilder err = new ErrorBuilder(Error.CONSTRAINT_VIOLATION);
             
@@ -135,11 +147,15 @@ public abstract class AbstractResource {
             response.status(CustomHttpStatusCodes.SUBJECT_NOT_FOUND);
             response.entity(ex.getError().withLang(lang).build());
         }
+        catch (CommentNotFoundException ex) {
+            response.status(CustomHttpStatusCodes.COMMENT_NOT_FOUND);
+            response.entity(ex.getError().withLang(lang).build());
+        }
         catch (UserNotFoundException ex) {
             response.status(CustomHttpStatusCodes.USER_NOT_FOUND);
             response.entity(ex.getError().withLang(lang).build());
         }
-        catch (OfferNotFoundException ex) {
+        catch (EntryNotFoundException ex) {
             response.status(CustomHttpStatusCodes.OFFER_NOT_FOUND);
             response.entity(ex.getError().withLang(lang).build());
         }
@@ -153,6 +169,14 @@ public abstract class AbstractResource {
         }
         catch (SubjectNotActiveException ex) {
             response.status(CustomHttpStatusCodes.SUBJECT_NOT_ACTIVE);
+            response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (NullValueException ex) {
+            response.status(Response.Status.NOT_FOUND);
+            response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (XMPPException ex) {
+            response.status(Response.Status.INTERNAL_SERVER_ERROR);
             response.entity(ex.getError().withLang(lang).build());
         }
         catch (Exception e) {

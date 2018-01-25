@@ -32,6 +32,8 @@ public class SubjectLocalizeSerializer extends JsonSerializer<Subject> {
         generator.writeStartObject();
         generator.writeNumberField("id", subject.getId());
         generator.writeStringField("name", name);
+        generator.writeStringField("dename", subject.getDename());
+        generator.writeStringField("enname", subject.getEnname());
         generator.writeBooleanField("isactive", subject.getIsactive().equals('1'));
         generator.writeEndObject();
     }

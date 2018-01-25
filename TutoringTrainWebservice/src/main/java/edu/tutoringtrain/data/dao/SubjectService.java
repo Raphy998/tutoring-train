@@ -27,11 +27,22 @@ public class SubjectService extends AbstractService {
     }
     
     @Transactional
+    public List<Subject> getAllSubjects() {
+        List<Subject> results;
+        
+        TypedQuery<Subject> query =
+        (TypedQuery<Subject>) em.createNamedQuery("Subject.findAll");
+        results = query.getResultList();
+
+        return results;
+    }
+    
+    @Transactional
     public List<Subject> getAllActiveSubjects() {
         List<Subject> results;
         
         TypedQuery<Subject> query =
-        em.createNamedQuery("Subject.findAllActive", Subject.class);
+        (TypedQuery<Subject>) em.createNamedQuery("Subject.findAllActive");
         results = query.getResultList();
 
         return results;
@@ -42,7 +53,7 @@ public class SubjectService extends AbstractService {
         List<Subject> results;
         
         TypedQuery<Subject> query =
-        em.createNamedQuery("Subject.findAllInactive", Subject.class);
+        (TypedQuery<Subject>) em.createNamedQuery("Subject.findAllInactive");
         results = query.getResultList();
 
         return results;

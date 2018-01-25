@@ -21,7 +21,7 @@ public class Error {
     public static final int USERNAME_NULL = 6;
     public static final int NAME_NULL = 7;
     public static final int USER_NULL = 8;
-    public static final int OFFER_NULL = 9;
+    public static final int ENTRY_NULL = 9;
     public static final int GENDER_NULL = 10;
     public static final int SUBJECT_NULL = 11;
     public static final int USER_NOT_FOUND = 12;
@@ -48,6 +48,18 @@ public class Error {
     public static final int START_LT_ZERO = 33;
     public static final int PAGE_SIZE_LTE_ZERO = 34;
     public static final int OFFER_NOT_FOUND = 35;
+    public static final int SUBJECT_USED = 36;
+    public static final int ILLEGAL_ROLE = 37;
+    public static final int DEGRADE_ADMIN = 38;
+    public static final int DEGRADE_OWN = 39;
+    public static final int REQUEST_NOT_FOUND = 40;
+    public static final int REQUEST_OF_USER_NOT_FOUND = 41;
+    public static final int XMPP_ERROR = 42;
+    public static final int SET_ROOT_ROLE = 43;
+    public static final int COMMENT_NOT_FOUND = 44;
+    public static final int COMMENT_OF_USER_NOT_FOUND = 45;
+    public static final int VALUE_INVALID = 46;
+    public static final int ENTRY_NOT_FOUND = 47;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -61,7 +73,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return OFFER_NOT_FOUND;
+        return ENTRY_NOT_FOUND;
     }
 
     public Error() {

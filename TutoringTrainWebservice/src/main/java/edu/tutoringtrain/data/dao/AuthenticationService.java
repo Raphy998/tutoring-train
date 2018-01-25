@@ -7,10 +7,10 @@ package edu.tutoringtrain.data.dao;
 
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
-import edu.tutoringtrain.data.Role;
-import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
+import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
@@ -42,9 +42,9 @@ public class AuthenticationService extends AbstractService {
     }
     
     @Transactional(dontRollbackOn = Exception.class)
-    public void authenticate(String username, String password, Character requiredRole) throws UnauthorizedException, ForbiddenException, BlockedException {
+    public void authenticate(String username, String password, Character requiredRole) throws UnauthorizedException, ForbiddenException, BlockedException, InvalidArgumentException {
         TypedQuery<User> query =
-        em.createNamedQuery("User.findByUsernameAndPassword", User.class);
+        (TypedQuery<User>) em.createNamedQuery("User.findByUsernameAndPassword");
         query.setParameter("username", username);
         query.setParameter("password", password);
         List<User> results = query.getResultList();
@@ -87,23 +87,18 @@ public class AuthenticationService extends AbstractService {
         throw new BlockedException(new ErrorBuilder(errCode).withParams(params));
     }
     
-    public boolean canAuthenticate(Character requiredRole, Character role) {
-        boolean canAuth = true;
-        
-        //if non-admin logges in via admin application
-        if (requiredRole != null && requiredRole.equals(UserRoles.ADMIN) && !role.equals(UserRoles.ADMIN)) {
-            canAuth = false;
-        }
-        
-        return canAuth;
+    public boolean canAuthenticate(Character requiredRole, Character role) throws InvalidArgumentException {
+        return (requiredRole != null) ? (UserRole.toUserRole(role).hasPermission(UserRole.toUserRole(requiredRole))) : true;
     }
     
     /**
      * Retreives the authentication token from the database or issues a new one if the old one has expired
      * @param username 
      * @return authentication token
+     * @throws edu.tutoringtrain.data.exceptions.UserNotFoundException
+     * @throws edu.tutoringtrain.data.exceptions.NullValueException
      */
-    @Transactional
+    @Transactional(dontRollbackOn = Exception.class)
     public String issueToken(String username) throws UserNotFoundException, NullValueException {
         String token = getRandomToken();
         boolean persisted = false;
@@ -122,7 +117,7 @@ public class AuthenticationService extends AbstractService {
         return token;
     }
     
-    @Transactional
+    @Transactional(dontRollbackOn = Exception.class)
     private void insertToken(String username, String token) throws NullValueException, UserNotFoundException {
         User user = userService.getUserByUsername(username);
 
@@ -133,7 +128,7 @@ public class AuthenticationService extends AbstractService {
     }
     
     @Transactional
-    public void checkPermissions(String token, List<Role> roles) throws UnauthorizedException, ForbiddenException, BlockedException {
+    public void checkPermissions(String token, List<UserRole> roles) throws UnauthorizedException, ForbiddenException, BlockedException, InvalidArgumentException {
         User user = getUserByToken(token);
         if (user == null) {
             throw new UnauthorizedException(new ErrorBuilder(Error.TOKEN_INVALID).withParams(token));
@@ -150,24 +145,8 @@ public class AuthenticationService extends AbstractService {
         }
     }
     
-    private boolean hasPermissions(User user, List<Role> roles) {
-        boolean hasPerm = false;
-        
-        if (user.getRole().equals(UserRoles.ADMIN)) {
-            hasPerm = true;
-        }
-        else if (user.getRole().equals(UserRoles.MODERATOR)) {
-            if (!roles.contains(Role.ADMIN)) {
-                hasPerm = true;
-            }
-        }
-        else if (user.getRole().equals(UserRoles.USER)) {
-            if (!(roles.contains(Role.ADMIN) || roles.contains(Role.MODERATOR))) {
-                hasPerm = true;
-            }
-        }
-        
-        return hasPerm;
+    private boolean hasPermissions(User user, List<UserRole> roles) throws InvalidArgumentException {
+        return (!roles.isEmpty() && roles.get(0) != null) ? UserRole.toUserRole(user.getRole()).hasPermission(roles.get(0)) : true;
     }
     
     @Transactional(dontRollbackOn = UnauthorizedException.class)
@@ -175,7 +154,7 @@ public class AuthenticationService extends AbstractService {
         User u = null;
         
         TypedQuery<Session> query =
-        em.createNamedQuery("Session.findByAuthkey", Session.class);
+        (TypedQuery<Session>) em.createNamedQuery("Session.findByAuthkey");
         query.setParameter("authkey", token);
         
         List<Session> results = query.getResultList();

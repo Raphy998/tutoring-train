@@ -43,8 +43,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @JsonSerialize(using = SubjectLocalizeSerializer.class)
 @NamedQueries({
-    @NamedQuery(name = "Subject.findAllActive", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC"),
-    @NamedQuery(name = "Subject.findAllInactive", query = "SELECT s FROM Subject s WHERE s.isactive = '0' ORDER BY s.enname ASC")
+    @NamedQuery(name = "Subject.findAll", query = "SELECT s FROM Subject s ORDER BY s.enname ASC")
+    , @NamedQuery(name = "Subject.findAllActive", query = "SELECT s FROM Subject s WHERE s.isactive = '1' ORDER BY s.enname ASC")
+    , @NamedQuery(name = "Subject.findAllInactive", query = "SELECT s FROM Subject s WHERE s.isactive = '0' ORDER BY s.enname ASC")
     , @NamedQuery(name = "Subject.findById", query = "SELECT s FROM Subject s WHERE s.id = :id")
     , @NamedQuery(name = "Subject.findByDename", query = "SELECT s FROM Subject s WHERE s.dename = :dename")
     , @NamedQuery(name = "Subject.findByEnname", query = "SELECT s FROM Subject s WHERE s.enname = :enname")
@@ -60,21 +61,21 @@ public class Subject implements Serializable {
     @NotNull(groups = ConstraintGroups.Update.class)
     @Basic(optional = false)
     @Column(name = "ID", nullable = false, precision = 0, scale = -127)
-    @JsonView({Views.Offer.Out.Public.class, Views.Offer.In.Create.class, Views.Subject.Out.Public.class, 
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class, Views.Subject.Out.Public.class, 
         Views.Subject.In.Update.class})
     private BigDecimal id;
     @Size(max = 25)
     @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "DENAME", length = 25)
-    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String dename;
     @Size(max = 25)
     @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "ENNAME", length = 25)
-    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.Subject.Out.Public.class, Views.Subject.In.Create.class})
     private String enname;
     @Column(name = "ISACTIVE")
-    @JsonView({Views.Offer.Out.Public.class, Views.Subject.Out.Public.class, 
+    @JsonView({Views.Entry.Out.Public.class, Views.Subject.Out.Public.class, 
         Views.Subject.In.Update.class})
     @JsonSerialize(using=NumericBooleanSerializer.class)
     @JsonDeserialize(using=NumericBooleanDeserializer.class)

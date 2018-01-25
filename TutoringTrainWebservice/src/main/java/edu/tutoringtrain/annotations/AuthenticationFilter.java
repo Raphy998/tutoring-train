@@ -5,14 +5,15 @@
  */
 package edu.tutoringtrain.annotations;
 
-import edu.tutoringtrain.data.CustomHttpStatusCodes;
-import edu.tutoringtrain.data.Role;
+import edu.tutoringtrain.data.error.CustomHttpStatusCodes;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.dao.AuthenticationService;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockedException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
+import edu.tutoringtrain.data.exceptions.InvalidArgumentException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.entities.User;
 import java.io.IOException;
@@ -86,11 +87,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         // Get the resource class which matches with the requested URL
         // Extract the roles declared by it
         Class<?> resourceClass = resourceInfo.getResourceClass();
-        List<Role> classRoles = extractRoles(resourceClass);
+        List<UserRole> classRoles = extractRoles(resourceClass);
         // Get the resource method which matches with the requested URL
         // Extract the roles declared by it
         Method resourceMethod = resourceInfo.getResourceMethod();
-        List<Role> methodRoles = extractRoles(resourceMethod);
+        List<UserRole> methodRoles = extractRoles(resourceMethod);
         
         try {
             // Check if the user is allowed to execute the method
@@ -110,6 +111,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 throw new NotAuthorizedException(ex.getMessage());
             }
             final String username = user != null ? user.getUsername() : null;
+            final UserRole role = user != null ? UserRole.toUserRole(user.getRole()): null;
 
             final SecurityContext currentSecurityContext = requestContext.getSecurityContext();
                 requestContext.setSecurityContext(new SecurityContext() {
@@ -117,13 +119,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     @Override
                     public Principal getUserPrincipal() {
 
-                        return new Principal() {
-
-                            @Override
-                            public String getName() {
-                                return username;
-                            }
-                        };
+                        return new PrincipalInRole(username, role);
                     }
 
                     @Override
@@ -151,10 +147,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         catch (BlockedException e) {
             abortWithStatus(requestContext, CustomHttpStatusCodes.BLOCKED, e.getError().withLang(lang).build());
         }
+        catch (InvalidArgumentException e) {
+            abortWithStatus(requestContext, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getError().withLang(lang).build());
+        }
     }
     
     // Extract the roles from the annotated element
-    private List<Role> extractRoles(AnnotatedElement annotatedElement) {
+    private List<UserRole> extractRoles(AnnotatedElement annotatedElement) {
         if (annotatedElement == null) {
             return new ArrayList<>();
         } else {
@@ -162,7 +161,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             if (secured == null) {
                 return new ArrayList<>();
             } else {
-                Role[] allowedRoles = secured.value();
+                UserRole[] allowedRoles = secured.value();
                 return Arrays.asList(allowedRoles);
             }
         }

@@ -6,6 +6,7 @@
 package edu.tutoringtrain.resource;
 
 import edu.tutoringtrain.annotations.Localized;
+import edu.tutoringtrain.annotations.PrincipalInRole;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
@@ -17,11 +18,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import edu.tutoringtrain.data.Role;
-import edu.tutoringtrain.data.UserRoles;
+import edu.tutoringtrain.data.UserRole;
 import edu.tutoringtrain.data.dao.SubjectService;
 import edu.tutoringtrain.data.dao.UserService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.data.error.CustomHttpStatusCodes;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.NullValueException;
 import edu.tutoringtrain.entities.Subject;
@@ -53,6 +54,30 @@ public class SubjectResource extends AbstractResource {
     
     @Secured
     @GET
+    @Path("all")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getAll(@Context HttpServletRequest httpServletRequest) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        try {
+            List<Subject> subjects = subjectService.getAllSubjects();
+            response.entity(getMapper().writerWithView(Views.Subject.Out.Public.class).with(lang.getLocale()).writeValueAsString(subjects.toArray()));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+
+        return response.build();
+    }
+    
+    @Secured
+    @GET
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response getAllActive(@Context HttpServletRequest httpServletRequest) throws Exception {
         
@@ -74,7 +99,7 @@ public class SubjectResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @GET
     @Path("inactive")
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -114,8 +139,10 @@ public class SubjectResource extends AbstractResource {
             subjectIn = getMapper().readerWithView(Views.Subject.In.Create.class).forType(Subject.class).readValue(subjectStr);
             checkConstraints(subjectIn, lang, ConstraintGroups.Create.class);
             
+            PrincipalInRole principal = (PrincipalInRole) securityContext.getUserPrincipal();
+            
             //if user is admin, activate subject immediately
-            if (userService.getUserByUsername(securityContext.getUserPrincipal().getName()).getRole().equals(UserRoles.ADMIN)) {
+            if (principal.getRole().isAdmin()) {
                 subjectIn.setIsactive('1');
             }
             else {
@@ -130,9 +157,19 @@ public class SubjectResource extends AbstractResource {
                 handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
+                String param;
+                if (subjectIn.getDename() != null && subjectIn.getEnname() != null) 
+                    param = subjectIn.getEnname() + "/" + subjectIn.getDename();
+                else if (subjectIn.getEnname() != null)
+                    param = subjectIn.getEnname();
+                else if (subjectIn.getDename() != null)
+                    param = subjectIn.getDename();
+                else        //should never happen
+                    param = "-";
+                
                 response.status(Response.Status.CONFLICT);
                 response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
-                        .withParams(subjectIn.getEnname() + "/" + subjectIn.getDename())
+                        .withParams(param)
                         .withLang(lang)
                         .build());
             }
@@ -144,7 +181,7 @@ public class SubjectResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @PUT
     @Consumes(value = MediaType.APPLICATION_JSON)
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -165,9 +202,19 @@ public class SubjectResource extends AbstractResource {
                 handleException(ex, response, lang);
             }
             catch (TransactionalException rbex) {
+                String param;
+                if (subjectIn.getDename() != null && subjectIn.getEnname() != null) 
+                    param = subjectIn.getEnname() + "/" + subjectIn.getDename();
+                else if (subjectIn.getEnname() != null)
+                    param = subjectIn.getEnname();
+                else if (subjectIn.getDename() != null)
+                    param = subjectIn.getDename();
+                else        //should never happen
+                    param = "-";
+                
                 response.status(Response.Status.CONFLICT);
                 response.entity(new ErrorBuilder(Error.SUBJECT_CONFLICT)
-                        .withParams(subjectIn.getEnname() + "/" + subjectIn.getDename())
+                        .withParams(param)
                         .withLang(lang)
                         .build());
             }
@@ -185,7 +232,7 @@ public class SubjectResource extends AbstractResource {
         return response.build();
     }
     
-    @Secured(Role.ADMIN)
+    @Secured(UserRole.ADMIN)
     @DELETE
     @Path("{id}")
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -201,6 +248,10 @@ public class SubjectResource extends AbstractResource {
         catch (Exception ex) {
             try {
                 handleException(ex, response, lang);
+            }
+            catch (TransactionalException rbex) {
+                response.status(CustomHttpStatusCodes.SUBJECT_USED);
+                response.entity(new ErrorBuilder(Error.SUBJECT_USED).withParams(subjectId).withLang(lang).build());
             }
             catch (Exception e) {
                 unknownError(e, response, lang);

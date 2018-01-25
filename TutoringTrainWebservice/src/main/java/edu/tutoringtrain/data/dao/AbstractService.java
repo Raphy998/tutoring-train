@@ -8,6 +8,8 @@ package edu.tutoringtrain.data.dao;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -15,8 +17,8 @@ import javax.persistence.PersistenceContext;
  */
 @ApplicationScoped
 public class AbstractService {
-    @PersistenceContext(unitName = "aphrodite4")
+    @PersistenceContext(unitName = "jtaUnit")
     protected EntityManager em;
     
-    
+    protected final Logger logger = LogManager.getLogger(this.getClass().getName());
 }
