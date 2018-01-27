@@ -130,7 +130,7 @@ public class BlockUserController implements Initializable, TutoringTrainWindow, 
             if (validateInputControls()) {
                 disableControls(true);
                 BlockRequest blockRequest = new BlockRequest(getUsername(), getReason(), getDuration());
-                if (!communicator.requestBlockUser(this, blockRequest)) {
+                if (!communicator.requestBlockUser(this, blockRequest, getDuration() == null)) {
                     disableControls(false);
                     displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
                 }
@@ -186,7 +186,11 @@ public class BlockUserController implements Initializable, TutoringTrainWindow, 
     }
 
     private BlockDuration getDuration() {
-        return comboDuration.getSelectionModel().getSelectedItem();
+        BlockDuration duration = comboDuration.getSelectionModel().getSelectedItem();
+        if (duration == BlockDuration.UNLIMITED) {
+            duration = null;
+        }
+        return duration;
     }
     
     private void notifyBlockListener() {

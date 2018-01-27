@@ -27,11 +27,21 @@ public enum UserRole {
     }
     
     public static UserRole valueOf(char roleid) {
-        UserRole role = USER;
-        if (roleid == 'A') {
-            role = ADMIN;
-        } else if (roleid == 'M') {
-            role = MODERATOR;
+        UserRole role;
+        switch (roleid) {
+            case 'A':
+                role = ADMIN;
+                break;
+            case 'M':
+                role = MODERATOR;
+                break;
+            case 'R':
+                role = ROOT;
+                break;
+            case 'U':
+            default:
+                role = USER;    
+                break;
         }
         return role;
     }

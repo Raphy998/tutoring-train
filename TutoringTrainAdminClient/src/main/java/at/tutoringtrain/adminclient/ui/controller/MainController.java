@@ -1,6 +1,7 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
 import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
@@ -88,6 +89,9 @@ public class MainController implements Initializable, ApplicationExitListener, T
         snackbar = new JFXSnackbar(pane);
         comboCategorie.getItems().addAll(SearchCategory.USER, SearchCategory.SUBJECT, SearchCategory.OFFER);
         comboCategorie.getSelectionModel().select(SearchCategory.USER);
+        if (UserRole.valueOf(applicationManager.getCurrentUser().getRole()) == UserRole.ROOT) {
+            btnMyAccount.setDisable(true);
+        }
         setWelcomeMessage(applicationManager.getCurrentUser());
     }
     

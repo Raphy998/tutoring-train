@@ -10,7 +10,6 @@ import at.tutoringtrain.adminclient.io.network.RequestResult;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestSetUserRoleListener;
-import at.tutoringtrain.adminclient.io.network.listener.user.RequestUnblockUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateOwnUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateUserListener;
@@ -23,7 +22,6 @@ import at.tutoringtrain.adminclient.security.PasswordGenerator;
 import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.UserAvatarChangedListner;
-import at.tutoringtrain.adminclient.ui.listener.UserBlockListner;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
 import at.tutoringtrain.adminclient.ui.validators.EmailFieldValidator;
 import at.tutoringtrain.adminclient.ui.validators.TextFieldValidator;
@@ -60,7 +58,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class UpdateUserController implements Initializable, TutoringTrainWindow, UserBlockListner, RequestUpdateUserListener, RequestUpdateOwnUserListener, RequestGetAvatarListener, RequestUpdateAvatarListener, RequestUnblockUserListener, RequestResetAvatarListener, RequestSetUserRoleListener {
+public class UpdateUserController implements Initializable, TutoringTrainWindow, RequestUpdateUserListener, RequestUpdateOwnUserListener, RequestGetAvatarListener, RequestUpdateAvatarListener, RequestResetAvatarListener, RequestSetUserRoleListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -88,10 +86,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
     @FXML
     private JFXButton btnClose;
     @FXML
-    private JFXButton btnBlock;
-    @FXML
-    private JFXButton btnUnblock;
-    @FXML
     private ImageView ivAvatar;
     @FXML
     private JFXSpinner spinnerAvatar;
@@ -115,7 +109,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
     private TextFieldValidator validatorEducationField; 
     private UserDataChangedListner userDataChangedListner;
     private UserAvatarChangedListner userAvatarChangedListner;
-    private UserBlockListner userBlockListner;
     private User user, temporaryUser;
 
     @Override
@@ -146,8 +139,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
         comboRole.setDisable(isOwnUser);
         txtPassword.setVisible(isOwnUser);
         btnRandomPassword.setVisible(isOwnUser);
-        btnBlock.setVisible(!isOwnUser);
-        btnUnblock.setVisible(!isOwnUser);
         btnSelectAvatar.setVisible(isOwnUser);
         if (user != null && user.isCurrentUser()) {
             lblTitle.setText(localizedValueProvider.getString("myAccount"));
@@ -183,8 +174,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
             btnUpdate.setDisable(disable);
             btnClose.setDisable(disable);
             btnRandomPassword.setDisable(disable);
-            btnBlock.setDisable(disable);
-            btnUnblock.setDisable(disable);
             btnSelectAvatar.setDisable(disable);
             btnRemoveAvatar.setDisable(disable);
             comboRole.setDisable(user.isCurrentUser() || disable);
@@ -278,10 +267,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
     public void setUserAvatarChangedListner(UserAvatarChangedListner userAvatarChangedListner) {
         this.userAvatarChangedListner = userAvatarChangedListner;
     }
-
-    public void setUserBlockListner(UserBlockListner userBlockListner) {
-        this.userBlockListner = userBlockListner;
-    }
     
     private void notifyUserDataChangedListener(User user) {
         if (userDataChangedListner != null) {
@@ -292,18 +277,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
     private void notifyUserAvatarChangedListener(User user) {
         if (userAvatarChangedListner != null) {
             Platform.runLater(() -> userAvatarChangedListner.userAvatarChanged(user));
-        }
-    }
-    
-    private void notifyUserBlockedListener(User user) {
-        if (userBlockListner != null) {
-            Platform.runLater(() -> userBlockListner.userBlocked(user));
-        }
-    }
-
-    private void notifyUserUnblockedListener() {
-        if (userBlockListner != null) {
-            Platform.runLater(() -> userBlockListner.userUnblocked());
         }
     }
 
@@ -347,25 +320,8 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
         }
     }
 
-    @FXML
-    void onBtnBlock(ActionEvent event) {
-        try {
-            windowService.openBlockUserWindow(this, user);
-        } catch (Exception ex) {
-            logger.error("onBtnBlock", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
-        }
-    }
 
-    @FXML
-    void onBtnUnblock(ActionEvent event) {
-        try {
-            communicator.requestUnblockUser(this, getUsername());
-        } catch (Exception ex) {
-            logger.error("onBtnUnblock", ex);
-            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
-        }
-    }
+
 
     @FXML
     void onBtnGeneratePassword(ActionEvent event) {
@@ -524,19 +480,6 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
         }
     }
 
-    @Override
-    public void requestUnblockUserFinished(RequestResult result) {
-        if (result.isSuccessful()) {
-            user.setBlock(null);
-            userUnblocked();
-        } else {
-            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
-                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
-            } else {
-                displayMessage(result.getMessageContainer());
-            }
-        }
-    }
     
     @Override
     public void requestSetUserRoleFinished(RequestResult result) {
@@ -559,23 +502,12 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
     @Override
     public void requestFailed(RequestResult result) {
         disableControls(false);
+        Platform.runLater(() -> spinnerAvatar.setVisible(false));
         ApplicationManager.getHostFallbackService().requestCheck();
         displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
         logger.error(result.getMessageContainer().toString());
     }
 
-    @Override
-    public void userBlocked(User user) {
-        displayMessage(new MessageContainer(MessageCodes.INFO, localizedValueProvider.getString("messageUserBlocked")));
-        notifyUserBlockedListener(user);
-    }
-
-    @Override
-    public void userUnblocked() {
-        displayMessage(new MessageContainer(MessageCodes.INFO, localizedValueProvider.getString("messageUserUnblocked")));
-        notifyUserUnblockedListener();
-    }
-    
     @Override
     public void displayMessage(MessageContainer container) {
         windowService.displayMessage(snackbar, container);

@@ -22,7 +22,8 @@ public enum BlockDuration implements Comparator<BlockDuration> {
     MONTH_1(43800),
     MONTH_2(87600),
     MONTH_6(262800),
-    YEAR_1(525600);
+    YEAR_1(525600),
+    UNLIMITED(-1);
     
     private final int minutes;
 

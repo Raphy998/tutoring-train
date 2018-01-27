@@ -32,6 +32,14 @@ public class MessageContainer {
     public void setMessage(String message) {
         this.message = message;
     }
+    
+    public void addPrefix(String prefix) {
+        message = prefix.concat(message);
+    }
+    
+    public void addPostfix(String postfix) {
+        message = message.concat(postfix);
+    }
 
     @Override
     public String toString() {

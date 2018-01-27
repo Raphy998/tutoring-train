@@ -25,7 +25,7 @@
             </Label>
          </children>
       </VBox>
-      <VBox layoutX="24.0" layoutY="-34.0" prefHeight="200.0" prefWidth="100.0" spacing="33.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
+      <VBox layoutX="24.0" layoutY="-34.0" prefHeight="200.0" prefWidth="100.0" spacing="35.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
          <children>
             <JFXTextField fx:id="txtUsername" editable="false" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%username" unFocusColor="#86bab8" />
             <JFXTextField fx:id="txtName" editable="false" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%name" unFocusColor="#86bab8" />

@@ -67,8 +67,6 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
     private JFXTextField txtSearch;
     @FXML
     private JFXButton btnSearch;
-    @FXML
-    private JFXButton btnRefresh;
 
     private JFXSnackbar snackbar;  
     
@@ -130,8 +128,7 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
     private void disableControls(boolean disable) {
         Platform.runLater(() -> {
             txtSearch.setDisable(disable);
-            btnSearch.setDisable(disable);        
-            btnRefresh.setDisable(disable);
+            btnSearch.setDisable(disable);  
             btnClose.setDisable(disable);
             comboOrder.setDisable(disable);
             comboOperation.setDisable(disable);
@@ -149,29 +146,24 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
     @FXML
     void onBtnSearch(ActionEvent event) {
         try {
-            if (validateInputControls()) {
-                ArrayList<SearchCriteria<UserProp>> criteria = new ArrayList<>();
-                ArrayList<OrderElement<UserProp>> order = new ArrayList<>();
-                criteria.add(new StringSearchCriteria<>(getUserProp(), getOperation(), getSearch(), true));
-                order.add(new OrderElement<>(getUserProp(), getOrder()));
-                UserSearch search = new UserSearch(criteria, order);
-                disableControls(true);
-                if (!communicator.requestUserSearch(this, search)) {
-                    disableControls(false);
-                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
-                }  
+            if (getSearch().length() == 0) {
+                loadUsersFromWebService();
+            } else {
+                if (validateInputControls()) {
+                    ArrayList<SearchCriteria<UserProp>> criteria = new ArrayList<>();
+                    ArrayList<OrderElement<UserProp>> order = new ArrayList<>();
+                    criteria.add(new StringSearchCriteria<>(getUserProp(), getOperation(), getSearch(), true));
+                    order.add(new OrderElement<>(getUserProp(), getOrder()));
+                    UserSearch search = new UserSearch(criteria, order);
+                    disableControls(true);
+                    if (!communicator.requestUserSearch(this, search)) {
+                        disableControls(false);
+                        displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+                    }  
+                }
             }
         } catch (Exception e) {
             logger.error("onBtnSearch: exception occurred", e);
-        }
-    }
-
-    @FXML
-    void onBtnRefresh(ActionEvent event) {
-        try {
-            loadUsersFromWebService();
-        } catch (Exception e) {
-            logger.error("onBtnRefresh: exception occurred", e);
         }
     }
 
@@ -253,8 +245,8 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
     @Override
     public void requestFailed(RequestResult result) {
         disableControls(false);
-        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
-        logger.error("Request failed with status code:" + result.getStatusCode());
+        ApplicationManager.getHostFallbackService().requestCheck();
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
         logger.error(result.getMessageContainer().toString());
     }
     

@@ -173,7 +173,6 @@ public class WindowService {
         controller.setUser(user);
         controller.setUserDataChangedListner(userDataChangedListner);
         controller.setUserAvatarChangedListner(userAvatarChangedListner);
-        controller.setUserBlockListner(userBlockListner);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
     }

@@ -30,6 +30,7 @@ import at.tutoringtrain.adminclient.io.network.listener.user.RequestOwnUserListe
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestReauthenticateListner;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestRegisterUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetAvatarListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetPasswordListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestSetUserRoleListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestTokenValidationListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUnblockUserListener;
@@ -537,7 +538,7 @@ public class Communicator {
      * @return true if request was successfully enqueued
      * @throws java.lang.Exception 
      */
-    public boolean requestBlockUser(RequestBlockUserListener listener, BlockRequest blockRequest) throws Exception {
+    public boolean requestBlockUser(RequestBlockUserListener listener, BlockRequest blockRequest, boolean unlimited) throws Exception {
         RequestCallback requestCallback;  
         if (listener == null) {
             throw new Exception("RequestBlockUserListener must not be null");
@@ -551,7 +552,7 @@ public class Communicator {
                 listener.requestBlockUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.POST, true, "user/block", requestCallback, json, dataMapper.toJSON(blockRequest));
+        return enqueueRequest(HttpMethod.POST, true, "user/block", requestCallback, json, dataMapper.toJSON(blockRequest, (unlimited ? DataMappingViews.BlockRequest.Out.Unlimited.class : DataMappingViews.BlockRequest.Out.Limited.class)));
     }
     
     /**
@@ -576,6 +577,23 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.GET, true, "user/unblock/" + username, requestCallback);
+    }
+    
+    public boolean requestResetPassword(RequestResetPasswordListener listener, String username) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new Exception("RequestResetPasswordListener must not be null");
+        }
+        if (StringUtils.isEmpty(username)) {
+            throw new Exception("Username must not be empty");
+        }
+        requestCallback = new RequestCallback<RequestResetPasswordListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestResetPasswordFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.PUT, true, "user/resetPw/" + username, requestCallback);
     }
     
     public boolean requestSetUserRole(RequestSetUserRoleListener listener, User user) throws Exception {

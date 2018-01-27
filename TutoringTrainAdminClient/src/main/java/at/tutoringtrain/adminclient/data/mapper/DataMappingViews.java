@@ -15,6 +15,13 @@ public interface DataMappingViews {
         }
     }
     
+    public static interface BlockRequest {
+        public static interface  Out {
+            public static interface Limited{};
+            public static interface Unlimited{};
+        }
+    }
+    
     public static interface User {
         public static interface Out {
             public static interface Register {}

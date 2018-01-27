@@ -1,10 +1,10 @@
 package at.tutoringtrain.adminclient.data.mapper;
 
-import at.tutoringtrain.adminclient.data.user.BlockRequest;
-import at.tutoringtrain.adminclient.data.user.Gender;
 import at.tutoringtrain.adminclient.data.entry.Offer;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
+import at.tutoringtrain.adminclient.data.user.BlockRequest;
+import at.tutoringtrain.adminclient.data.user.Gender;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.io.network.Credentials;
 import at.tutoringtrain.adminclient.main.ApplicationConfiguration;
@@ -179,6 +179,10 @@ public class DataMapper {
     
     public String toJSON(BlockRequest blockRequest) throws JsonProcessingException {
         return mapper.writeValueAsString(blockRequest);
+    }
+    
+    public String toJSON(BlockRequest blockRequest, Class jsonView) throws JsonProcessingException  {
+        return mapper.writerWithView(jsonView).forType(BlockRequest.class).writeValueAsString(blockRequest);
     }
     
     public String toJSON(Credentials credentials) throws JsonProcessingException {
