@@ -1,13 +1,13 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.entry.Offer;
+import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
-import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersListener;
-import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSearchListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DataStorage;
 import at.tutoringtrain.adminclient.main.ListItemFactory;
@@ -56,7 +56,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class AllOffersController implements Initializable, TutoringTrainWindow, MessageListener, RequestNewestOffersListener, RequestOfferSearchListener {
+public class AllRequestsController implements Initializable, TutoringTrainWindow, MessageListener, RequestNewestRequestsListener, RequestRequestSearchListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -109,7 +109,7 @@ public class AllOffersController implements Initializable, TutoringTrainWindow, 
         listItems = lvOffers.getItems();
         initializeControls();
         initializeControlValidators();
-        logger.debug("AllOffersController initialized"); 
+        logger.debug("AllRequestssController initialized"); 
         
         try {
             loadOffersFromWebService();
@@ -196,7 +196,7 @@ public class AllOffersController implements Initializable, TutoringTrainWindow, 
                 }  
                 EntrySearch search = new EntrySearch(criteria, order);
                 disableControls(true);
-                if (!communicator.requestOfferSearch(this, search)) {
+                if (!communicator.requestRequestSearch(this, search)) {
                     disableControls(false);
                     displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
                 }   
@@ -219,28 +219,28 @@ public class AllOffersController implements Initializable, TutoringTrainWindow, 
     
     private void loadOffersFromWebService() throws Exception {
         disableControls(true);
-        if (!communicator.requestNewestOffers(this, 0, Integer.MAX_VALUE)) {
+        if (!communicator.requestNewestRequests(this, 0, Integer.MAX_VALUE)) {
             disableControls(false);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
         }
     }
 
     @Override
-    public void requestGetNewestOffersFinished(RequestResult result) {
+    public void requestGetNewestRequestsFinished(RequestResult result) {
        disableControls(false);
         if (result.isSuccessful()) {
             Platform.runLater(() -> {
                 try {
                     listItems.clear();
-                    for (Offer offer : dataMapper.toOfferArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
-                        listItems.add(listItemFactory.generateOfferListItem(offer, this));
+                    for (Request request : dataMapper.toRequestArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
+                        listItems.add(listItemFactory.generateRequestListItem(request, this));
                     } 
                     if (listItems.isEmpty()) {
                         listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
                     }
                 } catch (IOException ioex) {
                     disableControls(false);
-                    logger.error("requestGetNewestOffersFinished: loading offers failed", ioex);
+                    logger.error("requestGetNewestOffersFinished: loading requests failed", ioex);
                 }
             });         
         } else {      
@@ -253,21 +253,21 @@ public class AllOffersController implements Initializable, TutoringTrainWindow, 
     }
 
     @Override
-    public void requestOfferSearchFinished(RequestResult result) {
+    public void requestRequestSearchFinished(RequestResult result) {
         disableControls(false);
         if (result.isSuccessful()) {
             Platform.runLater(() -> {
                 try {
                     listItems.clear();
-                    for (Offer offer : dataMapper.toOfferArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
-                        listItems.add(listItemFactory.generateOfferListItem(offer, this));
+                    for (Request request : dataMapper.toRequestArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
+                        listItems.add(listItemFactory.generateRequestListItem(request, this));
                     } 
                     if (listItems.isEmpty()) {
                         listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
                     }
                 } catch (IOException ioex) {
                     disableControls(false);
-                    logger.error("requestOfferSearchFinished: loading offers failed", ioex);
+                    logger.error("requestOfferSearchFinished: loading requests failed", ioex);
                 }
             });         
         } else {     

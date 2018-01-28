@@ -14,11 +14,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" prefHeight="640.0" prefWidth="1000.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.AllOffersController">
+<AnchorPane fx:id="pane" prefHeight="640.0" prefWidth="1000.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.AllRequestsController">
    <children>
       <VBox alignment="CENTER" layoutX="260.0" layoutY="15.0" prefHeight="50.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label alignment="CENTER" text="%titleAllOffers" textAlignment="CENTER" textFill="#084c61">
+            <Label alignment="CENTER" text="%titleAllRequests" textAlignment="CENTER" textFill="#084c61">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>

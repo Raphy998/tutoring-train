@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.OfferListItemController">
+<AnchorPane fx:id="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.RequestListItemController">
    <children>
       <HBox fx:id="boxImage" alignment="CENTER" layoutX="655.0" layoutY="32.0" prefWidth="220.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
@@ -19,7 +19,7 @@
                <children>
                   <ImageView fx:id="ivIcon" fitHeight="180.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/default_offer.png" />
+                        <Image url="@../images/default_request.png" />
                      </image></ImageView>
                </children>
                <HBox.margin>

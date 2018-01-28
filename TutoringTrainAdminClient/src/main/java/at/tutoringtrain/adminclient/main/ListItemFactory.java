@@ -1,11 +1,13 @@
 package at.tutoringtrain.adminclient.main;
 
 import at.tutoringtrain.adminclient.data.entry.Offer;
+import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.MessageListItemController;
 import at.tutoringtrain.adminclient.ui.controller.OfferListItemController;
+import at.tutoringtrain.adminclient.ui.controller.RequestListItemController;
 import at.tutoringtrain.adminclient.ui.controller.SubjectListItemController;
 import at.tutoringtrain.adminclient.ui.controller.UserListItemController;
 import at.tutoringtrain.adminclient.ui.listener.MessageListener;
@@ -105,6 +107,23 @@ public class ListItemFactory {
         } catch (IOException ioex) {
             itemPane = null;
             logger.error("Generating offer-list-item failed", ioex);
+        }
+        return itemPane;
+    }
+    
+    public AnchorPane generateRequestListItem(Request request, MessageListener listener) {
+        AnchorPane itemPane;
+        FXMLLoader loader;
+        RequestListItemController controller;
+        try {
+            loader = new FXMLLoader(getClass().getResource("/fxml/RequestListItem.fxml"), resourceBundle);
+            itemPane = loader.<AnchorPane>load();
+            controller = (RequestListItemController)loader.getController();
+            controller.setRequest(request);
+            controller.setMessageListener(listener);
+        } catch (IOException ioex) {
+            itemPane = null;
+            logger.error("Generating request-list-item failed", ioex);
         }
         return itemPane;
     }

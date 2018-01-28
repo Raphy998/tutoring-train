@@ -1,5 +1,7 @@
 package at.tutoringtrain.adminclient.ui.search;
 
+import java.util.Date;
+
 /**
  *
  * @author Elias
@@ -12,11 +14,11 @@ public class DateSearchCriteria<T extends EntityProp> extends SearchCriteria<T> 
         super();
     }
     
-    public DateSearchCriteria(T key, DateOperation operation, Object value) {
+    public DateSearchCriteria(T key, DateOperation operation, Date value) {
         this(key, operation, value, false);
     }
 
-    public DateSearchCriteria(T key, DateOperation operation, Object value, boolean not) {
+    public DateSearchCriteria(T key, DateOperation operation, Date value, boolean not) {
         super(key, value, not);
         checkDataType(key);
         this.operation = operation;

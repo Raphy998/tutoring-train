@@ -8,6 +8,7 @@ import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.controller.AllOffersController;
+import at.tutoringtrain.adminclient.ui.controller.AllRequestsController;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
 import at.tutoringtrain.adminclient.ui.controller.AuthenticationController;
@@ -239,6 +240,23 @@ public class WindowService {
         loader = new FXMLLoader(getClass().getResource("/fxml/AllOffers.fxml"), resourceBundle);
         root = loader.load();
         controller = (AllOffersController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openShowAllRequestsWindow() throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        AllRequestsController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/AllRequests.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (AllRequestsController)loader.getController();
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());

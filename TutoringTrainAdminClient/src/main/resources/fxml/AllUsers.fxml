@@ -26,7 +26,7 @@
       </VBox>
       <VBox alignment="TOP_CENTER" layoutX="61.0" layoutY="-12.0" spacing="12.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
          <children>
-            <HBox alignment="TOP_CENTER" prefHeight="50.0" spacing="5.0">
+            <HBox alignment="TOP_CENTER" spacing="5.0">
                <children>
                   <JFXComboBox fx:id="comboProperty" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%property" unFocusColor="#86bab8" />
                   <JFXComboBox fx:id="comboOperation" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%operation" unFocusColor="#86bab8" />
@@ -51,6 +51,9 @@
                <VBox.margin>
                   <Insets />
                </VBox.margin>
+               <padding>
+                  <Insets bottom="15.0" />
+               </padding>
             </HBox>
             <StackPane>
                <children>

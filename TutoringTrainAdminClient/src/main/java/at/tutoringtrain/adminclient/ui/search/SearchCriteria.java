@@ -1,5 +1,7 @@
 package at.tutoringtrain.adminclient.ui.search;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  *
  * @author Elias
@@ -7,6 +9,7 @@ package at.tutoringtrain.adminclient.ui.search;
  */
 public abstract class SearchCriteria<T extends EntityProp> {
     private T key;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Object value;
     private boolean not;
 

@@ -7,10 +7,10 @@ import at.tutoringtrain.adminclient.main.ApplicationManager;
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
 public enum EntryActiveState {
-    TRUE, FALSE, ALL;
+    TRUE, FALSE, IGNORE;
 
     @Override
     public String toString() {
-        return ApplicationManager.getLocalizedValueProvider().getString(name().toLowerCase());
+        return ApplicationManager.getLocalizedValueProvider().getString("es" + name().toLowerCase());
     }
 }

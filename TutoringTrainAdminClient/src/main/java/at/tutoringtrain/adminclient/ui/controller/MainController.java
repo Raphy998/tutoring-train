@@ -114,6 +114,16 @@ public class MainController implements Initializable, ApplicationExitListener, T
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
+    
+    @FXML
+    void onBtnAllRequests(ActionEvent event) {
+        try {
+            windowService.openShowAllRequestsWindow();
+        } catch (Exception ex) {
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+        }
+    }
 
     @FXML
     void onBtnAllSubjects(ActionEvent event) {

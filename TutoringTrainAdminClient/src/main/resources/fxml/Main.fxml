@@ -65,7 +65,7 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </JFXButton>
-            <JFXButton fx:id="btnAllRequests" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllOffers" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%allRequests">
+            <JFXButton fx:id="btnAllRequests" alignment="CENTER" buttonType="RAISED" onAction="#onBtnAllRequests" prefHeight="35.0" prefWidth="350.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%allRequests">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>

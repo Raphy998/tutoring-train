@@ -1,6 +1,6 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
-import at.tutoringtrain.adminclient.data.entry.Offer;
+import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.io.network.Communicator;
@@ -10,7 +10,7 @@ import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.MessageListener;
-import at.tutoringtrain.adminclient.ui.listener.OfferChangedListener;
+import at.tutoringtrain.adminclient.ui.listener.RequestChangedListener;
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class OfferListItemController implements Initializable, OfferChangedListener {
+public class RequestListItemController implements Initializable, RequestChangedListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -67,7 +67,7 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     private DataStorage dataStorage;
     
     private MessageListener messageListener;
-    private Offer offer;
+    private Request request;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -113,13 +113,13 @@ public class OfferListItemController implements Initializable, OfferChangedListe
         }
     }
 
-    public void setOffer(Offer offer) {
-        this.offer = offer;
-        displayOffer();
+    public void setRequest(Request request) {
+        this.request = request;
+        displayRequest();
     }
     
-    private void displayOffer() {
-        if (offer == null) {
+    private void displayRequest() {
+        if (request == null) {
             lblHeadline.setText("NULL");
             lblPostedOn.setText("NULL");
             lblActive.setText("NULL");
@@ -130,20 +130,20 @@ public class OfferListItemController implements Initializable, OfferChangedListe
             btnDelete.setDisable(true);
             btnEdit.setDisable(true);
         } else {
-            lblHeadline.setText(offer.getHeadline());
-            lblPostedOn.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(offer.getPostedon()));
-            lblActive.setText(localizedValueProvider.getString(offer.getIsactive() ? "active" : "inactive"));
-            lblSubject.setText(offer.getSubject().getName());
-            lblUsername.setText("@" + offer.getUser().getUsername() + " - " + offer.getUser().getName());
-            lblDescription.setText(offer.getDescription());
-            ivIcon.setOpacity(offer.getIsactive()? 1 : 0.5);
+            lblHeadline.setText(request.getHeadline());
+            lblPostedOn.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(request.getPostedon()));
+            lblActive.setText(localizedValueProvider.getString(request.getIsactive() ? "active" : "inactive"));
+            lblSubject.setText(request.getSubject().getName());
+            lblUsername.setText("@" + request.getUser().getUsername() + " - " + request.getUser().getName());
+            lblDescription.setText(request.getDescription());
+            ivIcon.setOpacity(request.getIsactive()? 1 : 0.5);
             btnDelete.setDisable(false);
             btnEdit.setDisable(false);
         }
     }
     
     @Override
-    public void offerChanged(Offer offer) {
-        displayOffer();
+    public void requestChanged(Request request) {
+        displayRequest();
     }
 }

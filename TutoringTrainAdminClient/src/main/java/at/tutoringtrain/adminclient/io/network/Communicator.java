@@ -15,6 +15,7 @@ import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestReset
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestCountListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestResetPropertyOfRequestListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestAllSubjectsListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestDeleteSubjectListener;
@@ -936,5 +937,22 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.POST, true, "request/reset/" + requestId, requestCallback, json, dataMapper.toJSON(propertynames));
+    }
+    
+    public boolean requestRequestSearch(RequestRequestSearchListener listener, EntrySearch entrySearch) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (entrySearch == null) {
+             throw new RequiredParameterException(entrySearch, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestRequestSearchListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestRequestSearchFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "request/search", requestCallback, json, dataMapper.toJSON(entrySearch));
     }
 } 
