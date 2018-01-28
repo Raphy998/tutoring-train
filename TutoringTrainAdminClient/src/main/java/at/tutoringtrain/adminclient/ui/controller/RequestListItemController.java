@@ -15,6 +15,7 @@ import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -83,7 +84,7 @@ public class RequestListItemController implements Initializable, RequestChangedL
     @FXML
     void onBtnEdit(ActionEvent event) {
         try {
-            
+            windowService.openUpdateRequestWindow(request, this);
         } catch (Exception e) {
             displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
             logger.error("onBtnEdit: exception occurred", e);
@@ -144,6 +145,7 @@ public class RequestListItemController implements Initializable, RequestChangedL
     
     @Override
     public void requestChanged(Request request) {
-        displayRequest();
+        this.request = request;
+        Platform.runLater(()-> displayRequest());
     }
 }

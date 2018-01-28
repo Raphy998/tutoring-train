@@ -15,6 +15,7 @@ import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -83,7 +84,7 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     @FXML
     void onBtnEdit(ActionEvent event) {
         try {
-            
+            windowService.openUpdateOfferWindow(offer, this);
         } catch (Exception e) {
             displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
             logger.error("onBtnEdit: exception occurred", e);
@@ -144,6 +145,7 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     
     @Override
     public void offerChanged(Offer offer) {
-        displayOffer();
+        this.offer = offer;
+        Platform.runLater(() -> displayOffer());
     }
 }

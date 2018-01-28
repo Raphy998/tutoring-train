@@ -104,7 +104,7 @@ public final class DefaultValueProvider {
     
     private void initializeDefaultWebserviceFallbackHosts() {
         defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("tutoringtrain.hopto.org", 8080));
-        defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
+        //defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
     }
 
     private void initializeDefaultBlockDurations() {
@@ -120,6 +120,8 @@ public final class DefaultValueProvider {
         this.defaultValidationPatterns.put("name", new ValidationPattern("^.{1,30}$", "messageValidationName"));
         this.defaultValidationPatterns.put("reason", new ValidationPattern("^.{1,100}$", "messageValidationReason"));
         this.defaultValidationPatterns.put("subjectname", new ValidationPattern("^.{1,25}$", "messageValidationSubjectName"));
+        this.defaultValidationPatterns.put("headline", new ValidationPattern("^.{1,50}$", "messageValidationHeadline"));
+        this.defaultValidationPatterns.put("description", new ValidationPattern("^.{1,500}$", "messageValidationDescription"));
         this.defaultValidationPatterns.put("serverip", new ValidationPattern("^.+$", "messageValidationServerIp"));
         this.defaultValidationPatterns.put("serverport", new ValidationPattern("^[1-9][0-9]*$", "messageValidationServerPort"));
     }

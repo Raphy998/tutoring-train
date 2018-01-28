@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXToggleButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="pane" prefHeight="640.0" prefWidth="600.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.UpdateOfferController">
+   <children>
+      <VBox alignment="CENTER" layoutX="250.0" layoutY="5.0" prefHeight="50.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="lblTitle" alignment="CENTER" text="%titleUpdateOffer" textAlignment="CENTER" textFill="#084c61">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox layoutX="-10.0" layoutY="-20.0" spacing="35.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
+         <children>
+            <JFXTextField fx:id="txtHeadline" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%headline" unFocusColor="#86bab8" />
+            <JFXTextField fx:id="txtDescription" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%description" unFocusColor="#86bab8" />
+            <JFXComboBox fx:id="comboSubject" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%subject" unFocusColor="#86bab8" />
+            <JFXToggleButton fx:id="active" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="60.0" prefWidth="280.0" size="9.0" text="%active" toggleColor="#084c61" toggleLineColor="#86bab8" unToggleColor="#86bab8" unToggleLineColor="#e8f3f4" />
+         </children>
+      </VBox>
+      <JFXButton fx:id="btnUpdate" buttonType="RAISED" layoutX="415.0" layoutY="630.0" onAction="#onBtnUpdate" prefHeight="40.0" prefWidth="200.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%update" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <JFXButton fx:id="btnClose" buttonType="RAISED" layoutX="383.0" layoutY="703.0" onAction="#onBtnClose" prefHeight="30.0" prefWidth="200.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%close" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0">
+         <font>
+            <Font name="System Bold Italic" size="13.0" />
+         </font>
+      </JFXButton>
+      <VBox alignment="CENTER" layoutX="80.0" layoutY="63.0" prefHeight="200.0" prefWidth="100.0" spacing="11.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="100.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
+               <children>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/default_offer.png" />
+                           </image></ImageView>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </StackPane>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <JFXSpinner fx:id="spinner" layoutX="437.0" layoutY="570.0" prefHeight="30.0" prefWidth="30.0" radius="15.0" startingAngle="0.0" AnchorPane.bottomAnchor="155.0" AnchorPane.rightAnchor="127.0" />
+   </children>
+</AnchorPane>

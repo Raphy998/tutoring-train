@@ -15,21 +15,24 @@ import java.util.Date;
 public abstract class Entry {
     @JsonView({
         DataMappingViews.Entry.In.Get.class,
-        DataMappingViews.Entry.In.Create.class
+        DataMappingViews.Entry.In.Create.class,
+        DataMappingViews.Entry.Out.Update.class
     })
     private BigDecimal id;
     
     @JsonView({
         DataMappingViews.Entry.In.Get.class,
         DataMappingViews.Entry.In.Create.class,
-        DataMappingViews.Entry.Out.Create.class
+        DataMappingViews.Entry.Out.Create.class,
+        DataMappingViews.Entry.Out.Update.class
     })
     private String headline;
     
     @JsonView({
         DataMappingViews.Entry.In.Get.class,
         DataMappingViews.Entry.In.Create.class,
-        DataMappingViews.Entry.Out.Create.class
+        DataMappingViews.Entry.Out.Create.class,
+        DataMappingViews.Entry.Out.Update.class
     })
     private String description;
     
@@ -48,14 +51,16 @@ public abstract class Entry {
     
     @JsonView({
         DataMappingViews.Entry.In.Get.class,
-        DataMappingViews.Entry.In.Create.class
+        DataMappingViews.Entry.In.Create.class,
+        DataMappingViews.Entry.Out.Update.class
     })
     private boolean isactive;
        
     @JsonView({
         DataMappingViews.Entry.In.Get.class,
         DataMappingViews.Entry.In.Create.class,
-        DataMappingViews.Entry.Out.Create.class
+        DataMappingViews.Entry.Out.Create.class,
+        DataMappingViews.Entry.Out.Update.class
     })
     private Subject subject;
     

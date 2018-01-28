@@ -12,11 +12,13 @@ import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewes
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestResetPropertyOfOfferListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestUpdateOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestResetPropertyOfRequestListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestUpdateRequestListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestAllSubjectsListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestDeleteSubjectListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestRegisterSubjectListener;
@@ -859,6 +861,23 @@ public class Communicator {
         return enqueueRequest(HttpMethod.POST, true, "offer/search", requestCallback, json, dataMapper.toJSON(entrySearch));
     }
     
+    public boolean requestUpdateOffer(RequestUpdateOfferListener listener, at.tutoringtrain.adminclient.data.entry.Offer offer) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (offer == null) {
+            throw new RequiredParameterException(offer, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestUpdateOfferListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestUpdateOfferFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.PUT, true, "offer", requestCallback, json, dataMapper.toJSON(offer, DataMappingViews.Entry.Out.Update.class));
+    }
+    
     //REQUESTS
     
     public boolean requestNewestRequests(RequestNewestRequestsListener listener, int startIndex, int maxCount) throws Exception {
@@ -954,5 +973,22 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.POST, true, "request/search", requestCallback, json, dataMapper.toJSON(entrySearch));
+    }
+    
+    public boolean requestUpdateRequest(RequestUpdateRequestListener listener, at.tutoringtrain.adminclient.data.entry.Request request) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (request == null) {
+            throw new RequiredParameterException(request, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestUpdateRequestListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestUpdateRequestFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.PUT, true, "request", requestCallback, json, dataMapper.toJSON(request, DataMappingViews.Entry.Out.Update.class));
     }
 } 

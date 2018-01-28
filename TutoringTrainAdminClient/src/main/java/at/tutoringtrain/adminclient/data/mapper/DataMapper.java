@@ -152,7 +152,7 @@ public class DataMapper {
     }
     
     public String toJSON(Request request, Class jsonView) throws JsonProcessingException  {
-        return mapper.writerWithView(jsonView).forType(Offer.class).writeValueAsString(request);
+        return mapper.writerWithView(jsonView).forType(Request.class).writeValueAsString(request);
     }
     
     public MessageContainer toMessageContainer(String json) {

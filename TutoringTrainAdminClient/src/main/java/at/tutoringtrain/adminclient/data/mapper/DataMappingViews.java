@@ -12,6 +12,7 @@ public interface DataMappingViews {
         }   
         public static interface  Out {
             public static interface Create{};
+            public static interface Update{};
         }
     }
     

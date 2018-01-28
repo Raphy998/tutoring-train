@@ -1,5 +1,7 @@
 package at.tutoringtrain.adminclient.ui;
 
+import at.tutoringtrain.adminclient.data.entry.Offer;
+import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
@@ -18,8 +20,12 @@ import at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterUserController;
 import at.tutoringtrain.adminclient.ui.controller.SettingsController;
 import at.tutoringtrain.adminclient.ui.controller.SubjectListItemController;
+import at.tutoringtrain.adminclient.ui.controller.UpdateOfferController;
+import at.tutoringtrain.adminclient.ui.controller.UpdateRequestController;
 import at.tutoringtrain.adminclient.ui.controller.UpdateSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.UpdateUserController;
+import at.tutoringtrain.adminclient.ui.listener.OfferChangedListener;
+import at.tutoringtrain.adminclient.ui.listener.RequestChangedListener;
 import at.tutoringtrain.adminclient.ui.listener.UserAvatarChangedListner;
 import at.tutoringtrain.adminclient.ui.listener.UserBlockListner;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
@@ -174,6 +180,44 @@ public class WindowService {
         controller.setUser(user);
         controller.setUserDataChangedListner(userDataChangedListner);
         controller.setUserAvatarChangedListner(userAvatarChangedListner);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openUpdateRequestWindow(Request request, RequestChangedListener listener) throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        UpdateRequestController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/UpdateRequest.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (UpdateRequestController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        controller.setRequest(request);
+        controller.setRequestChangedListener(listener);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openUpdateOfferWindow(Offer offer, OfferChangedListener listener) throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        UpdateOfferController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/UpdateOffer.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (UpdateOfferController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        controller.setOffer(offer);
+        controller.setOfferChangedListener(listener);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
     }

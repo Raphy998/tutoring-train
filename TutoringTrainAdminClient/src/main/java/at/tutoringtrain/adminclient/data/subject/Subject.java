@@ -14,7 +14,8 @@ public class Subject {
         DataMappingViews.Subject.In.Get.class,
         DataMappingViews.Subject.Out.Update.class,
         DataMappingViews.Subject.Out.UpdateState.class,
-        DataMappingViews.Entry.In.Get.class
+        DataMappingViews.Entry.In.Get.class,
+        DataMappingViews.Entry.Out.Update.class,
     })
     private BigDecimal id;
     @JsonView({
@@ -96,6 +97,6 @@ public class Subject {
 
     @Override
     public String toString() {
-        return "Subject{" + "id=" + id + ", dename=" + dename + ", enname=" + enname + ", name=" + name + ", isactive=" + isactive + '}';
+        return name;
     }
 }
