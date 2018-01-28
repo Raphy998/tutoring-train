@@ -24,7 +24,7 @@
             </Label>
          </children>
       </VBox>
-      <VBox layoutX="90.0" layoutY="310.0" prefHeight="0.0" spacing="33.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
+      <VBox layoutX="90.0" layoutY="310.0" prefHeight="0.0" spacing="35.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
          <children>
             <JFXTextField fx:id="txtEName" focusColor="#084c61" labelFloat="true" promptText="%enname" unFocusColor="#86bab8" />
             <JFXTextField fx:id="txtDName" focusColor="#084c61" labelFloat="true" promptText="%dename" unFocusColor="#86bab8" />
