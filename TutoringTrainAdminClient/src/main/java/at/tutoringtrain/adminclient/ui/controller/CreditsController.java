@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.web.WebView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +33,9 @@ public class CreditsController implements Initializable {
     private Label lblTitle;
     @FXML
     private JFXButton btnClose;
-
+    @FXML
+    private WebView webView;
+    
     private JFXSnackbar snackbar;
     
     private DefaultValueProvider defaultValueProvider;
@@ -50,6 +53,7 @@ public class CreditsController implements Initializable {
     
     private void initializeControls() {
         snackbar = new JFXSnackbar(pane);
+        webView.getEngine().load(getClass().getResource("/docs/credits.html").toExternalForm());
     }
     
     @FXML

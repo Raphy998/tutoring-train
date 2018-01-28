@@ -7,14 +7,12 @@ import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
+import at.tutoringtrain.adminclient.main.WebserviceHostInfo;
 import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
-import at.tutoringtrain.adminclient.ui.validators.IpFieldValidator;
-import at.tutoringtrain.adminclient.ui.validators.TextFieldValidator;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSnackbar;
-import com.jfoenix.controls.JFXTextField;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -22,6 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,15 +36,13 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     @FXML
     private JFXComboBox<Language> comboLanguage;
     @FXML
-    private JFXTextField txtServerIp;
-    @FXML
-    private JFXTextField txtServerPort;
-    @FXML
     private JFXButton btnSave;
     @FXML
     private JFXButton btnClose;
     @FXML
     private JFXButton btnCredits;
+    @FXML
+    private ListView<String> lvWebserviceHosts;
     
     private JFXSnackbar snackbar;
     
@@ -55,8 +52,7 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     private WindowService windowService;
     private ApplicationManager applicationManager;
     
-    private IpFieldValidator validatorServerIPField;
-    private TextFieldValidator validatorServerPortField;
+    
     
     private boolean writeImmediately;
     
@@ -68,7 +64,6 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
         localizedValueProvider = ApplicationManager.getLocalizedValueProvider();
         defaultValueProvider = ApplicationManager.getDefaultValueProvider();
         initializeControls();
-        initializeControlValidators();
         logger.debug("SettingsController initialized"); 
     } 
     
@@ -78,30 +73,18 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
         loadApplicationConfiguration();
     }
 
-    private void initializeControlValidators() {
-        validatorServerIPField = new IpFieldValidator(defaultValueProvider.getDefaultValidationPattern("serverip"));  
-        validatorServerPortField = new TextFieldValidator(defaultValueProvider.getDefaultValidationPattern("serverport"));
-        txtServerIp.getValidators().add(validatorServerIPField);
-        txtServerPort.getValidators().add(validatorServerPortField);
-    }
     
     private void loadApplicationConfiguration() {
-        txtServerIp.setText(applicationManager.getApplicationConfiguration().getWebserviceHostInfo().getHost());
-        txtServerPort.setText(Integer.toString(applicationManager.getApplicationConfiguration().getWebserviceHostInfo().getPort()));
+        lvWebserviceHosts.getItems().clear();
+        lvWebserviceHosts.getItems().add(applicationManager.getApplicationConfiguration().getWebserviceHostInfo().toString());   
+        for (WebserviceHostInfo fbHost : applicationManager.getApplicationConfiguration().getWebserviceFallbackHostsInfo()) {
+            lvWebserviceHosts.getItems().add(fbHost.toString() + " (FALLBACK)");
+        }
         comboLanguage.getSelectionModel().select(applicationManager.getApplicationConfiguration().getLanguage());
-    }
-
-    private boolean validateInputControls() {
-        boolean isValid;
-        txtServerIp.validate();
-        txtServerPort.validate();
-        isValid = !(validatorServerIPField.getHasErrors() || validatorServerPortField.getHasErrors());
-        return isValid;
     }
     
     @Override
     public void displayMessage(MessageContainer container) {
-        logger.debug(container.toString());
         windowService.displayMessage(snackbar, container);
     }
     
@@ -112,14 +95,6 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     
     private Language getLanguage() {
         return comboLanguage.getSelectionModel().getSelectedItem();
-    }
-    
-    private String getServerIp() {
-        return txtServerIp.getText();
-    }
-    
-    private int getServerPort() {
-        return Integer.parseInt(txtServerPort.getText());
     }
 
     public void setWriteImmediately(boolean writeImmediately) {
@@ -133,21 +108,19 @@ public class SettingsController implements Initializable, TutoringTrainWindow {
     
     @FXML
     void onBtnSave(ActionEvent event) {
-        if (true /*validateInputControls()*/) {
-            try {
-                ApplicationConfiguration temporaryApplicationConfiguration = new ApplicationConfiguration();
-                temporaryApplicationConfiguration.setLanguage(getLanguage());
-                //temporaryApplicationConfiguration.setWebserviceHostInfo(new WebserviceHostInfo(getServerIp(), getServerPort()));          
-                if (writeImmediately) {
-                    applicationManager.getApplicationConfiguration().apply(temporaryApplicationConfiguration);
-                } else {
-                    applicationManager.setTemporaryApplicationConfiguration(temporaryApplicationConfiguration);
-                    applicationManager.writeTemporaryConfigFile();
-                }
-                displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString(writeImmediately ? "messageSettingsSavedWI" : "messageSettingsSaved")));
-            } catch (IOException ioex) {
-                logger.error("onBtnUpdate: excpetion occurred", ioex);
+        try {
+            ApplicationConfiguration temporaryApplicationConfiguration = new ApplicationConfiguration();
+            temporaryApplicationConfiguration.setLanguage(getLanguage());      
+            if (writeImmediately) {
+                applicationManager.getApplicationConfiguration().apply(temporaryApplicationConfiguration);
+            } else {
+                applicationManager.setTemporaryApplicationConfiguration(temporaryApplicationConfiguration);
+                applicationManager.writeTemporaryConfigFile();
             }
+            displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString(writeImmediately ? "messageSettingsSavedWI" : "messageSettingsSaved")));
+        } catch (IOException ioex) {
+            logger.error(ioex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
         }
     }
     

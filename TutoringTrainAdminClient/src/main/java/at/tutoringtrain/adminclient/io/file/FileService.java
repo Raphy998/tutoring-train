@@ -105,6 +105,7 @@ public class FileService {
                 config = dataMapper.toApplicationConfiguration(readFile(file)); 
             } catch (IOException ioex) {
                 config = null;
+                logger.error(ioex);
             }
         }
         return config;

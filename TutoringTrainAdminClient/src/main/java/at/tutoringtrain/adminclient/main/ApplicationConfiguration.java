@@ -74,4 +74,9 @@ public final class ApplicationConfiguration {
         }
         return success;
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationConfiguration{" + "language=" + language + ", webserviceHostInfo=" + webserviceHostInfo + ", webserviceFallbackHostsInfo=" + webserviceFallbackHostsInfo + '}';
+    }
 }

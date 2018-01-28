@@ -104,7 +104,7 @@ public final class DefaultValueProvider {
     
     private void initializeDefaultWebserviceFallbackHosts() {
         defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("tutoringtrain.hopto.org", 8080));
-        //defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
+        defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
     }
 
     private void initializeDefaultBlockDurations() {
