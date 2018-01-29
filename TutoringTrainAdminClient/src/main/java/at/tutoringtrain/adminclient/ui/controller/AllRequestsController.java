@@ -233,7 +233,7 @@ public class AllRequestsController implements Initializable, TutoringTrainWindow
                 try {
                     listItems.clear();
                     for (Request request : dataMapper.toRequestArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
-                        listItems.add(listItemFactory.generateRequestListItem(request, this));
+                        listItems.add(listItemFactory.generateRequestListItem(request, this, this));
                     } 
                     if (listItems.isEmpty()) {
                         listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
@@ -260,7 +260,7 @@ public class AllRequestsController implements Initializable, TutoringTrainWindow
                 try {
                     listItems.clear();
                     for (Request request : dataMapper.toRequestArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
-                        listItems.add(listItemFactory.generateRequestListItem(request, this));
+                        listItems.add(listItemFactory.generateRequestListItem(request, this, this));
                     } 
                     if (listItems.isEmpty()) {
                         listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
@@ -318,5 +318,9 @@ public class AllRequestsController implements Initializable, TutoringTrainWindow
     
     private LocalDate getDate() {
         return pickerDate.getValue();
+    }
+    
+    public boolean removeListItem(AnchorPane listItem) {
+        return listItems.remove(listItem);
     }
 }

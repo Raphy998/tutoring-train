@@ -7,12 +7,14 @@ import at.tutoringtrain.adminclient.data.user.BlockRequest;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.exception.ParameterValueException;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestDeleteOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestResetPropertyOfOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestUpdateOfferListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestDeleteRequestListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestCountListener;
@@ -27,6 +29,7 @@ import at.tutoringtrain.adminclient.io.network.listener.subject.RequestUpdateSub
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestAllUsersListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestAuthenticateListner;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestBlockUserListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestDeleteUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetGendersListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestOwnUserListener;
@@ -616,13 +619,30 @@ public class Communicator {
         return enqueueRequest(HttpMethod.PUT, true, "user/role/" + user.getUsername(), requestCallback, json, dataMapper.toJSON(user, DataMappingViews.User.Out.UpdateRole.class));
     }
     
+    public boolean requestDeleteUser(RequestDeleteUserListener listener, User user) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (user == null) {
+            throw new RequiredParameterException(user, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestDeleteUserListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestDeleteUserFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.DELTE, true, "user/" + user.getUsername(), requestCallback, new QueryParameter("force", "true"));
+    }
+    
     /**
      * Get all genders
      * @param listener result listener
      * @return true if request was successfully enqueued
      * @throws Exception 
      */
-        public boolean requestGetGenders(RequestGetGendersListener listener) throws Exception {
+    public boolean requestGetGenders(RequestGetGendersListener listener) throws Exception {
         RequestCallback requestCallback;  
         if (listener == null) {
             throw new Exception("RequestGetGendersListener must not be null");
@@ -878,6 +898,23 @@ public class Communicator {
         return enqueueRequest(HttpMethod.PUT, true, "offer", requestCallback, json, dataMapper.toJSON(offer, DataMappingViews.Entry.Out.Update.class));
     }
     
+    public boolean requestDeleteOffer(RequestDeleteOfferListener listener, at.tutoringtrain.adminclient.data.entry.Offer offer) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (offer == null) {
+            throw new RequiredParameterException(offer, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestDeleteOfferListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestDeleteOfferFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.DELTE, true, "offer/" + offer.getId(), requestCallback);
+    }
+    
     //REQUESTS
     
     public boolean requestNewestRequests(RequestNewestRequestsListener listener, int startIndex, int maxCount) throws Exception {
@@ -990,5 +1027,22 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.PUT, true, "request", requestCallback, json, dataMapper.toJSON(request, DataMappingViews.Entry.Out.Update.class));
+    }
+    
+    public boolean requestDeleteRequest(RequestDeleteRequestListener listener, at.tutoringtrain.adminclient.data.entry.Request request) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+            throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (request == null) {
+            throw new RequiredParameterException(request, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestDeleteRequestListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestDeleteRequestFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.DELTE, true, "request/" + request.getId(), requestCallback);
     }
 } 

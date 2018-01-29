@@ -3,8 +3,10 @@ package at.tutoringtrain.adminclient.ui.controller;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
+import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
+import at.tutoringtrain.adminclient.io.network.listener.user.RequestDeleteUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestGetAvatarListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestResetPasswordListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUnblockUserListener;
@@ -31,6 +33,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -45,7 +48,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class UserListItemController implements Initializable, UserDataChangedListner, UserAvatarChangedListner, UserBlockListner, RequestGetAvatarListener, RequestUnblockUserListener, RequestResetPasswordListener {
+public class UserListItemController implements Initializable, UserDataChangedListner, UserAvatarChangedListner, UserBlockListner, RequestGetAvatarListener, RequestUnblockUserListener, RequestResetPasswordListener, RequestDeleteUserListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -93,7 +96,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
     private WindowService windowService;
     private Communicator communicator;
     private DataStorage dataStorage;
-    
+    private AllUsersController parentController;
     private MessageListener messageListener;
     private User user;
     
@@ -165,10 +168,13 @@ public class UserListItemController implements Initializable, UserDataChangedLis
     @FXML
     void onBtnDelete(ActionEvent event) {
         try {
-            displayMessage(new MessageContainer(MessageCodes.NOT_IMPLEMENTED_YET, "NOT IMPLEMENTED YET"));
-            //if (windowService.openConfirmDialog("dialogHeaderDeleteUser", "dialogContenDeleteUser", new StringPlaceholder("name", user.getName()), new StringPlaceholder("username", user.getUsername())).get() == ButtonType.OK) {
-                //TODO     
-            //}
+            if (windowService.openConfirmDialog("dialogHeaderDeleteUser", "dialogContenDeleteUser", new StringPlaceholder("name", user.getName()), new StringPlaceholder("username", user.getUsername())).get() == ButtonType.OK) {
+                btnDelete.setDisable(true);
+                if(!communicator.requestDeleteUser(this, user)) {
+                    btnDelete.setDisable(false);
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+                }
+            }
         } catch (Exception ex) {
             logger.error(ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
@@ -201,6 +207,10 @@ public class UserListItemController implements Initializable, UserDataChangedLis
         } else {
             logger.warn("no message listener specified");
         }
+    }
+    
+    public void setParentController(AllUsersController parentController) {
+        this.parentController = parentController;
     }
     
     public void setUser(User user) {
@@ -352,6 +362,17 @@ public class UserListItemController implements Initializable, UserDataChangedLis
             } else {
                 displayMessage(result.getMessageContainer());
             }
+        }
+    }
+    
+    @Override
+    public void requestDeleteUserFinished(RequestResult result) {
+        if (result.isSuccessful()) {
+            displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageUserSuccessfullyRemoved")));
+            Platform.runLater(() -> parentController.removeListItem(pane));            
+        } else {
+            displayMessage(result.getMessageContainer());
+            logger.debug(result.getMessageContainer().toString());
         }
     }
     

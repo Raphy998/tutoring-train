@@ -4,7 +4,10 @@ import at.tutoringtrain.adminclient.data.entry.Offer;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.ui.controller.AllOffersController;
+import at.tutoringtrain.adminclient.ui.controller.AllRequestsController;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
+import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
 import at.tutoringtrain.adminclient.ui.controller.MessageListItemController;
 import at.tutoringtrain.adminclient.ui.controller.OfferListItemController;
 import at.tutoringtrain.adminclient.ui.controller.RequestListItemController;
@@ -43,7 +46,7 @@ public class ListItemFactory {
         this.logger.debug("ListItemFactory initialized");
     }
     
-    public AnchorPane generateUserListItem(User user, MessageListener listener) {
+    public AnchorPane generateUserListItem(User user, MessageListener listener, AllUsersController parentController) {
         AnchorPane itemPane;
         FXMLLoader loader;
         UserListItemController controller;
@@ -52,6 +55,7 @@ public class ListItemFactory {
             itemPane = loader.<AnchorPane>load();
             controller = (UserListItemController)loader.getController();
             controller.setUser(user);
+            controller.setParentController(parentController);
             controller.setMessageListener(listener);
         } catch (IOException ioex) {
             itemPane = null;
@@ -94,7 +98,7 @@ public class ListItemFactory {
         return itemPane;
     }
     
-    public AnchorPane generateOfferListItem(Offer offer, MessageListener listener) {
+    public AnchorPane generateOfferListItem(Offer offer, MessageListener listener, AllOffersController parentController) {
         AnchorPane itemPane;
         FXMLLoader loader;
         OfferListItemController controller;
@@ -103,6 +107,7 @@ public class ListItemFactory {
             itemPane = loader.<AnchorPane>load();
             controller = (OfferListItemController)loader.getController();
             controller.setOffer(offer);
+            controller.setParentController(parentController);
             controller.setMessageListener(listener);
         } catch (IOException ioex) {
             itemPane = null;
@@ -111,7 +116,7 @@ public class ListItemFactory {
         return itemPane;
     }
     
-    public AnchorPane generateRequestListItem(Request request, MessageListener listener) {
+    public AnchorPane generateRequestListItem(Request request, MessageListener listener, AllRequestsController parentController) {
         AnchorPane itemPane;
         FXMLLoader loader;
         RequestListItemController controller;
@@ -120,6 +125,7 @@ public class ListItemFactory {
             itemPane = loader.<AnchorPane>load();
             controller = (RequestListItemController)loader.getController();
             controller.setRequest(request);
+            controller.setParentController(parentController);
             controller.setMessageListener(listener);
         } catch (IOException ioex) {
             itemPane = null;

@@ -3,7 +3,10 @@ package at.tutoringtrain.adminclient.ui.controller;
 import at.tutoringtrain.adminclient.data.entry.Offer;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
+import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
+import at.tutoringtrain.adminclient.io.network.RequestResult;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestDeleteOfferListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DataStorage;
 import at.tutoringtrain.adminclient.main.MessageCodes;
@@ -19,6 +22,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -32,7 +36,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class OfferListItemController implements Initializable, OfferChangedListener {
+public class OfferListItemController implements Initializable, OfferChangedListener, RequestDeleteOfferListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -66,7 +70,7 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     private WindowService windowService;
     private Communicator communicator;
     private DataStorage dataStorage;
-    
+    private AllOffersController parentController;
     private MessageListener messageListener;
     private Offer offer;
     
@@ -94,10 +98,13 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     @FXML
     void onBtnDelete(ActionEvent event) {
         try {
-            displayMessage(new MessageContainer(MessageCodes.NOT_IMPLEMENTED_YET, "NOT IMPLEMENTED YET"));
-            //if (windowService.openConfirmDialog("dialogHeaderDeleteOffer", "dialogContenDeleteOffer", new StringPlaceholder("headline", offer.getHeadline())).get() == ButtonType.OK) {
-                //TODO     
-            //}
+            if (windowService.openConfirmDialog("dialogHeaderDeleteOffer", "dialogContenDeleteOffer", new StringPlaceholder("headline", offer.getHeadline())).get() == ButtonType.OK) {
+                btnDelete.setDisable(true);
+                if(!communicator.requestDeleteOffer(this, offer)) {
+                    btnDelete.setDisable(false);
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+                } 
+            }
         } catch (Exception ex) {
             logger.error(ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
@@ -106,6 +113,10 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
+    }
+
+    public void setParentController(AllOffersController parentController) {
+        this.parentController = parentController;
     }
     
     private void displayMessage(MessageContainer container) {
@@ -147,5 +158,24 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     public void offerChanged(Offer offer) {
         this.offer = offer;
         Platform.runLater(() -> displayOffer());
+    }
+    
+    @Override
+    public void requestDeleteOfferFinished(RequestResult result) {
+        if (result.isSuccessful()) {
+            displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageOfferSuccessfullyRemoved")));
+            Platform.runLater(() -> parentController.removeListItem(pane));            
+        } else {
+            displayMessage(result.getMessageContainer());
+            logger.debug(result.getMessageContainer().toString());
+        }
+    }
+
+    @Override
+    public void requestFailed(RequestResult result) {
+        btnDelete.setDisable(false);
+        ApplicationManager.getHostFallbackService().requestCheck();
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
+        logger.error(result.getMessageContainer().toString());
     }
 }

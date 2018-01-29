@@ -196,7 +196,7 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
                     listItems.clear();
                     for (User user : dataMapper.toUserArrayList(result.getData(), DataMappingViews.User.In.Get.class)) {
                         dataStorage.addUser(user);
-                        listItems.add(listItemFactory.generateUserListItem(user, this));
+                        listItems.add(listItemFactory.generateUserListItem(user, this, this));
                     } 
                     if (listItems.isEmpty()) {
                         listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
@@ -223,7 +223,7 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
                 try {
                     listItems.clear();
                     for (User user : dataMapper.toUserArrayList(result.getData(), DataMappingViews.User.In.Get.class)) {
-                        listItems.add(listItemFactory.generateUserListItem(user, this));
+                        listItems.add(listItemFactory.generateUserListItem(user, this, this));
                     } 
                     if (listItems.isEmpty()) {
                         listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
@@ -264,5 +264,9 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
     
     private String getSearch() {
         return txtSearch.getText();
+    }
+    
+     public boolean removeListItem(AnchorPane listItem) {
+        return listItems.remove(listItem);
     }
 }

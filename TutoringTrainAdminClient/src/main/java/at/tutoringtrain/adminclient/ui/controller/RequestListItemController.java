@@ -3,7 +3,10 @@ package at.tutoringtrain.adminclient.ui.controller;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
+import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
+import at.tutoringtrain.adminclient.io.network.RequestResult;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestDeleteRequestListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DataStorage;
 import at.tutoringtrain.adminclient.main.MessageCodes;
@@ -19,6 +22,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -32,7 +36,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class RequestListItemController implements Initializable, RequestChangedListener {
+public class RequestListItemController implements Initializable, RequestChangedListener, RequestDeleteRequestListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -66,7 +70,7 @@ public class RequestListItemController implements Initializable, RequestChangedL
     private WindowService windowService;
     private Communicator communicator;
     private DataStorage dataStorage;
-    
+    private AllRequestsController parentController;
     private MessageListener messageListener;
     private Request request;
     
@@ -94,10 +98,13 @@ public class RequestListItemController implements Initializable, RequestChangedL
     @FXML
     void onBtnDelete(ActionEvent event) {
         try {
-            displayMessage(new MessageContainer(MessageCodes.NOT_IMPLEMENTED_YET, "NOT IMPLEMENTED YET"));
-            //if (windowService.openConfirmDialog("dialogHeaderDeleteOffer", "dialogContenDeleteOffer", new StringPlaceholder("headline", offer.getHeadline())).get() == ButtonType.OK) {
-                //TODO     
-            //}
+            if (windowService.openConfirmDialog("dialogHeaderDeleteRequest", "dialogContenDeleteRequest", new StringPlaceholder("headline", request.getHeadline())).get() == ButtonType.OK) {
+                btnDelete.setDisable(true);
+                if(!communicator.requestDeleteRequest(this, request)) {
+                    btnDelete.setDisable(false);
+                    displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+                }     
+            }
         } catch (Exception ex) {
             logger.error(ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
@@ -106,6 +113,10 @@ public class RequestListItemController implements Initializable, RequestChangedL
     
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
+    }
+
+    public void setParentController(AllRequestsController parentController) {
+        this.parentController = parentController;
     }
     
     private void displayMessage(MessageContainer container) {
@@ -147,5 +158,24 @@ public class RequestListItemController implements Initializable, RequestChangedL
     public void requestChanged(Request request) {
         this.request = request;
         Platform.runLater(()-> displayRequest());
+    }
+
+    @Override
+    public void requestDeleteRequestFinished(RequestResult result) {
+        if (result.isSuccessful()) {
+            displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageRequestSuccessfullyRemoved")));
+            Platform.runLater(() -> parentController.removeListItem(pane));            
+        } else {
+            displayMessage(result.getMessageContainer());
+            logger.debug(result.getMessageContainer().toString());
+        }
+    }
+
+    @Override
+    public void requestFailed(RequestResult result) {
+        btnDelete.setDisable(false);
+        ApplicationManager.getHostFallbackService().requestCheck();
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageConnectionFailed")));
+        logger.error(result.getMessageContainer().toString());
     }
 }
