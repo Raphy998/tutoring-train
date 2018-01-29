@@ -5,10 +5,8 @@
     <jta-data-source>java:app/aphrodite4</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-        <!--<property name="myapp.cache-prefix" value="MyApp_"/>-->
-        <property name="toplink.target-database" value ="oracle.toplink.essentials.extension.spatial.Oracle10SpatialPlatform"/>
-        <property name="toplink.descriptor.customizer.SimpleSpatial" value="edu.tutoringtrain.utils.SimpleSpatialCustomizer"/>
         <property name="eclipselink.cache.shared.default" value="false"/>
+        <!--<property name="eclipselink.logging.level" value="FINE"/>-->
         <property name="javax.persistence.validation.group.pre-persist" value="javax.validation.groups.Default"/>
         <property name="javax.persistence.validation.group.pre-update" value="javax.validation.groups.Default,edu.tutoringtrain.utils.ConstraintGroups.Update"/>
     </properties>

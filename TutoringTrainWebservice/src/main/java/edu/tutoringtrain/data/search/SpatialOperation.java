@@ -9,6 +9,6 @@ package edu.tutoringtrain.data.search;
  *
  * @author Elias
  */
-public enum DataType {
-    STRING, CHAR, NUMBER, DATE, BOOLEAN, SPATIAL, OTHER
+public enum SpatialOperation {
+    INSIDE, INSIDE_NULL
 }

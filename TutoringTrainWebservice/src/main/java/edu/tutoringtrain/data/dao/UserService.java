@@ -226,8 +226,7 @@ public class UserService extends AbstractService {
     @Transactional
     public List<User> getUsers(int start, int pageSize) {
         List<User> users;
-        
-        TypedQuery<User> query = (TypedQuery<User>) em.createNamedQuery("User.findAll");
+        TypedQuery<User> query = em.createNamedQuery("User.findAll", User.class);
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
         users = query.getResultList();

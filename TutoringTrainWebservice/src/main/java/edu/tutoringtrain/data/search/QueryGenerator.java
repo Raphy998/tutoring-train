@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.data.search;
 
+import com.mysema.query.support.Expressions;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.expr.ComparableExpressionBase;
@@ -12,12 +13,12 @@ import com.mysema.query.types.path.ComparablePath;
 import com.mysema.query.types.path.DateTimePath;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.StringPath;
-import java.math.BigDecimal;
+import edu.tutoringtrain.entities.QEntry;
+import edu.tutoringtrain.misc.GeoPoint;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 /**
  *
  * @author Elias
@@ -144,6 +145,35 @@ public abstract class QueryGenerator<T extends EntityProp> {
                 break;
             case LTE:
                 pred = key.loe(Integer.valueOf(crit.getValue().toString()));
+                break;
+        }
+
+        if (crit.isNot()) {
+            pred = pred.not();
+        }
+        
+        return pred;
+    }
+    
+    protected Predicate getPredicate(SpatialSearchCriteria crit) {
+        Predicate pred = null;
+        
+        GeoPoint loc = (GeoPoint) crit.getValue();
+
+        switch (crit.getOperation()) {
+            case INSIDE:
+                pred = Expressions.stringTemplate("function('WITHIN_DISTANCE', {0}, {1}, {2}, {3})" , 
+                        QEntry.entry.location,
+                        loc.getLon(),
+                        loc.getLat(),
+                        crit.getRadius()).eq("TRUE");
+                break;
+            case INSIDE_NULL:
+                pred = Expressions.stringTemplate("function('WITHIN_DISTANCE', {0}, {1}, {2}, {3})" , 
+                        QEntry.entry.location,
+                        loc.getLon(),
+                        loc.getLat(),
+                        crit.getRadius()).eq("TRUE").or(QEntry.entry.location.isNull());
                 break;
         }
 

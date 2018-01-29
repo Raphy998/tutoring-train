@@ -10,6 +10,7 @@ import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.entities.User;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.jivesoftware.smack.sasl.SASLMechanism;
 import org.jivesoftware.smack.sasl.javax.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
@@ -37,11 +39,11 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
  */
 @ApplicationScoped
 public class XMPPService extends AbstractService {
-    private static final String DOMAIN = "tutoringtrain.zapto.org";     //The domain set in XMPP Server
-    private static final String HOST = "tutoringtrain.zapto.org";             //The IP Address of the XMPP Server 
+    private static final String DOMAIN = "tutoringtrain.hopto.org";     //The domain set in XMPP Server
+    private static final String HOST = "tutoringtrain.hopto.org";             //The IP Address of the XMPP Server 
     private static final int PORT = 5222;                       //The Port for XMPP Connections (Default: 5222)
     private static final String ADMIN_USERNAME = "admin";       //The Username of the XNPP Server Admin (for creating new users)
-    private static final String ADMIN_PASSWORD = "tutoringtrain";       //The Password of the XNPP Server Admin (for creating new users)
+    private static final String ADMIN_PASSWORD = "Moe998!";       //The Password of the XNPP Server Admin (for creating new users)
 
     public XMPPService() {
     }
@@ -163,13 +165,14 @@ public class XMPPService extends AbstractService {
     }
     
     private String getXMPPPassword(String stringToEncrypt) throws NoSuchAlgorithmException {
-        String key = null;
+        /*String key = null;
 
         MessageDigest m = MessageDigest.getInstance("MD5");
         m.update(stringToEncrypt.getBytes(), 0, stringToEncrypt.length());
         key = new BigInteger(1, m.digest()).toString(16);
         
-        return key;
+        return key;*/
+        return stringToEncrypt;
     }
     
     private AbstractXMPPConnection getXMPPConnection(String username, String password) throws SmackException, IOException, XMPPException {
@@ -187,10 +190,16 @@ public class XMPPService extends AbstractService {
 
         SASLMechanism mechanism = new SASLDigestMD5Mechanism();
         SASLAuthentication.registerSASLMechanism(mechanism);
-        SASLAuthentication.blacklistSASLMechanism("SCRAM-SHA-1");
-        SASLAuthentication.unBlacklistSASLMechanism("DIGEST-MD5");
+        //SASLAuthentication.blacklistSASLMechanism("SCRAM-SHA-1");
+        SASLAuthentication.unBlacklistSASLMechanism("SCRAM-SHA-1");
         
-        config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
+        config.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
+        try {
+            TLSUtils.acceptAllCertificates(config);
+            TLSUtils.disableHostnameVerificationForTlsCertificicates(config);
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+        }
+        
         connection = new XMPPTCPConnection(config.build());
         connection.setPacketReplyTimeout(10000);
         connection.connect();
@@ -209,7 +218,7 @@ public class XMPPService extends AbstractService {
 
             Presence subscribe = new Presence(Presence.Type.subscribe);
             subscribe.setTo(usernameToAdd + "@" + DOMAIN);
-            conn.sendPacket(subscribe);
+            conn.sendStanza(subscribe);
         }
         catch (Exception ex) {
             ex.printStackTrace();

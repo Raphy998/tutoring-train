@@ -15,6 +15,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  *
@@ -30,8 +31,7 @@ public class SubjectService extends AbstractService {
     public List<Subject> getAllSubjects() {
         List<Subject> results;
         
-        TypedQuery<Subject> query =
-        (TypedQuery<Subject>) em.createNamedQuery("Subject.findAll");
+        TypedQuery<Subject> query = em.createNamedQuery("Subject.findAll", Subject.class);
         results = query.getResultList();
 
         return results;
@@ -41,8 +41,7 @@ public class SubjectService extends AbstractService {
     public List<Subject> getAllActiveSubjects() {
         List<Subject> results;
         
-        TypedQuery<Subject> query =
-        (TypedQuery<Subject>) em.createNamedQuery("Subject.findAllActive");
+        TypedQuery<Subject> query = em.createNamedQuery("Subject.findAllActive", Subject.class);
         results = query.getResultList();
 
         return results;
@@ -52,8 +51,7 @@ public class SubjectService extends AbstractService {
     public List<Subject> getAllInactiveSubjects() {
         List<Subject> results;
         
-        TypedQuery<Subject> query =
-        (TypedQuery<Subject>) em.createNamedQuery("Subject.findAllInactive");
+        TypedQuery<Subject> query = em.createNamedQuery("Subject.findAllInactive", Subject.class);
         results = query.getResultList();
 
         return results;

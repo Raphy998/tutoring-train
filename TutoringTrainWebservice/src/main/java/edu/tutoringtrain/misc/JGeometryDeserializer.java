@@ -19,6 +19,9 @@ import oracle.spatial.geometry.JGeometry;
 public class JGeometryDeserializer extends JsonDeserializer<JGeometry> {
     @Override
     public JGeometry deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+        /*GeoPoint gp = parser.readValueAs(GeoPoint.class);
+        double[] coords = new double[] {gp.getLon(), gp.getLat()};
+        return JGeometryConverter.convert(JGeometry.createPoint(coords, 2, 8307));*/
         GeoPoint gp = parser.readValueAs(GeoPoint.class);
         double[] coords = new double[] {gp.getLon(), gp.getLat()};
         return JGeometry.createPoint(coords, 2, 8307);

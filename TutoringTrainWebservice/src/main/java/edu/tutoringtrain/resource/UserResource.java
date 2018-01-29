@@ -35,6 +35,7 @@ import edu.tutoringtrain.data.search.user.UserSearchCriteriaDeserializer;
 import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.entities.User;
+import edu.tutoringtrain.utils.StringUtils;
 import edu.tutoringtrain.utils.Views;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -88,7 +89,7 @@ public class UserResource extends AbstractResource {
             
             if (userIn.getPassword() == null) {
                 //if user doesn't have a password set, generate one and send it to the given email
-                String genPassword = RandomStringUtils.randomAlphanumeric(8);
+                String genPassword = StringUtils.getRandomPassword(); 
                 userIn.setPassword(DigestUtils.md5Hex(genPassword));
                 
                 userOut = userService.registerUser(userIn, errBuilder);
@@ -684,6 +685,47 @@ public class UserResource extends AbstractResource {
             }
             catch (Exception e) {
                 unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured(UserRole.ADMIN)
+    @PUT
+    @Path("/resetPw/{username}")
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response resetAndGenPassword(@Context HttpServletRequest httpServletRequest,
+                            @PathParam("username") String username) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        ErrorBuilder errBuilder = new ErrorBuilder();
+
+        try {
+            String newPw = StringUtils.getRandomPassword();
+            
+            User user2update = new User(username);
+            user2update.setPassword(DigestUtils.md5Hex(newPw));
+            
+            userService.updateUser(user2update, errBuilder);
+            
+            emailService.sendNewPassword(userService.getUserByUsername(username), newPw, false);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, Language.EN);
+            }
+            catch (TransactionalException e) {
+                if (errBuilder.getErrorCode() == Error.USERNAME_CONFLICT || errBuilder.getErrorCode() == Error.EMAIL_CONFLICT) 
+                    response.status(Response.Status.CONFLICT);
+                else 
+                    response.status(Response.Status.INTERNAL_SERVER_ERROR);
+                
+                response.entity(errBuilder.withLang(lang).build());
+            }
+            catch (Exception e) {
+                unknownError(e, response, Language.EN);
             } 
         }
  

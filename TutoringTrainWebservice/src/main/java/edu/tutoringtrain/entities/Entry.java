@@ -13,7 +13,6 @@ import edu.tutoringtrain.misc.JGeometryDeserializer;
 import edu.tutoringtrain.misc.JGeometrySerializer;
 import edu.tutoringtrain.misc.NumericBooleanDeserializer;
 import edu.tutoringtrain.misc.NumericBooleanSerializer;
-import edu.tutoringtrain.misc.SubjectLocalizeSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -114,11 +113,11 @@ public class Entry implements Serializable {
     @Column(name = "HEADLINE", length = 50)
     @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private String headline;
-    @Convert("JGeometry")
     @Column(name = "LOCATION")
     @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     @JsonSerialize(using = JGeometrySerializer.class)
     @JsonDeserialize(using = JGeometryDeserializer.class)
+    @Convert("JGeometry")
     private JGeometry location;
     @OneToMany(mappedBy = "entry")
     private Collection<Comment> tcommentCollection;

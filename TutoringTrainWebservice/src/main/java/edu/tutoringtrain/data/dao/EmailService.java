@@ -45,6 +45,9 @@ public class EmailService extends AbstractService {
     private static final String WELCOME_CONTENT_WITH_PASSWORD = "Welcome %s!" + LINE_SEP + LINE_SEP + "Your credentials are:" + LINE_SEP + "Username: %s" + LINE_SEP + "Password: %s";
     
     private static final String NEWS_SUBJECT = "TutoringTrain Newsletter";
+    
+    private static final String PWRESET_SUBJECT = "TutoringTrain Password Reset";
+    private static final String PWRESET_CONTENT = "Hello %s!" + LINE_SEP + LINE_SEP + "Your password new password is: %s";
         
     private ExecutorService executor;
     
@@ -166,5 +169,41 @@ public class EmailService extends AbstractService {
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
         String firstName = user.getName().substring(0, user.getName().indexOf(' '));
         message.setContent(in.lines().collect(Collectors.joining()).replaceAll("\\{name\\}", firstName), "text/html; charset=utf-8");
+    }
+    
+    
+    public void sendNewPassword(final User user, final String newPassword, final boolean errorIfNotSend) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (errorIfNotSend && (user == null || user.getEmail() == null)) {
+                        throw new IllegalArgumentException("cannot send email (user or email null)");
+                    }
+
+                    Message message = new MimeMessage(getSMTPSession());
+                    setPasswordResetEmailContents(message, user, newPassword);
+                    Transport.send(message);
+                    logger.info("Send new password to: " + user.getEmail());
+
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                    if (errorIfNotSend) {
+                        throw new RuntimeException(e);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+    
+    private void setPasswordResetEmailContents(Message message, User user, String newPassword) throws AddressException, MessagingException, IOException {
+        message.setFrom(new InternetAddress("noreply.tutoringtrain@gmail.com"));		//seems to do nothing...
+        message.setRecipients(Message.RecipientType.TO,
+                        InternetAddress.parse(user.getEmail()));
+        
+        message.setSubject(PWRESET_SUBJECT);
+        message.setText(String.format(PWRESET_CONTENT, user.getUsername(), newPassword));
     }
 }

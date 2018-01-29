@@ -46,7 +46,7 @@ public class CommentService extends AbstractService {
             throw new NullValueException(new ErrorBuilder(edu.tutoringtrain.data.error.Error.ENTRY_NOT_FOUND).withParams(entryID));
         }
         
-        TypedQuery<Comment> query = (TypedQuery<Comment>) em.createNamedQuery("Comment.findByEntryId");
+        TypedQuery<Comment> query = em.createNamedQuery("Comment.findByEntryId", Comment.class);
         query.setParameter("entryId", entryID);
         
         return query.getResultList();

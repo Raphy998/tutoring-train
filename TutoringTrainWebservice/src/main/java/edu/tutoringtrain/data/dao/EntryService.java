@@ -59,8 +59,8 @@ public class EntryService extends AbstractService {
     public List<Entry> getNewestEntries(EntryType type, int start, int pageSize) {
         List<Entry> results;
         TypedQuery<Entry> query;
-        if (type == EntryType.OFFER) query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findOfferNewest");
-        else query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findRequestNewest");
+        if (type == EntryType.OFFER) query = em.createNamedQuery("Entry.findOfferNewest", Entry.class);
+        else query = em.createNamedQuery("Entry.findRequestNewest", Entry.class);
         
         query.setFirstResult(start);
         query.setMaxResults(pageSize);
@@ -76,6 +76,7 @@ public class EntryService extends AbstractService {
      * @param start start of offer selection (beginning at 0)
      * @param pageSize maximum number of results returned
      * @return 
+     * @throws edu.tutoringtrain.data.exceptions.UserNotFoundException 
      */
     @Transactional
     public List<Entry> getNewestEntiresOfUser(EntryType type, String username, int start, int pageSize) throws UserNotFoundException {
@@ -85,8 +86,8 @@ public class EntryService extends AbstractService {
         }
         
         TypedQuery<Entry> query;
-        if (type == EntryType.OFFER) query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findOfferNewestOfUser");
-        else query = (TypedQuery<Entry>) em.createNamedQuery("Entry.findRequestNewestOfUser");
+        if (type == EntryType.OFFER) query = em.createNamedQuery("Entry.findOfferNewestOfUser", Entry.class);
+        else query = em.createNamedQuery("Entry.findRequestNewestOfUser", Entry.class);
         
         query.setParameter("username", username);
         query.setFirstResult(start);
@@ -252,12 +253,20 @@ public class EntryService extends AbstractService {
     public List<Entry> search(EntryType type, EntrySearch searchCriteria) throws ParseException {
         EntryQueryGenerator gen = new EntryQueryGenerator();
         JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        List<Entry> e = null;
 
-        return query.from(QEntry.entry)
-            .where(gen.getPredicates(searchCriteria))
-            .where(QEntry.entry.flag.eq(type.getChar()))
-            .orderBy(gen.getOrders(searchCriteria))
-            .list(QEntry.entry);
+        try {
+            e = query.from(QEntry.entry)
+                .where(gen.getPredicates(searchCriteria))
+                .where(QEntry.entry.flag.eq(type.getChar()))
+                .orderBy(gen.getOrders(searchCriteria))
+                .list(QEntry.entry);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        return e;
     }
     
     @Transactional

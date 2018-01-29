@@ -18,6 +18,7 @@ import edu.tutoringtrain.data.search.DateSearchCriteria;
 import edu.tutoringtrain.data.search.EntityProp;
 import edu.tutoringtrain.data.search.NumberSearchCriteria;
 import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.SpatialSearchCriteria;
 import edu.tutoringtrain.data.search.StringSearchCriteria;
 import java.io.IOException;
 
@@ -40,7 +41,7 @@ public class EntrySearchCriteriaDeserializer extends StdDeserializer<SearchCrite
         final JsonNode node = parser.getCodec().readTree(parser);
         final ObjectMapper mapper = (ObjectMapper)parser.getCodec();
         
-        //add a module to deserialize all EntityProps to UserProps since this Deserializer is only used for Users
+        //add a module to deserialize all EntityProps to EntryProps since this Deserializer is only used for Entries
         final SimpleModule module = new SimpleModule();
         module.addDeserializer(EntityProp.class, new EntryEntityPropDeserializer());
         mapper.registerModule(module);
@@ -67,6 +68,9 @@ public class EntrySearchCriteriaDeserializer extends StdDeserializer<SearchCrite
                         break;
                     case DATE:
                         sc = mapper.treeToValue(node, DateSearchCriteria.class);
+                        break;
+                    case SPATIAL:
+                        sc = mapper.treeToValue(node, SpatialSearchCriteria.class);
                         break;
                     default:
                         break;

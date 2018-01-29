@@ -4,7 +4,7 @@
 
     <groupId>com.tutoringtrain</groupId>
     <artifactId>TutoringTrainWebservice</artifactId>
-    <version>1.8</version>
+    <version>1.8.3</version>
     <packaging>war</packaging>
 
     <name>TutoringTrainWebservice</name>
@@ -16,11 +16,11 @@
     
     <dependencies>        
         <!-- https://mvnrepository.com/artifact/toplink.essentials/toplink-essentials -->
-        <dependency>
+        <!--<dependency>
             <groupId>toplink.essentials</groupId>
             <artifactId>toplink-essentials</artifactId>
             <version>2.1-60f</version>
-        </dependency>
+        </dependency>-->
         
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -121,6 +121,19 @@
             <artifactId>querydsl-jpa</artifactId>
             <version>3.7.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.mysema.querydsl/querydsl-spatial -->
+        <dependency>
+            <groupId>com.mysema.querydsl</groupId>
+            <artifactId>querydsl-spatial</artifactId>
+            <version>3.7.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.mysema.querydsl/querydsl-sql -->
+        <dependency>
+            <groupId>com.mysema.querydsl</groupId>
+            <artifactId>querydsl-sql</artifactId>
+            <version>3.7.4</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -190,6 +203,7 @@
                     <configuration>
                       <outputDirectory>target/generated-sources/java</outputDirectory>
                       <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+                      <spatial>true</spatial>
                     </configuration>
                   </execution>
                 </executions>

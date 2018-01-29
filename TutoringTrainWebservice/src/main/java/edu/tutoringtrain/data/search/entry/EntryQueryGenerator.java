@@ -17,6 +17,7 @@ import edu.tutoringtrain.data.search.OrderElement;
 import edu.tutoringtrain.data.search.QueryGenerator;
 import edu.tutoringtrain.data.search.Search;
 import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.SpatialSearchCriteria;
 import edu.tutoringtrain.data.search.StringSearchCriteria;
 import edu.tutoringtrain.entities.QEntry;
 import java.text.ParseException;
@@ -28,7 +29,7 @@ import java.util.List;
  * @author Elias
  */
 public class EntryQueryGenerator extends QueryGenerator<EntryProp> {
-    private final QEntry offer = QEntry.entry;
+    private final QEntry entry = QEntry.entry;
     
     @Override
     public Predicate[] getPredicates(Search<EntryProp> s) throws ParseException {
@@ -46,6 +47,9 @@ public class EntryQueryGenerator extends QueryGenerator<EntryProp> {
             }
             else if (crit instanceof NumberSearchCriteria) {
                 preds.add(getPredicate((NumberSearchCriteria<EntryProp>) crit));
+            }
+            else if (crit instanceof SpatialSearchCriteria) {
+                preds.add(getPredicate((SpatialSearchCriteria<EntryProp>) crit));
             }
         }
         
@@ -73,25 +77,25 @@ public class EntryQueryGenerator extends QueryGenerator<EntryProp> {
         
         switch (key) {
             case ID:
-                var = offer.id;
+                var = entry.id;
                 break;
             case HEADLINE:
-                var = offer.headline;
+                var = entry.headline;
                 break;
             case DESCRIPTION:
-                var = offer.description;
+                var = entry.description;
                 break;
             case ISACTIVE:
-                var = offer.isactive;
+                var = entry.isactive;
                 break;
             case POSTEDON:
-                var = offer.postedon;
+                var = entry.postedon;
                 break;
             case SUBJECT:
-                var = offer.subject.id;
+                var = entry.subject.id;
                 break;
             case USERNAME:
-                var = offer.user.username;
+                var = entry.user.username;
                 break;
         }
         
