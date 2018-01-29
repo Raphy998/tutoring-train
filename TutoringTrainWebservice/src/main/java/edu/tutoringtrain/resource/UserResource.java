@@ -28,6 +28,7 @@ import edu.tutoringtrain.data.dao.XMPPService;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
+import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.search.SearchCriteria;
@@ -53,6 +54,7 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.RandomStringUtils;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 /**
  * REST Web Service
@@ -198,6 +200,48 @@ public class UserResource extends AbstractResource {
             } 
         }
  
+        return response.build();
+    }
+    
+    @Secured(UserRole.ADMIN)
+    @DELETE
+    @Path("/{username}")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response delete(@Context HttpServletRequest httpServletRequest,
+            @PathParam(value = "username") String username,
+            @QueryParam("force") String strForce,
+            @Context SecurityContext securityContext) throws Exception {
+
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            boolean force = false;
+            
+            if (strForce != null) {
+                try { force = Boolean.valueOf(strForce); }
+                catch (Exception ex) { throw new NumberFormatException(strForce); }
+            }
+            
+            User user2delete = userService.getUserByUsername(username);
+            
+            if (((PrincipalInRole)securityContext.getUserPrincipal()).getRole() != UserRole.ROOT &&
+                    UserRole.toUserRole(user2delete.getRole()) == UserRole.ADMIN) {
+                throw new ForbiddenException(new ErrorBuilder(Error.DELETE_ADMIN));
+            }
+            
+            userService.deleteUser(username, force);
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+
         return response.build();
     }
     

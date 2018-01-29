@@ -60,6 +60,8 @@ public class Error {
     public static final int COMMENT_OF_USER_NOT_FOUND = 45;
     public static final int VALUE_INVALID = 46;
     public static final int ENTRY_NOT_FOUND = 47;
+    public static final int DELETE_ADMIN = 48;
+    public static final int DELETE_NO_CASCADE = 49;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -73,7 +75,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return ENTRY_NOT_FOUND;
+        return DELETE_NO_CASCADE;
     }
 
     public Error() {

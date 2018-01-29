@@ -87,19 +87,19 @@ public class User implements Serializable {
     @Column(name = "GENDER")
     @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private Character gender;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Collection<Rating> ratingCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user1")
-    private Collection<Rating> ratingCollection1;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ratedUser")
+    private Collection<Rating> ratingsGot;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ratingUser")
+    private Collection<Rating> ratingsGiven;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private Collection<Session> sessionCollection;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private Collection<Entry> entryCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @JsonView({Views.User.Out.Public.class})
     @JsonProperty("block")
     private Blocked blocked;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private Collection<Comment> commentCollection;
     @Lob
     @Column(name = "AVATAR")
@@ -177,22 +177,20 @@ public class User implements Serializable {
         this.gender = gender;
     }
 
-    @XmlTransient
-    public Collection<Rating> getRatingCollection() {
-        return ratingCollection;
+    public Collection<Rating> getRatingsGot() {
+        return ratingsGot;
     }
 
-    public void setRatingCollection(Collection<Rating> ratingCollection) {
-        this.ratingCollection = ratingCollection;
+    public void setRatingsGot(Collection<Rating> ratingsGot) {
+        this.ratingsGot = ratingsGot;
     }
 
-    @XmlTransient
-    public Collection<Rating> getRatingCollection1() {
-        return ratingCollection1;
+    public Collection<Rating> getRatingsGiven() {
+        return ratingsGiven;
     }
 
-    public void setRatingCollection1(Collection<Rating> ratingCollection1) {
-        this.ratingCollection1 = ratingCollection1;
+    public void setRatingsGiven(Collection<Rating> ratingsGiven) {
+        this.ratingsGiven = ratingsGiven;
     }
 
     @XmlTransient

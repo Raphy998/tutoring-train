@@ -49,10 +49,10 @@ public class Rating implements Serializable {
     private Date writtenon;
     @JoinColumn(name = "RATEDUSER", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
     @ManyToOne(optional = false)
-    private User user;
+    private User ratedUser;
     @JoinColumn(name = "RATINGUSER", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
     @ManyToOne(optional = false)
-    private User user1;
+    private User ratingUser;
 
     public Rating() {
     }
@@ -97,20 +97,20 @@ public class Rating implements Serializable {
         this.writtenon = writtenon;
     }
 
-    public User getUser() {
-        return user;
+    public User getRatedUser() {
+        return ratedUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setRatedUser(User ratedUser) {
+        this.ratedUser = ratedUser;
     }
 
-    public User getUser1() {
-        return user1;
+    public User getRatingUser() {
+        return ratingUser;
     }
 
-    public void setUser1(User user1) {
-        this.user1 = user1;
+    public void setRatingUser(User ratingUser) {
+        this.ratingUser = ratingUser;
     }
 
     @Override

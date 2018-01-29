@@ -160,6 +160,26 @@ public class EntryService extends AbstractService {
     }
     
     @Transactional
+    public void deleteEntry(EntryType type, BigDecimal id) throws EntryNotFoundException {
+        Entry e = getEntry(type, id);
+        em.remove(e);
+    }
+    
+    @Transactional
+    public void deleteEntry(EntryType type, BigDecimal id, String username) throws EntryNotFoundException {
+        Entry e = getEntry(type, id);
+        
+        if (!e.getUser().getUsername().equals(username)) {
+            if (type == EntryType.OFFER)
+                throw new EntryNotFoundException(new ErrorBuilder(Error.OFFER_OF_USER_NOT_FOUND).withParams(id, username));
+            else 
+                throw new EntryNotFoundException(new ErrorBuilder(Error.REQUEST_OF_USER_NOT_FOUND).withParams(id, username));
+        }
+        
+        em.remove(e);
+    }
+    
+    @Transactional
     public void updateEntry(EntryType type, Entry entryReq, String username) throws NullValueException, EntryNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException {
         if (entryReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.ENTRY_NULL));

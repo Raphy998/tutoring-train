@@ -45,5 +45,7 @@
     "44": "Kommentar (id=%s) bei %s (id=%s) nicht gefunden",
     "45": "Kommentar (id=%s) von '%s' bei %s (id=%s) nicht gefunden",
     "46": "Ungültiger Wert: '%s'",
-    "47": "Eintrag (id=%s) nicht gefunden"
+    "47": "Eintrag (id=%s) nicht gefunden",
+    "48": "Andere Admins können nicht gelöscht werden",
+    "49": "Benutzer kann nicht gelöscht werden, da er andere Objekte besitzt"
 }

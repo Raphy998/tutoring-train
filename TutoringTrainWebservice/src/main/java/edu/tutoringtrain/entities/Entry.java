@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -119,7 +120,7 @@ public class Entry implements Serializable {
     @JsonDeserialize(using = JGeometryDeserializer.class)
     @Convert("JGeometry")
     private JGeometry location;
-    @OneToMany(mappedBy = "entry")
+    @OneToMany(mappedBy = "entry", cascade = CascadeType.REMOVE)        //remove all comments
     private Collection<Comment> tcommentCollection;
 
     public Entry() {

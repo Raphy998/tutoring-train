@@ -29,6 +29,7 @@ import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
+import edu.tutoringtrain.data.exceptions.UnperformableActionException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.exceptions.XMPPException;
 import java.text.SimpleDateFormat;
@@ -173,6 +174,10 @@ public abstract class AbstractResource {
         }
         catch (NullValueException ex) {
             response.status(Response.Status.NOT_FOUND);
+            response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (UnperformableActionException ex) {
+            response.status(CustomHttpStatusCodes.UNPERFORMABLE_ACTION);
             response.entity(ex.getError().withLang(lang).build());
         }
         catch (XMPPException ex) {

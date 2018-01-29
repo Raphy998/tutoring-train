@@ -18,6 +18,7 @@ import edu.tutoringtrain.entities.Blocked;
 import edu.tutoringtrain.data.Gender;
 import edu.tutoringtrain.data.ResettableUserProp;
 import edu.tutoringtrain.data.UserRole;
+import edu.tutoringtrain.data.exceptions.UnperformableActionException;
 import edu.tutoringtrain.data.exceptions.XMPPException;
 import edu.tutoringtrain.data.search.user.UserQueryGenerator;
 import edu.tutoringtrain.data.search.user.UserSearch;
@@ -105,8 +106,19 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    public void deleteUser(String username) throws InvalidArgumentException, NullValueException, ConstraintViolationException {
-        em.remove(em.find(User.class, username));
+    public void deleteUser(String username, boolean force) throws UserNotFoundException, NullValueException, UnperformableActionException {
+        User user2delete = getUserByUsername(username);
+        
+        if (!force) {
+            if (!user2delete.getCommentCollection().isEmpty() || 
+                    !user2delete.getEntryCollection().isEmpty() ||
+                    !user2delete.getRatingsGiven().isEmpty() ||
+                    !user2delete.getRatingsGot().isEmpty()) {
+                throw new UnperformableActionException(new ErrorBuilder(Error.DELETE_NO_CASCADE));
+            }
+        }
+        
+        em.remove(user2delete);
     }
     
     @Transactional(rollbackOn = XMPPException.class)

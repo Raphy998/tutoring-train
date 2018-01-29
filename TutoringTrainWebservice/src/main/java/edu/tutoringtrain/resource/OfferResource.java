@@ -201,6 +201,40 @@ public class OfferResource extends AbstractResource {
     }
     
     @Secured
+    @DELETE
+    @Path("/{id}")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response delete(@Context HttpServletRequest httpServletRequest,
+            @PathParam(value = "id") String id,
+            @Context SecurityContext securityContext) throws Exception {
+
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            Integer idInt;
+            try { idInt = Integer.parseInt(id); }
+            catch (NumberFormatException ex) { throw new NumberFormatException(id); }
+            
+            if (((PrincipalInRole) securityContext.getUserPrincipal()).getRole().isAdmin())
+                entryService.deleteEntry(type, new BigDecimal(idInt));
+            else 
+                entryService.deleteEntry(type, new BigDecimal(idInt), securityContext.getUserPrincipal().getName());
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+
+        return response.build();
+    }
+    
+    @Secured
     @GET
     @Path("/count")
     @Produces(value = MediaType.APPLICATION_JSON)
