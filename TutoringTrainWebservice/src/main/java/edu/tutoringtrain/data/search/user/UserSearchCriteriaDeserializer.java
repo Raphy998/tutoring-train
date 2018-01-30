@@ -39,10 +39,12 @@ public class UserSearchCriteriaDeserializer extends StdDeserializer<SearchCriter
         final JsonNode node = parser.getCodec().readTree(parser);
         final ObjectMapper mapper = (ObjectMapper)parser.getCodec();
         
+        final ObjectMapper customMapper = mapper.copy();
+        
         //add a module to deserialize all EntityProps to UserProps since this Deserializer is only used for Users
         final SimpleModule module = new SimpleModule();
         module.addDeserializer(EntityProp.class, new UserEntityPropDeserializer());
-        mapper.registerModule(module);
+        customMapper.registerModule(module);
         
         SearchCriteria sc = null;
         JsonNode subNode = node.get("key");
@@ -56,13 +58,13 @@ public class UserSearchCriteriaDeserializer extends StdDeserializer<SearchCriter
                 prop = UserProp.valueOf(subNode.textValue().toUpperCase());
                 if (null != prop.getDataType()) switch (prop.getDataType()) {
                     case STRING:
-                        sc = mapper.treeToValue(node, StringSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, StringSearchCriteria.class);
                         break;
                     case NUMBER:
-                        sc = mapper.treeToValue(node, NumberSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, NumberSearchCriteria.class);
                         break;
                     case CHAR:
-                        sc = mapper.treeToValue(node, CharacterSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, CharacterSearchCriteria.class);
                         break;
                     default:
                         break;

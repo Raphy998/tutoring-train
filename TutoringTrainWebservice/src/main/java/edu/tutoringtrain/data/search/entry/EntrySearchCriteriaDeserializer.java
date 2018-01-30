@@ -41,10 +41,12 @@ public class EntrySearchCriteriaDeserializer extends StdDeserializer<SearchCrite
         final JsonNode node = parser.getCodec().readTree(parser);
         final ObjectMapper mapper = (ObjectMapper)parser.getCodec();
         
+        final ObjectMapper customMapper = mapper.copy();
+        
         //add a module to deserialize all EntityProps to EntryProps since this Deserializer is only used for Entries
         final SimpleModule module = new SimpleModule();
         module.addDeserializer(EntityProp.class, new EntryEntityPropDeserializer());
-        mapper.registerModule(module);
+        customMapper.registerModule(module);
         
         SearchCriteria sc = null;
         JsonNode subNode = node.get("key");
@@ -58,19 +60,19 @@ public class EntrySearchCriteriaDeserializer extends StdDeserializer<SearchCrite
                 prop = EntryProp.valueOf(subNode.textValue().toUpperCase());
                 if (null != prop.getDataType()) switch (prop.getDataType()) {
                     case STRING:
-                        sc = mapper.treeToValue(node, StringSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, StringSearchCriteria.class);
                         break;
                     case NUMBER:
-                        sc = mapper.treeToValue(node, NumberSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, NumberSearchCriteria.class);
                         break;
                     case BOOLEAN:
-                        sc = mapper.treeToValue(node, BooleanSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, BooleanSearchCriteria.class);
                         break;
                     case DATE:
-                        sc = mapper.treeToValue(node, DateSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, DateSearchCriteria.class);
                         break;
                     case SPATIAL:
-                        sc = mapper.treeToValue(node, SpatialSearchCriteria.class);
+                        sc = customMapper.treeToValue(node, SpatialSearchCriteria.class);
                         break;
                     default:
                         break;

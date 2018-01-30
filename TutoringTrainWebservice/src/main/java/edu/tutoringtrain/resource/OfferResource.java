@@ -5,6 +5,7 @@
  */
 package edu.tutoringtrain.resource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.PrincipalInRole;
@@ -319,11 +320,12 @@ public class OfferResource extends AbstractResource {
             checkStartPageSize(start, pageSize);
             
             //register module to deserialize SearchCriteria for user
+            ObjectMapper customMapper = getMapper().copy();
             final SimpleModule module = new SimpleModule();
             module.addDeserializer(SearchCriteria.class, new EntrySearchCriteriaDeserializer());
-            getMapper().registerModule(module);
+            customMapper.registerModule(module);
             
-            EntrySearch osIn = getMapper().reader().forType(EntrySearch.class).readValue(searchStr);
+            EntrySearch osIn = customMapper.reader().forType(EntrySearch.class).readValue(searchStr);
             List<Entry> offers;
             if (start != null && pageSize != null) offers = entryService.search(type, osIn, start, pageSize);
             else offers = entryService.search(type, osIn);
