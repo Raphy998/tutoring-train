@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.concurrent.TimeUnit;
 
 import at.train.tutorial.tutoringtrainapp.Data.URLExtension;
 import at.train.tutorial.tutoringtrainapp.Data.User;
@@ -47,7 +48,10 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void>{
 
     @Override
     protected Void doInBackground(Void... voids) {
-        client = new OkHttpClient();
+        client = new OkHttpClient.Builder()
+                .connectTimeout(15,TimeUnit.SECONDS)
+                .readTimeout(15,TimeUnit.SECONDS)
+                .build();
 
         RequestBody body = RequestBody.create(JSON, postBody);
 

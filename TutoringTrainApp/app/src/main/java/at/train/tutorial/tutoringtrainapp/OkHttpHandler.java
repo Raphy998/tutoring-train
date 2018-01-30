@@ -50,6 +50,7 @@ public class OkHttpHandler {
             request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
         }
 
+            System.out.println("ab hier warten");
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -68,6 +69,58 @@ public class OkHttpHandler {
 
             }
         });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadComments(EntryType type, final okHttpHandlerListener listener,int entryId) throws IOException {
+        System.out.println("load comments");
+        OkHttpClient client = new OkHttpClient();
+        String urlExtension = "";
+
+        if(type == EntryType.OFFER){
+            urlExtension = URLExtension.OFFER;
+        }
+        else if (type == EntryType.REQUEST){
+            urlExtension = URLExtension.REQUEST;
+        }
+        urlExtension = urlExtension.concat("/" + entryId);
+        urlExtension = urlExtension.concat(URLExtension.COMMENTS);
+
+        try{
+
+            HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
+            String url = urlBuilder.build().toString();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            if ((sessionKey = Database.getInstance().getSessionKey()) != null) {
+                request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
+            }
+
+            System.out.println("ab hier warten");
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    listener.onFailure(e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                    listener.onSuccess(response);
+                    //final String myResponse = response.body().string();
+//
+                    //System.out.println(response.code() + ": " + myResponse);
+
+                }
+            });
         }
         catch (Exception e){
             e.printStackTrace();

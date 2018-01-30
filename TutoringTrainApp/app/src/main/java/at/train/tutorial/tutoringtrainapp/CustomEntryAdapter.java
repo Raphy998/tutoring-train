@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.text.DateFormat;
@@ -21,15 +22,18 @@ import at.train.tutorial.tutoringtrainapp.Data.Entry;
 
     ArrayList<Entry> entries;
     private Context context;
+    private View.OnClickListener listener;
 
-    public CustomEntryAdapter(ArrayList<Entry> entries, Context context) {
+    public CustomEntryAdapter(ArrayList<Entry> entries, Context context, View.OnClickListener listener) {
         this.entries = entries;
         this.context = context;
+        this.listener = listener;
     }
 
     @Override
     public CustomEntryAdapter.CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_row, parent, false);
+        v.setOnClickListener(listener);
         CustomViewHolder viewHolder = new CustomViewHolder(v);
         return viewHolder;
     }
@@ -55,8 +59,6 @@ import at.train.tutorial.tutoringtrainapp.Data.Entry;
     }
 
     public static class CustomViewHolder extends RecyclerView.ViewHolder {
-
-
         protected TextView txtHeadline;
         protected TextView txtUser;
         protected TextView txtSubject;
@@ -69,7 +71,6 @@ import at.train.tutorial.tutoringtrainapp.Data.Entry;
             txtUser = (TextView) itemView.findViewById(R.id.txt_user);
             txtSubject = (TextView) itemView.findViewById(R.id.txt_subject);
             txtDate = (TextView) itemView.findViewById(R.id.txt_date);
-
         }
     }
 }

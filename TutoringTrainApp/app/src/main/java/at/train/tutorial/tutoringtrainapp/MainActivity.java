@@ -1,5 +1,6 @@
 package at.train.tutorial.tutoringtrainapp;
 
+import android.content.Intent;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +13,14 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 
-public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Entry> entries =new ArrayList();
@@ -52,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
             layoutManager = new LinearLayoutManager(this);
             recView.setLayoutManager(layoutManager);
 
-
-
             //entryType = getResources().getStringArray(R.array.entry_types);
             entryType[0] = getResources().getString(R.string.offer);
             entryType[1] = getResources().getString(R.string.request);
@@ -67,14 +67,14 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
             db = Database.getInstance();
             db.setListener(this);
             if(spinner.getSelectedItem() == getResources().getString(R.string.offer)) {
-                db.loadOffer();
+                //db.loadOffer();
             }
             else if(spinner.getSelectedItem() == getResources().getString(R.string.request)){
-                db.loadRequest();
+                //db.loadRequest();
             }
 
             entries = db.getEntries();
-            adapter = new CustomEntryAdapter(this.entries,getApplicationContext());
+            adapter = new CustomEntryAdapter(this.entries,getApplicationContext(),this);
 
             recView.setAdapter(adapter);
             Database.getInstance().getEntries();
@@ -123,5 +123,15 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        int itemPosition = recView.getChildLayoutPosition(view);
+        Entry item = entries.get(itemPosition);
+
+        Intent myIntent = new Intent(this, EntryActivity.class);
+        myIntent.putExtra("EntryId",item.getId()); //Optional parameters
+        this.startActivity(myIntent);
     }
 }

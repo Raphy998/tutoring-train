@@ -11,4 +11,5 @@ public class URLExtension {
     public static final String REQUEST = "/request";
     public static final String OFFER = "/offer";
     public static final String NEW = "/new";
+    public static final String COMMENTS = "/comments";
 }

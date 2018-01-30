@@ -31,6 +31,16 @@ public class Entry {
 
     }
 
+    public Entry(int id, Date postedOn, boolean isActive, String description, Subject subject, String headline, User user) {
+        this.id = id;
+        this.postedOn = postedOn;
+        this.isActive = isActive;
+        this.description = description;
+        this.subject = subject;
+        this.headline = headline;
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return id + " - " + postedOn + " - " + isActive + " - " + description + " - " + subject + " - " + headline + " - " + user;
