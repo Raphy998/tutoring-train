@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
@@ -28,11 +27,19 @@ public class Chats extends Fragment implements OnClickListener {
 
     private String myUser, otherUser;
     private Random random;
-    private ArrayList<ChatMessage> chatlist;
     private ChatAdapter chatAdapter;
 
     public void setUsers(String myUser, String otherUser) {
         this.myUser = myUser;
+
+        if (this.otherUser == null || !this.otherUser.equals(otherUser)) {
+            try {
+                XMPPHandler.getInstance().loadArchivedMsgs(otherUser);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
         this.otherUser = otherUser;
     }
 
@@ -57,7 +64,6 @@ public class Chats extends Fragment implements OnClickListener {
         msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msgListView.setStackFromBottom(true);
 
-        chatlist = new ArrayList<>();
         chatAdapter = new ChatAdapter(getActivity());
         msgListView.setAdapter(chatAdapter);
         return view;

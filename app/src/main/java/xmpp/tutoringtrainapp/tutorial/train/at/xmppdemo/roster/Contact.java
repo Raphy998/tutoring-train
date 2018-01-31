@@ -40,4 +40,13 @@ public class Contact {
     public void setType(Type type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "username='" + username + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", type=" + type +
+                '}';
+    }
 }

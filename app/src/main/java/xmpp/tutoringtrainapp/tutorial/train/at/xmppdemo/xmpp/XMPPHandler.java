@@ -75,6 +75,8 @@ public class XMPPHandler extends Application {
     private String password;
     private XmppService context;
     private DataStore ds;
+    private static String DOMAIN;
+    private static String HOST;
 
     private org.jivesoftware.smack.chat2.Chat chat;
     private IncomingChatMessageListenerImpl mChatManagerListener;
@@ -85,6 +87,9 @@ public class XMPPHandler extends Application {
         this.password = password;
         this.context = context;
         this.ds = DataStore.getInstance();
+
+        DOMAIN = context.getString(R.string.domain);
+        HOST = context.getString(R.string.host);
         init();
     }
 
@@ -121,7 +126,6 @@ public class XMPPHandler extends Application {
         } catch (XmppStringprepException e) {
             e.printStackTrace();
         }
-
     }
 
     private void loadRoster() {
@@ -138,7 +142,7 @@ public class XMPPHandler extends Application {
                 }
             }
 
-            ds.getRoster().clear();
+            ds.clearRoster();
             Collection<RosterEntry> entries = roster.getEntries();
             for (RosterEntry entry : entries) {
                 VCard vCardOfUser = getVCard(entry.getJid());
@@ -151,12 +155,26 @@ public class XMPPHandler extends Application {
                         fullName,
                         Contact.Type.APPROVED);
 
-                ds.getRoster().add(newContact);
+                ds.addContact(newContact);
             }
         }
         catch (Exception ex) {
             ex.printStackTrace();
             showToast("Error loading ROSTER");
+        }
+    }
+
+    public void removeFromRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
+        Presence subscribe = new Presence(Presence.Type.unsubscribed);
+        subscribe.setTo(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN));
+        connection.sendStanza(subscribe);
+    }
+
+    public void addToRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
+        if (c.getType().equals(Contact.Type.REQUESTED)) {
+            Presence subscribe = new Presence(Presence.Type.subscribed);
+            subscribe.setTo(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN));
+            connection.sendStanza(subscribe);
         }
     }
 
@@ -168,34 +186,34 @@ public class XMPPHandler extends Application {
             @Override
             public void entriesAdded(Collection<Jid> addresses) {
                 System.out.println("---------------- ENTRIES ADDED: " + addresses);
-                loadRoster();
+                //loadRoster();
             }
 
             @Override
             public void entriesUpdated(Collection<Jid> addresses) {
                 System.out.println("---------------- ENTRIES UPDATED: " + addresses);
-                loadRoster();
+                //loadRoster();
             }
 
             @Override
             public void entriesDeleted(Collection<Jid> addresses) {
                 System.out.println("---------------- ENTRIES DELETED: " + addresses);
-                loadRoster();
+                //loadRoster();
             }
 
             @Override
             public void presenceChanged(Presence presence) {
                 System.out.println("---------------- PRESENCE CHANGED: " + presence);
-                loadRoster();
+                //loadRoster();
             }
         });
     }
 
-    private void loadArchivedMsgs() throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException, SmackException.NotLoggedInException, XmppStringprepException {
+    public void loadArchivedMsgs(String username) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException, SmackException.NotLoggedInException, XmppStringprepException {
         MamManager mamManager = MamManager.getInstanceFor(connection);
         boolean isSupported = mamManager.isSupported();
 
-        final Jid to = JidCreate.entityBareFrom("user2@" + context.getString(R.string.domain));
+        final Jid to = JidCreate.entityBareFrom(username + "@" + DOMAIN);
 
         if (isSupported) {
 
@@ -203,7 +221,7 @@ public class XMPPHandler extends Application {
 
             showToast("MAM query successful!");
 
-            ds.getChats().clear();
+            ds.clearChatMessages();
             Message message;
             for (Forwarded fm: mamQueryResult.forwardedMessages) {
                 message = (Message) fm.getForwardedStanza();
@@ -220,7 +238,7 @@ public class XMPPHandler extends Application {
                     chatMessage.setMine(true);
                 }
 
-                ds.getChats().add(chatMessage);
+                ds.addChatMessage(chatMessage);
             }
         }
     }
@@ -235,9 +253,9 @@ public class XMPPHandler extends Application {
             field.addValue(MamElements.NAMESPACE);
             form.addField(field);
 
-            /*FormField formField = new FormField("with");
+            FormField formField = new FormField("with");
             formField.addValue(jid);
-            form.addField(formField);*/
+            form.addField(formField);
 
             // "" empty string for before
             RSMSet rsmSet = new RSMSet(maxResults, "", RSMSet.PageDirection.before);
@@ -267,8 +285,8 @@ public class XMPPHandler extends Application {
 
         XMPPTCPConnectionConfiguration.Builder config = XMPPTCPConnectionConfiguration
                 .builder();
-        config.setXmppDomain(context.getString(R.string.domain));
-        config.setHost(context.getString(R.string.host));
+        config.setXmppDomain(DOMAIN);
+        config.setHost(HOST);
         config.setPort(5222);
         XMPPTCPConnection.setUseStreamManagementResumptionDefault(true);
         XMPPTCPConnection.setUseStreamManagementDefault(true);
@@ -325,10 +343,7 @@ public class XMPPHandler extends Application {
                               fullName,
                               Contact.Type.REQUESTED);
 
-                      ds.getRoster().add(newContact);
-                  /*Presence subscribe = new Presence(Presence.Type.subscribe);
-                  subscribe.setTo(usernameToAdd + "@" + DOMAIN);
-                  conn.sendStanza(subscribe);*/
+                      ds.addContact(newContact);
                   }
               }
               catch (Exception ex) {
@@ -431,7 +446,7 @@ public class XMPPHandler extends Application {
         private void processMessage(final ChatMessage chatMessage) {
 
             chatMessage.setMine(false);
-            ds.getChats().add(chatMessage);
+            ds.addChatMessage(chatMessage);
 
             if (!isActivityVisible()) {
                 showNewMessageNotification(chatMessage);
@@ -442,7 +457,7 @@ public class XMPPHandler extends Application {
     public void sendMessage(ChatMessage chatMessage) throws XmppStringprepException {
         if (!chat_created) {
             final Jid to = JidCreate.entityBareFrom(chatMessage.getReceiver() + "@"
-                    + context.getString(R.string.domain));
+                    + DOMAIN);
 
             chat = ChatManager.getInstanceFor(connection).chatWith(to.asEntityBareJidOrThrow());
             chat_created = true;
@@ -455,11 +470,11 @@ public class XMPPHandler extends Application {
                 msg.setBody(chatMessage.getBody());
                 msg.setType(Message.Type.chat);
                 msg.setTo(JidCreate.entityBareFrom(chatMessage.getReceiver() + "@"
-                        + context.getString(R.string.domain)));
+                        + DOMAIN));
                 chat.send(msg);
 
                 chatMessage.setDateTime(new Date());        //now
-                ds.getChats().add(chatMessage);
+                ds.addChatMessage(chatMessage);
 
             } else {
 
@@ -512,7 +527,6 @@ public class XMPPHandler extends Application {
         public void authenticated(XMPPConnection arg0, boolean arg1) {
             try {
                 intiRoster();
-                loadArchivedMsgs();
             }
             catch (Exception ex) {
                 ex.printStackTrace();

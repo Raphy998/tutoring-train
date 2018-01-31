@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.RosterInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 
 public class RosterAdapter extends BaseAdapter {
@@ -18,6 +20,7 @@ public class RosterAdapter extends BaseAdapter {
     private DataStore ds;
     private RosterAdapter adapter;
     private Activity activity;
+    private RosterInteractionListener listener;
 
     private class OnRosterChangedCallback extends ObservableList.OnListChangedCallback implements Runnable {
         @Override
@@ -51,23 +54,24 @@ public class RosterAdapter extends BaseAdapter {
         }
     }
 
-    public RosterAdapter(Activity activity) {
+    public RosterAdapter(Activity activity, RosterInteractionListener listener) {
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.activity = activity;
+        this.listener = listener;
         this.ds = DataStore.getInstance();
         this.adapter = this;
 
-        this.ds.getRoster().addOnListChangedCallback(new OnRosterChangedCallback());
+        this.ds.addOnRosterChangedCallback(new OnRosterChangedCallback());
     }
 
     @Override
     public int getCount() {
-        return ds.getRoster().size();
+        return ds.getContactCount();
     }
 
     @Override
     public Object getItem(int position) {
-        return position;
+        return ds.getContactAt(position);
     }
 
     @Override
@@ -77,15 +81,51 @@ public class RosterAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Contact c = ds.getRoster().get(position);
-        View vi = convertView;
-        if (convertView == null)
-            vi = inflater.inflate(R.layout.roster_list_item, null);
+        final Contact c = ds.getContactAt(position);
+        View vi;
 
-        TextView txt = (TextView) vi.findViewById(R.id.name);
-        txt.setText(c.getFullName());
-        TextView type = (TextView) vi.findViewById(R.id.type);
-        type.setText(c.getType().name());
+        if (c.getType().equals(Contact.Type.APPROVED)) {
+            vi = inflater.inflate(R.layout.roster_list_item_approved, null);
+            ((ViewGroup) vi).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+            TextView txtName = (TextView) vi.findViewById(R.id.name);
+            TextView txtUsername = (TextView) vi.findViewById(R.id.username);
+            txtName.setText(c.getFullName());
+            txtUsername.setText(c.getUsername());
+
+            ImageButton btnRemove = (ImageButton) vi.findViewById(R.id.btnRemoveContact);
+            btnRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.removeFromRoster(c);
+                }
+            });
+        }
+        else {
+            vi = inflater.inflate(R.layout.roster_list_item_requested, null);
+            ((ViewGroup) vi).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+            TextView txtName = (TextView) vi.findViewById(R.id.name);
+            TextView txtUsername = (TextView) vi.findViewById(R.id.username);
+            txtName.setText(c.getFullName());
+            txtUsername.setText(c.getUsername());
+
+            ImageButton btnRemove = (ImageButton) vi.findViewById(R.id.btnRemoveContact);
+            btnRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.removeFromRoster(c);
+                }
+            });
+
+            ImageButton btnAdd = (ImageButton) vi.findViewById(R.id.btnAddContact);
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.addToRoster(c);
+                }
+            });
+        }
 
         return vi;
     }

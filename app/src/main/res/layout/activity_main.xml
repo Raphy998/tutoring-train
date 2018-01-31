@@ -29,21 +29,27 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toBottomOf="@id/appbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:orientation="vertical">
+
+        <fragment
+            android:id="@+id/frag_roster"
+            android:name="xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Roster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/roster_layout" />
+
+        <fragment
+            android:id="@+id/frag_chat"
+            android:name="xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/chat_layout" />
+    </LinearLayout>
 
 
 </LinearLayout>

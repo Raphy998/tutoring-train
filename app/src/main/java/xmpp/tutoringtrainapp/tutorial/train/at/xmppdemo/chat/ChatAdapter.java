@@ -65,12 +65,12 @@ public class ChatAdapter extends BaseAdapter {
         this.ds = DataStore.getInstance();
         this.adapter = this;
 
-        this.ds.getChats().addOnListChangedCallback(new OnChatsChangedCallback());
+        this.ds.addOnChatsChangedCallback(new OnChatsChangedCallback());
     }
 
     @Override
     public int getCount() {
-        return ds.getChats().size();
+        return ds.getChatMessageCount();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ChatAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ChatMessage message = ds.getChats().get(position);
+        ChatMessage message = ds.getChatMessageAt(position);
         View vi = convertView;
         if (convertView == null)
             vi = inflater.inflate(R.layout.chatbubble, null);
