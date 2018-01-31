@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 
 public class User {
-    @JsonView ({Views.User.Out.Login.class})
+    @JsonView ({Views.User.Out.Login.class,Views.Comment.In.loadNewest.class})
     private String username;
     private String email;
     private String name;

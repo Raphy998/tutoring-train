@@ -8,11 +8,20 @@ public interface Views {
     public static interface User{
      public static interface Out{
          public static interface Login{};
+         public static interface create{};
      };
     }
     public static interface Entry{
         public static interface In{
             public static interface loadNewest{};
+        }
+    }
+    public static interface Comment{
+        public static interface In{
+            public static interface loadNewest{};
+        }
+        public static interface Out{
+            public static interface create{};
         }
     }
 }
