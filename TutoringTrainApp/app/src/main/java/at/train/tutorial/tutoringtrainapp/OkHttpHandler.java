@@ -39,7 +39,6 @@ public class OkHttpHandler {
         urlExtension = urlExtension.concat(URLExtension.NEW);
 
         try{
-
         HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
         urlBuilder.addQueryParameter("start", Integer.toString(start));
         urlBuilder.addQueryParameter("pageSize", Integer.toString(pageSize));
@@ -53,8 +52,6 @@ public class OkHttpHandler {
             request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
         }
 
-            System.out.println("ab hier warten");
-
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -64,12 +61,7 @@ public class OkHttpHandler {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
                 listener.onSuccess(response);
-                //final String myResponse = response.body().string();
-//
-                //System.out.println(response.code() + ": " + myResponse);
-
             }
         });
         }
@@ -79,7 +71,6 @@ public class OkHttpHandler {
     }
 
     public static void loadComments(EntryType type, final okHttpHandlerListener listener,int entryId) throws IOException {
-        System.out.println("load comments");
         OkHttpClient client = new OkHttpClient();
         String urlExtension = "";
 
@@ -94,10 +85,8 @@ public class OkHttpHandler {
         urlExtension = urlExtension.concat(URLExtension.COMMENTS);
 
         try{
-
             HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
             String url = urlBuilder.build().toString();
-
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -105,8 +94,6 @@ public class OkHttpHandler {
             if ((sessionKey = Database.getInstance().getSessionKey()) != null) {
                 request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
             }
-
-            System.out.println("ab hier warten");
 
             client.newCall(request).enqueue(new Callback() {
                 @Override
@@ -117,12 +104,7 @@ public class OkHttpHandler {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-
                     listener.onSuccess(response);
-                    //final String myResponse = response.body().string();
-//
-                    //System.out.println(response.code() + ": " + myResponse);
-
                 }
             });
         }
@@ -132,7 +114,6 @@ public class OkHttpHandler {
     }
 
     public static void sendComment(EntryType type, final okHttpHandlerListener listener,int entryId,String commentText) throws IOException {
-        System.out.println("send comment");
         OkHttpClient client = new OkHttpClient();
         String urlExtension = "";
 
@@ -150,7 +131,6 @@ public class OkHttpHandler {
 
             HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
             String url = urlBuilder.build().toString();
-
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),JSONConverter.commentToJson(new Comment(commentText)));
 
             Request request = new Request.Builder()
@@ -162,8 +142,6 @@ public class OkHttpHandler {
                 request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
             }
 
-            System.out.println("ab hier warten");
-
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -173,12 +151,7 @@ public class OkHttpHandler {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-
                     listener.onSuccess(response);
-                    //final String myResponse = response.body().string();
-//
-                    //System.out.println(response.code() + ": " + myResponse);
-
                 }
             });
         }

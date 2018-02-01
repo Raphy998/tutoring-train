@@ -28,7 +28,8 @@
                 android:value="at.train.tutorial.tutoringtrainapp.StartActivity" />
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".EntryActivity"></activity>
+        <activity android:name=".EntryActivity"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

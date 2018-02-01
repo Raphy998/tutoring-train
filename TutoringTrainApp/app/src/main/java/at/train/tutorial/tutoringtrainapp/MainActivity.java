@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
+import at.train.tutorial.tutoringtrainapp.Data.Error;
 
 public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
     private RecyclerView.Adapter adapter;
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
             layoutManager = new LinearLayoutManager(this);
             recView.setLayoutManager(layoutManager);
 
-            //entryType = getResources().getStringArray(R.array.entry_types);
             entryType[0] = getResources().getString(R.string.offer);
             entryType[1] = getResources().getString(R.string.request);
             Spinner spinner = (Spinner) findViewById(R.id.sp_entryTyp);
@@ -63,15 +63,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
             spinner.setAdapter(spAdapter);
             entryTyp = spinner;
 
-
             db = Database.getInstance();
             db.setListener(this);
-            if(spinner.getSelectedItem() == getResources().getString(R.string.offer)) {
-                //db.loadOffer();
-            }
-            else if(spinner.getSelectedItem() == getResources().getString(R.string.request)){
-                //db.loadRequest();
-            }
 
             entries = db.getEntries();
             adapter = new CustomEntryAdapter(this.entries,getApplicationContext(),this);
@@ -82,13 +75,11 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
         catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
-
     @Override
-    public void onFailure() {
-
+    public void onFailure(Error e) {
+        Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
     }
 
     @Override

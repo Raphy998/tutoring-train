@@ -1,11 +1,18 @@
 package at.train.tutorial.tutoringtrainapp;
 
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -20,11 +27,13 @@ import at.train.tutorial.tutoringtrainapp.Data.Views;
 import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
 import okhttp3.Response;
 
-public class EntryActivity extends AppCompatActivity implements okHttpHandlerListener {
+public class EntryActivity extends AppCompatActivity implements okHttpHandlerListener, View.OnClickListener {
     private ArrayList<Comment> comments = new ArrayList<>();
     private ArrayAdapter<String> adapter;
     private ListView lv;
     private ArrayList<String> values;
+    private EditText txtMessage;
+    private int id;
 
 
     @Override
@@ -32,7 +41,14 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
         Intent intent = getIntent();
-        int id = intent.getIntExtra("EntryId",0); //if it's a string you stored.
+
+        Window window = this.getWindow();
+        // changes status bar to wished color
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary));
+
+        id= intent.getIntExtra("EntryId",0); //if it's a string you stored.
         Entry entry = new Entry();
 
         ArrayList <Entry> entries = Database.getInstance().getEntries();
@@ -48,6 +64,8 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
         TextView txtSubject = (TextView) findViewById(R.id.txt_subject);
         TextView txtDate = (TextView) findViewById(R.id.txt_date);
         TextView txtDesc = (TextView) findViewById(R.id.txt_desc);
+        txtMessage = (EditText) findViewById(R.id.txt_message);
+        Button btnSend = (Button) findViewById(R.id.btn_send);
 
         txtHeadline.setText(entry.getHeadline());
         txtUser.setText(entry.getUser().getUsername());
@@ -57,6 +75,7 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
         lv = (ListView) findViewById(R.id.lv);
 
         values = new ArrayList<>();
+        btnSend.setOnClickListener(this);
 
         adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,
@@ -64,7 +83,6 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
         lv.setAdapter(adapter);
 
         try {
-            //OkHttpHandler.sendComment(EntryType.OFFER,this,id,"Ein weiterer test Kommentar");
             OkHttpHandler.loadComments(EntryType.OFFER,this,id);
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,8 +96,13 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
 
 
     @Override
-    public void onFailure(String response) {
-
+    public void onFailure(final String response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(EntryActivity.this,response,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -88,30 +111,37 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
             try {
                 comments.addAll(JSONConverter.JsonToComment(response.body().string()));
                 for(final Comment c : comments){
-                    System.out.println(c.toString());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             values.add(c.getText());
+                            txtMessage.setText("");
                             adapter.notifyDataSetChanged();
                         }
                     });
-
                 }
-                System.out.println("lolfdsg");
-
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                //todo wenn hier, dann versuchen json to comment zu machen, sonst fehler ausgeben
             }
         }
         else{
-            System.out.println(response.code());
             try {
-                System.out.println(response.body().string());
+                Toast.makeText(this,JSONConverter.jsonToError(response.body().string()).getMessage(),Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("Ende");
+    }
+
+    @Override
+    public void onClick(View view) {
+        String message = txtMessage.getText().toString();
+        Comment c = new Comment(message);
+        try {
+            OkHttpHandler.sendComment(EntryType.OFFER,this,id,c.getText());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
+import at.train.tutorial.tutoringtrainapp.Data.Error;
 import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
 import okhttp3.Response;
 import okhttp3.internal.http.HttpMethod;
@@ -89,6 +90,12 @@ public class Database implements okHttpHandlerListener {
         }
     }
 
+    private void notifyFailureToListener(Error e){
+        if(listener != null){
+            listener.onFailure(e);
+        }
+    }
+
     @Override
     public void onFailure(String response) {
 
@@ -96,13 +103,19 @@ public class Database implements okHttpHandlerListener {
 
     @Override
     public void onSuccess(Response response) {
-        System.out.println("Success from database");
         if(response.code() == HttpURLConnection.HTTP_OK){
             try {
                 entries.addAll(JSONConverter.JsonToEntry(response.body().string()));
-                System.out.println("lel");
                 notifySuccessToListener();
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            try {
+                notifyFailureToListener(JSONConverter.jsonToError(response.body().string()));
+            }
+            catch (Exception e){
                 e.printStackTrace();
             }
         }

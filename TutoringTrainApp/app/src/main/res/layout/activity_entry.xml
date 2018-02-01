@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="at.train.tutorial.tutoringtrainapp.EntryActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -24,18 +23,19 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp">
+        android:layout_marginTop="50dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="10">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:textColor="@color/colorAccent"
                 android:id="@+id/txt_headline"/>
 
@@ -73,31 +73,50 @@
 
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/lv"
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/bottomBar"
-        android:layout_gravity="bottom">
-
-        <android.support.design.widget.BottomNavigationView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/navViewBottom"
-            android:background="@drawable/border_menu"
-            app:menu="@menu/bottom_navigation_menu"
+            android:layout_weight="10"
             >
 
-        </android.support.design.widget.BottomNavigationView>
+            <ListView
+                android:id="@+id/lv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                 />
 
-    </RelativeLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimary"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2.2">
+
+            <Button
+                android:id="@+id/btn_send"
+                android:layout_width="40dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_send_black_24dp"
+                android:layout_height="match_parent" />
+
+            <EditText
+                android:id="@+id/txt_message"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@id/btn_send"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>
 

@@ -70,7 +70,6 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
 
     @Override
     public void loginSuccess() {
-        Toast.makeText(this,"ok alles cool",Toast.LENGTH_SHORT).show();
         Intent myIntent = new Intent(this, MainActivity.class);
         this.startActivity(myIntent);
         this.finish();

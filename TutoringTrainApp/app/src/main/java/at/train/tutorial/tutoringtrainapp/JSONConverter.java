@@ -17,6 +17,7 @@ import java.util.List;
 
 import at.train.tutorial.tutoringtrainapp.Data.Comment;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
+import at.train.tutorial.tutoringtrainapp.Data.Error;
 import at.train.tutorial.tutoringtrainapp.Data.User;
 import at.train.tutorial.tutoringtrainapp.Data.Views;
 
@@ -93,5 +94,17 @@ public class JSONConverter {
         }
         System.out.println("-------------------" + retVal);
         return retVal;
+    }
+
+    public static Error jsonToError(String json){
+        Error error = new Error();
+        try {
+            ObjectMapper mapper = getMapper();
+            mapper.readerWithView(Views.Error.class);
+            error = mapper.readValue(json,new TypeReference<Error>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return error;
     }
 }

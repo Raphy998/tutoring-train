@@ -24,4 +24,6 @@ public interface Views {
             public static interface create{};
         }
     }
+
+    public static interface Error{}
 }
