@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
@@ -50,8 +51,7 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
             listener = (FragmentInteractionListener) context;
         }
         else {
-            throw new RuntimeException(context.toString()
-                    + " must implement FragmentInteractionListener");
+            throw new RuntimeException(context.toString() + " must implement FragmentInteractionListener");
         }
     }
 
@@ -82,9 +82,15 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Contact c = (Contact) rosterAdapter.getItem(position);
+        try {
+            Contact c = (Contact) rosterAdapter.getItem(position);
 
-        if (c.getType().equals(Contact.Type.APPROVED))
-            listener.openChatWithUser(this, c.getUsername());
+            if (c.getType().equals(Contact.Type.APPROVED))
+                listener.openChatWithUser(this, c);
+        }
+        catch (Exception ex) {
+            Toast.makeText(getActivity(), "Error: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+            ex.printStackTrace();
+        }
     }
 }

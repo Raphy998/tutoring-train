@@ -50,6 +50,7 @@ public class Chats extends Fragment implements OnClickListener {
             myUser = savedInstanceState.getString("myUser");
             otherUser = savedInstanceState.getString("otherUser");
         }
+
         random = new Random();
     }
 
@@ -106,8 +107,12 @@ public class Chats extends Fragment implements OnClickListener {
             }
         }
         catch (Exception ex) {
+            Toast.makeText(getActivity(), "Error: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
             ex.printStackTrace();
-            Toast.makeText(this.getContext(), ex.getMessage(), Toast.LENGTH_LONG);
         }
+    }
+
+    public String getWith() {
+        return this.otherUser;
     }
 }

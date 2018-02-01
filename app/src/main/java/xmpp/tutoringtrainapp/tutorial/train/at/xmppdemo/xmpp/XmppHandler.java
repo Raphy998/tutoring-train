@@ -6,11 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.Toast;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
@@ -38,9 +34,6 @@ import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.mam.element.MamElements;
-import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
-import org.jivesoftware.smackx.receipts.DeliveryReceiptManager.AutoReceiptMode;
-import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jivesoftware.smackx.rsm.packet.RSMSet;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
@@ -272,15 +265,16 @@ public class XmppHandler extends Application {
     }
 
     public void showToast(final String msg) {
-        if (isToasted)
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        /*if (isToasted) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
 
-            @Override
-            public void run() {
+                @Override
+                public void run() {
 
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-            }
-        });
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }*/
     }
 
     private void initialiseConnection() throws XmppStringprepException {
@@ -387,35 +381,8 @@ public class XmppHandler extends Application {
     }
 
     void connect(final String caller) {
-        AsyncTask<Void, Void, Boolean> connectionThread = new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected synchronized Boolean doInBackground(Void... arg0) {
-                if (connection.isConnected())
-                    return false;
-
-                showToast(caller + "=>connecting....");
-
-                try {
-                    connection.connect();
-                    DeliveryReceiptManager dm = DeliveryReceiptManager
-                            .getInstanceFor(connection);
-                    dm.setAutoReceiptMode(AutoReceiptMode.always);
-                    dm.addReceiptReceivedListener(new ReceiptReceivedListener() {
-
-                        @Override
-                        public void onReceiptReceived(Jid fromJid, Jid toJid, String receiptId, Stanza receipt) {
-
-                        }
-                    });
-
-                } catch (IOException | SmackException | XMPPException | InterruptedException ex) {
-                    ex.printStackTrace();
-                    showToast("Error: " + ex.getMessage());
-                }
-                return false;
-            }
-        };
-        connectionThread.execute();
+        Connector connector = new Connector(connection);
+        connector.execute();
     }
 
     private void login() {
@@ -471,8 +438,7 @@ public class XmppHandler extends Application {
                 Message msg = new Message();
                 msg.setBody(chatMessage.getBody());
                 msg.setType(Message.Type.chat);
-                msg.setTo(JidCreate.entityBareFrom(chatMessage.getReceiver() + "@"
-                        + DOMAIN));
+                msg.setTo(JidCreate.entityBareFrom(chatMessage.getReceiver() + "@" + DOMAIN));
                 chat.send(msg);
 
                 chatMessage.setDateTime(new Date());        //now
@@ -593,7 +559,7 @@ public class XmppHandler extends Application {
         Intent intent = new Intent(context, MainActivity.class);
         Bundle extras = new Bundle();
         extras.putString("action", Action.OPEN_CHAT.name());
-        extras.putString("withUser", senderName);
+        extras.putStringArray("withUser", new String[] { msg.getSender(), senderName });
         intent.putExtras(extras);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
