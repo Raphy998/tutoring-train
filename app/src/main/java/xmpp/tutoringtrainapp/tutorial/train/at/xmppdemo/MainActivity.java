@@ -34,8 +34,23 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
-            setFragmentVisible(chats, false);
-            setFragmentVisible(roster, true);
+            //display fragment
+            if (savedInstanceState != null) {
+                Boolean isChatVisible = savedInstanceState.getBoolean("chatVisible");
+
+                if (isChatVisible != null && isChatVisible) {
+                    setFragmentVisible(chats, true);
+                    setFragmentVisible(roster, false);
+                }
+                else {
+                    setFragmentVisible(chats, false);
+                    setFragmentVisible(roster, true);
+                }
+            }
+            else {
+                setFragmentVisible(chats, false);
+                setFragmentVisible(roster, true);
+            }
 
             System.out.println(" ------------ RUNNING: " + isMyServiceRunning(XmppService.class));
             Intent serviceIntent = new Intent(ctx, XmppService.class);
@@ -44,9 +59,29 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
             credentials.putString("password", getString(R.string.password));
             serviceIntent.putExtras(credentials);
             startService(serviceIntent);
+
+            handleIntent(getIntent());
         }
         catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void handleIntent(Intent intentWithExtras) {
+        if (intentWithExtras != null) {
+            System.out.println("++++++++++++++++++ " + intentWithExtras.getExtras());
+            Bundle extras = intentWithExtras.getExtras();
+            if (extras != null) {
+                String action = extras.getString("action");
+                if (action != null) {
+                    switch (Action.valueOf(action)) {
+                        case OPEN_CHAT:
+                            String withUser = extras.getString("withUser");
+                            openChatWithUser(this, withUser);
+                            break;
+                    }
+                }
+            }
         }
     }
 
@@ -94,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     }
 
     @Override
-    public void openChatWithUser(Fragment sender, String otherUsername) {
+    public void openChatWithUser(Object sender, String otherUsername) {
         try {
             chats.setUsers(getString(R.string.username), otherUsername);
             setFragmentVisible(roster, false);
@@ -108,6 +143,13 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     @Override
     public void showRoster(Fragment sender) {
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("chatVisible", !chats.isHidden());
     }
 
     @Override

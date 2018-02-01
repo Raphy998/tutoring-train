@@ -13,7 +13,7 @@ import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.RosterInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
-import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XMPPHandler;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 
 
 public class Roster extends Fragment implements RosterInteractionListener, AdapterView.OnItemClickListener {
@@ -59,7 +59,7 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
     public void removeFromRoster(Contact c) {
         try {
             System.out.println("------ REMOVE FROM ROSTER: " + c);
-            XMPPHandler.getInstance().removeFromRoster(c);
+            XmppHandler.getInstance().removeFromRoster(c);
             DataStore.getInstance().removeContact(c);
         }
         catch (Exception ex) {
@@ -71,7 +71,7 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
     public void addToRoster(Contact c) {
         try {
             System.out.println("------ ADD TO ROSTER: " + c);
-            XMPPHandler.getInstance().addToRoster(c);
+            XmppHandler.getInstance().addToRoster(c);
             c.setType(Contact.Type.APPROVED);
             DataStore.getInstance().updateContact(c);
         }

@@ -91,7 +91,7 @@ public class RosterAdapter extends BaseAdapter {
             TextView txtName = (TextView) vi.findViewById(R.id.name);
             TextView txtUsername = (TextView) vi.findViewById(R.id.username);
             txtName.setText(c.getFullName());
-            txtUsername.setText(c.getUsername());
+            txtUsername.setText("@" + c.getUsername());
 
             ImageButton btnRemove = (ImageButton) vi.findViewById(R.id.btnRemoveContact);
             btnRemove.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +108,7 @@ public class RosterAdapter extends BaseAdapter {
             TextView txtName = (TextView) vi.findViewById(R.id.name);
             TextView txtUsername = (TextView) vi.findViewById(R.id.username);
             txtName.setText(c.getFullName());
-            txtUsername.setText(c.getUsername());
+            txtUsername.setText("@" + c.getUsername());
 
             ImageButton btnRemove = (ImageButton) vi.findViewById(R.id.btnRemoveContact);
             btnRemove.setOnClickListener(new View.OnClickListener() {

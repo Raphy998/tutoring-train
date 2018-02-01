@@ -7,6 +7,6 @@ import android.support.v4.app.Fragment;
  */
 
 public interface FragmentInteractionListener {
-    void openChatWithUser(Fragment sender, String username);
+    void openChatWithUser(Object sender, String username);
     void showRoster(Fragment sender);
 }

@@ -16,7 +16,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.Random;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
-import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XMPPHandler;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 
 
 public class Chats extends Fragment implements OnClickListener {
@@ -34,7 +34,7 @@ public class Chats extends Fragment implements OnClickListener {
 
         if (this.otherUser == null || !this.otherUser.equals(otherUser)) {
             try {
-                XMPPHandler.getInstance().loadArchivedMsgs(otherUser);
+                XmppHandler.getInstance().loadArchivedMsgs(otherUser);
             }
             catch (Exception ex) {
                 ex.printStackTrace();
@@ -60,6 +60,7 @@ public class Chats extends Fragment implements OnClickListener {
         getViews(view);
 
         sendButton.setOnClickListener(this);
+
         // ----Set autoscroll of listview when a new message arrives----//
         msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msgListView.setStackFromBottom(true);
@@ -91,7 +92,7 @@ public class Chats extends Fragment implements OnClickListener {
             chatMessage.setBody(message);
             msg_edittext.setText("");
 
-            XMPPHandler.getInstance().sendMessage(chatMessage);
+            XmppHandler.getInstance().sendMessage(chatMessage);
         }
     }
 

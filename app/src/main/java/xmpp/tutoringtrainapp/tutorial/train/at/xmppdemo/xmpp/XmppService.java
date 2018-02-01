@@ -8,14 +8,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import org.jxmpp.stringprep.XmppStringprepException;
-
-import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.ChatMessage;
-
 public class XmppService extends Service {
     public static final String PREFS_NAME = "TutoringTrainXMPP";
 
-    private XMPPHandler xmpp;
+    private XmppHandler xmpp;
     private String username;
     private String password;
 
@@ -34,7 +30,7 @@ public class XmppService extends Service {
     }
 
     private void connectXmpp(String username, String password) {
-        this.xmpp = XMPPHandler.getInstance(this, username, password);
+        this.xmpp = XmppHandler.getInstance(this, username, password);
         this.xmpp.connect("onStartCommand");
     }
 
@@ -99,18 +95,14 @@ public class XmppService extends Service {
     }
 
     public static boolean isActivityVisible() {
-        return XMPPHandler.isActivityVisible();
+        return XmppHandler.isActivityVisible();
     }
 
     public static void activityResumed() {
-        XMPPHandler.activityResumed();
+        XmppHandler.activityResumed();
     }
 
     public static void activityPaused() {
-        XMPPHandler.activityPaused();
-    }
-
-    public void sendMessage(ChatMessage msg) throws XmppStringprepException {
-        this.xmpp.sendMessage(msg);
+        XmppHandler.activityPaused();
     }
 }

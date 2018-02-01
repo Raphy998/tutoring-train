@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
@@ -56,15 +57,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
 
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.Action;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.MainActivity;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.ChatMessage;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 
-public class XMPPHandler extends Application {
+public class XmppHandler extends Application {
 
     public static final String PREFS_NAME = "TutoringTrainXMPP";
-    private static XMPPHandler instance = null;
+    private static XmppHandler instance = null;
 
     private static boolean isToasted = true;
     private static boolean chat_created;
@@ -81,7 +83,7 @@ public class XMPPHandler extends Application {
     private org.jivesoftware.smack.chat2.Chat chat;
     private IncomingChatMessageListenerImpl mChatManagerListener;
 
-    private XMPPHandler(XmppService context, String username,
+    private XmppHandler(XmppService context, String username,
                         String password) {
         this.username = username;
         this.password = password;
@@ -93,19 +95,19 @@ public class XMPPHandler extends Application {
         init();
     }
 
-    public static XMPPHandler getInstance() {
+    public static XmppHandler getInstance() {
         return instance;
     }
 
-    public static XMPPHandler getInstance(XmppService context, String user, String pass) {
+    public static XmppHandler getInstance(XmppService context, String user, String pass) {
 
         if (instance == null) {
-            instance = new XMPPHandler(context, user, pass);
+            instance = new XmppHandler(context, user, pass);
         }
         else if (!instance.getUsername().equals(user) || !instance.getPassword().equals(pass)) {
             if (instance.getConnection().isConnected())
                 instance.getConnection().disconnect();
-            instance = new XMPPHandler(context, user, pass);
+            instance = new XmppHandler(context, user, pass);
         }
 
         return instance;
@@ -571,14 +573,29 @@ public class XMPPHandler extends Application {
     }
 
     public void showNewMessageNotification(ChatMessage msg) {
+        String senderName = msg.getSenderName();
+        try {
+            VCard vCard = getVCard(JidCreate.bareFrom(msg.getSender()));
+            if (vCard.getFirstName() != null)
+                senderName = vCard.getFirstName();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         Notification.Builder m_notificationBuilder = new Notification.Builder(context)
-                .setContentTitle("New Message from " + msg.getSenderName())
+                .setContentTitle("New Message from " + senderName)
                 .setContentText(msg.getBody())
                 .setSmallIcon(R.drawable.send_button)
                 .setAutoCancel(true);
 
         // create the pending intent and add to the notification
         Intent intent = new Intent(context, MainActivity.class);
+        Bundle extras = new Bundle();
+        extras.putString("action", Action.OPEN_CHAT.name());
+        extras.putString("withUser", senderName);
+        intent.putExtras(extras);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         m_notificationBuilder.setContentIntent(pendingIntent);
 

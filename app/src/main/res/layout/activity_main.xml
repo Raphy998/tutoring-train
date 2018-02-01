@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#e1e1e1">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
