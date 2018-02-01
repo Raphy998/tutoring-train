@@ -106,7 +106,7 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
     }
 
     @Override
-    public void onSuccess(Response response) {
+    public void onSuccess(final Response response) {
         if(response.code() == HttpURLConnection.HTTP_OK){
             try {
                 comments.addAll(JSONConverter.JsonToComment(response.body().string()));
@@ -126,11 +126,16 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
             }
         }
         else{
-            try {
-                Toast.makeText(this,JSONConverter.jsonToError(response.body().string()).getMessage(),Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Toast.makeText(EntryActivity.this,JSONConverter.jsonToError(response.body().string()).getMessage(),Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
         }
     }
 
