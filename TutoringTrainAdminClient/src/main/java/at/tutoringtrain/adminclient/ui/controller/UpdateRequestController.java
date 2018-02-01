@@ -18,11 +18,13 @@ import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.RequestChangedListener;
+import at.tutoringtrain.adminclient.ui.validators.DescriptionTextFieldValidator;
 import at.tutoringtrain.adminclient.ui.validators.TextFieldValidator;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import java.io.IOException;
@@ -51,7 +53,7 @@ public class UpdateRequestController implements Initializable, TutoringTrainWind
     @FXML
     private JFXTextField txtHeadline;
     @FXML
-    private JFXTextField txtDescription;
+    private JFXTextArea txtDescription;
     @FXML
     private JFXComboBox<Subject> comboSubject;
     @FXML
@@ -72,7 +74,8 @@ public class UpdateRequestController implements Initializable, TutoringTrainWind
     private Communicator communicator;
     private WindowService windowService;
     private ApplicationManager applicationManager; 
-    private TextFieldValidator validatorHeadlineField, validatorDescriptionField;
+    private TextFieldValidator validatorHeadlineField;
+    private DescriptionTextFieldValidator validatorDescriptionField;
     private RequestChangedListener requestChangedListener;
     private Request request, temporaryRequest;
     
@@ -99,7 +102,7 @@ public class UpdateRequestController implements Initializable, TutoringTrainWind
 
     private void initializeControlValidators() {
         validatorHeadlineField = new TextFieldValidator(defaultValueProvider.getDefaultValidationPattern("headline"));
-        validatorDescriptionField = new TextFieldValidator(defaultValueProvider.getDefaultValidationPattern("description"));
+        validatorDescriptionField = new DescriptionTextFieldValidator(defaultValueProvider.getDefaultValidationPattern("description"));
         txtHeadline.getValidators().add(validatorHeadlineField);
         txtDescription.getValidators().add(validatorDescriptionField);
     }

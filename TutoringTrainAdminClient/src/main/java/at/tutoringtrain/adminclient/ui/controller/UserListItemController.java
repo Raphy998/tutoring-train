@@ -231,12 +231,10 @@ public class UserListItemController implements Initializable, UserDataChangedLis
             if (UserRole.valueOf(user.getRole()) == UserRole.ROOT) {
                 disableButtonControls(true);
             } else {
-                if (user.isCurrentUser()) {
-                    btnDelete.setDisable(true);
-                }
-                if (user.isCurrentUser() || UserRole.valueOf(user.getRole()) == UserRole.ADMIN) {
+                if (UserRole.valueOf(ApplicationManager.getInstance().getCurrentUser().getRole()) != UserRole.ROOT && (user.isCurrentUser() || UserRole.valueOf(user.getRole()) == UserRole.ADMIN)) {
                     btnBlock.setDisable(true);
                     btnUnblock.setDisable(true);
+                    btnDelete.setDisable(true);
                 }
             }
         } else {

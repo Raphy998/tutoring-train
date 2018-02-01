@@ -12,8 +12,13 @@ import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.ApplicationExitListener;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
+import at.tutoringtrain.adminclient.ui.search.SearchCategory;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextField;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -31,7 +36,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindow, UserDataChangedListner {
+public class MainController1 implements Initializable, ApplicationExitListener, TutoringTrainWindow, UserDataChangedListner {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -54,6 +59,16 @@ public class MainController implements Initializable, ApplicationExitListener, T
     private JFXButton btnExit;
     @FXML
     private Label lblWelcome;
+    @FXML
+    private JFXListView<AnchorPane> lvResult;
+    @FXML
+    private JFXTextField txtSearch;
+    @FXML
+    private JFXButton btnSearch;
+    @FXML
+    private JFXComboBox<SearchCategory> comboCategorie;
+    @FXML
+    private JFXSpinner spinner;
     
     private JFXSnackbar snackbar; 
     private ApplicationManager applicationManager;
@@ -72,6 +87,8 @@ public class MainController implements Initializable, ApplicationExitListener, T
         applicationManager.registerMainApplicationExitListener(this);
         applicationManager.addCurrentUserDataChangedListener(this);
         snackbar = new JFXSnackbar(pane);
+        comboCategorie.getItems().addAll(SearchCategory.USER, SearchCategory.SUBJECT, SearchCategory.OFFER);
+        comboCategorie.getSelectionModel().select(SearchCategory.USER);
         if (UserRole.valueOf(applicationManager.getCurrentUser().getRole()) == UserRole.ROOT) {
             btnMyAccount.setDisable(true);
         }
@@ -165,6 +182,16 @@ public class MainController implements Initializable, ApplicationExitListener, T
     void onBtnOwnAccount(ActionEvent event) {
         try {
             windowService.openUpdateUserWindow(applicationManager.getCurrentUser());
+        } catch (Exception ex) {
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+        }
+    }
+
+    @FXML
+    void onBtnSearch(ActionEvent event) {
+        try {
+            
         } catch (Exception ex) {
             logger.error(ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));

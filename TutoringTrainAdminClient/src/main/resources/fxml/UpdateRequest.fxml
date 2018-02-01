@@ -3,6 +3,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXToggleButton?>
 <?import javafx.geometry.Insets?>
@@ -29,7 +30,7 @@
       <VBox layoutX="-10.0" layoutY="-20.0" spacing="35.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="100.0">
          <children>
             <JFXTextField fx:id="txtHeadline" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%headline" unFocusColor="#86bab8" />
-            <JFXTextField fx:id="txtDescription" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%description" unFocusColor="#86bab8" />
+            <JFXTextArea fx:id="txtDescription" focusColor="#084c61" labelFloat="true" promptText="%description" unFocusColor="#86bab8" />
             <JFXComboBox fx:id="comboSubject" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%subject" unFocusColor="#86bab8" />
             <JFXToggleButton fx:id="active" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="60.0" prefWidth="280.0" size="9.0" text="%active" toggleColor="#084c61" toggleLineColor="#86bab8" unToggleColor="#86bab8" unToggleLineColor="#e8f3f4" />
          </children>

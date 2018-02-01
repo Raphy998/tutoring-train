@@ -439,7 +439,12 @@ public class UpdateUserController implements Initializable, TutoringTrainWindow,
                 if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
                     displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
                 } else {
-                    displayMessage(result.getMessageContainer());
+                    MessageContainer messageContainer = result.getMessageContainer();
+                    if (messageContainer.getCode() == MessageCodes.MAPPING_FAILED) {
+                        logger.error(messageContainer.toString());
+                    } else {
+                        displayMessage(result.getMessageContainer());
+                    }
                 }
             }
         } catch (IOException ioex) {
