@@ -32,6 +32,7 @@ import edu.tutoringtrain.data.exceptions.UnauthorizedException;
 import edu.tutoringtrain.data.exceptions.UnperformableActionException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.exceptions.XMPPException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -183,6 +184,11 @@ public abstract class AbstractResource {
         catch (XMPPException ex) {
             response.status(Response.Status.INTERNAL_SERVER_ERROR);
             response.entity(ex.getError().withLang(lang).build());
+        }
+        catch (IOException ex) {
+            if (ex.getCause() != null) {
+                handleException((Exception) ex.getCause(), response, lang);
+            }
         }
         catch (Exception e) {
             throw e;

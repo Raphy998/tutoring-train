@@ -5,7 +5,7 @@
  */
 package edu.tutoringtrain.data.search;
 
-import edu.tutoringtrain.misc.GeoPoint;
+import edu.tutoringtrain.data.geo.GeoPoint;
 
 /**
  *

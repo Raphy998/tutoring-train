@@ -420,7 +420,9 @@ public class UserResource extends AbstractResource {
             Blocked blockIn = getMapper().readerWithView(Views.Block.In.Create.class).forType(Blocked.class).readValue(blockStr);
             checkConstraints(blockIn, lang);
             
-            if (securityContext.getUserPrincipal().getName().equals(blockIn.getUsername())) {
+            PrincipalInRole userPrincipal = (PrincipalInRole) securityContext.getUserPrincipal();
+            
+            if (userPrincipal.getName().equals(blockIn.getUsername())) {
                 throw new BlockException(new ErrorBuilder(Error.USER_BLOCK_OWN));
             }
             
@@ -428,7 +430,7 @@ public class UserResource extends AbstractResource {
             if (user2Block == null) {
                 throw new UserNotFoundException(new ErrorBuilder(Error.USER_NOT_FOUND).withParams(blockIn.getUsername()));
             }
-            else if (user2Block.getRole().equals('A')) {
+            else if (userPrincipal.getRole() != UserRole.ROOT && UserRole.toUserRole(user2Block.getRole()).isAdmin()) {
                 throw new BlockException(new ErrorBuilder(Error.USER_BLOCK_ADMIN));
             }
             

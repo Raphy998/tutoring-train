@@ -110,7 +110,7 @@ public class Entry implements Serializable {
     @JsonView(Views.Entry.Out.Public.class)
     private User user;
     @Size(max = 50)
-    //@NotNull(groups = ConstraintGroups.Create.class)
+    @NotNull(groups = ConstraintGroups.Create.class)
     @Column(name = "HEADLINE", length = 50)
     @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class})
     private String headline;
@@ -120,6 +120,10 @@ public class Entry implements Serializable {
     @JsonDeserialize(using = JGeometryDeserializer.class)
     @Convert("JGeometry")
     private JGeometry location;
+    @Size(max = 100)
+    @Column(name = "LOCATIONNAME", length = 50)
+    @JsonView({Views.Entry.Out.Public.class})
+    private String locationName;
     @OneToMany(mappedBy = "entry", cascade = CascadeType.REMOVE)        //remove all comments
     private Collection<Comment> tcommentCollection;
 
@@ -243,5 +247,12 @@ public class Entry implements Serializable {
     public void setComments(Collection<Comment> tcommentCollection) {
         this.tcommentCollection = tcommentCollection;
     }
-    
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 }

@@ -14,7 +14,7 @@ import com.mysema.query.types.path.DateTimePath;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.StringPath;
 import edu.tutoringtrain.entities.QEntry;
-import edu.tutoringtrain.misc.GeoPoint;
+import edu.tutoringtrain.data.geo.GeoPoint;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

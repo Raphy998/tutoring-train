@@ -18,6 +18,7 @@ import edu.tutoringtrain.data.exceptions.EntryNotFoundException;
 import edu.tutoringtrain.data.exceptions.SubjectNotActiveException;
 import edu.tutoringtrain.data.exceptions.SubjectNotFoundException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
+import edu.tutoringtrain.data.geo.GeocodingInterface;
 import edu.tutoringtrain.data.search.entry.EntryQueryGenerator;
 import edu.tutoringtrain.data.search.entry.EntrySearch;
 import edu.tutoringtrain.entities.Entry;
@@ -96,18 +97,19 @@ public class EntryService extends AbstractService {
     }
     
     @Transactional
-    public Entry createEntry(EntryType type, String username, Entry offerReq) throws NullValueException, SubjectNotFoundException, UserNotFoundException, SubjectNotActiveException {
+    public Entry createEntry(EntryType type, String username, Entry e) throws NullValueException, SubjectNotFoundException, UserNotFoundException, SubjectNotActiveException, Exception {
         if (username == null) {
             throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
         }
-        if (offerReq == null) {
+        if (e == null) {
             throw new NullValueException(new ErrorBuilder(Error.ENTRY_NULL));
         }
         
-        Subject s = subjectService.getSubject(offerReq.getSubject().getId());
+        Subject s = subjectService.getSubject(e.getSubject().getId());
         if (s == null) {
-            throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(offerReq.getSubject().getId()));
-        }else {
+            throw new SubjectNotFoundException(new ErrorBuilder(Error.SUBJECT_NOT_FOUND).withParams(e.getSubject().getId()));
+        }
+        else {
             //if subject is not active
             if (!s.getIsactive().equals('1')) {
                 throw new SubjectNotActiveException(new ErrorBuilder(Error.SUBJECT_NOT_ACTIVE));
@@ -120,19 +122,22 @@ public class EntryService extends AbstractService {
         }
 
         try {
-            offerReq.setSubject(s);
-            offerReq.setUser(user);
-            offerReq.setIsactive('1');
-            offerReq.setFlag(type.getChar());
-            offerReq.setPostedon(DateUtils.toDate(LocalDateTime.now()));
-            em.persist(offerReq);
+            e.setSubject(s);
+            e.setUser(user);
+            e.setIsactive('1');
+            e.setFlag(type.getChar());
+            e.setPostedon(DateUtils.toDate(LocalDateTime.now()));
+            if (e.getLocation() != null) {
+                e.setLocationName(GeocodingInterface.getLocationName(e.getLocation()));
+            }
+            em.persist(e);
         }
         catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
         }
         
-        return offerReq;
+        return e;
     }
     
     @Transactional
@@ -180,7 +185,7 @@ public class EntryService extends AbstractService {
     }
     
     @Transactional
-    public void updateEntry(EntryType type, Entry entryReq, String username) throws NullValueException, EntryNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException {
+    public void updateEntry(EntryType type, Entry entryReq, String username) throws NullValueException, EntryNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException, Exception {
         if (entryReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.ENTRY_NULL));
         }
@@ -191,23 +196,32 @@ public class EntryService extends AbstractService {
     }
     
     @Transactional
-    public void updateEntry(EntryType type, Entry entryReq) throws NullValueException, EntryNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException {
+    public void updateEntry(EntryType type, Entry entryReq) throws NullValueException, EntryNotFoundException, SubjectNotFoundException, InvalidArgumentException, SubjectNotActiveException, Exception {
         if (entryReq == null) {
             throw new NullValueException(new ErrorBuilder(Error.ENTRY_NULL));
         }
         if (entryReq.getIsactive() != null && entryReq.getIsactive() != '0' && entryReq.getIsactive() != '1') {
             throw new InvalidArgumentException(new ErrorBuilder(Error.CONSTRAINT_VIOLATION).withParams("isActive must be 0 or 1"));
         }
+        try {
         updateProperties(getEntry(type, entryReq.getId()), entryReq);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
     }
     
-    private void updateProperties(Entry dbEntry, Entry dataEntry) throws SubjectNotFoundException, SubjectNotActiveException {
+    private void updateProperties(Entry dbEntry, Entry dataEntry) throws SubjectNotFoundException, SubjectNotActiveException, Exception {
         if (dataEntry.getDescription() != null) dbEntry.setDescription(dataEntry.getDescription());
         if (dataEntry.getHeadline()!= null) dbEntry.setHeadline(dataEntry.getHeadline());
         if (dataEntry.getDuedate() != null) dbEntry.setDuedate(dataEntry.getDuedate());
         if (dataEntry.getPostedon() != null) dbEntry.setPostedon(dataEntry.getPostedon());
         if (dataEntry.getIsactive() != null) dbEntry.setIsactive(dataEntry.getIsactive());
         if (dataEntry.getLocation()!= null) dbEntry.setLocation(dataEntry.getLocation());
+        if (dataEntry.getLocation() != null) {
+                dbEntry.setLocationName(GeocodingInterface.getLocationName(dataEntry.getLocation()));
+            }
         if (dataEntry.getSubject() != null) {
             Subject s = subjectService.getSubject(dataEntry.getSubject().getId());
             if (s == null) {
