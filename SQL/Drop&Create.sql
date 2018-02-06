@@ -177,7 +177,6 @@ INSERT INTO tuser VALUES (
     'admin@tutoringtrain.com',
     'Admin',
     NULL,
-    NULL,
     'HTL',
     'N'
 );
