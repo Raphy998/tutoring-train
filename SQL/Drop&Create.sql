@@ -91,6 +91,7 @@ CREATE TABLE entry (
     flag          CHAR(1),
     headline      VARCHAR2(50),
     location      mdsys.sdo_geometry,
+    locationname  VARCHAR2(150),
     CONSTRAINT pk_entry PRIMARY KEY ( id ),
     CONSTRAINT fk_entry_user FOREIGN KEY ( username )
         REFERENCES tuser ( username ),
