@@ -131,4 +131,11 @@ public class LocationObject {
     public void setBoundingbox(double[] boundingbox) {
         this.boundingbox = boundingbox;
     }
+
+    @Override
+    public String toString() {
+        return "LocationObject{" + "place_id=" + place_id + ", licence=" + licence + ", osm_type=" + osm_type + ", osm_id=" + osm_id + ", lat=" + lat + ", lon=" + lon + ", place_rank=" + place_rank + ", category=" + category + ", type=" + type + ", importance=" + importance + ", addresstype=" + addresstype + ", display_name=" + display_name + ", name=" + name + ", address=" + address + ", boundingbox=" + boundingbox + '}';
+    }
+    
+    
 }

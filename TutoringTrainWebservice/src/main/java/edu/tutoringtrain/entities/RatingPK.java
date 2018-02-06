@@ -5,6 +5,8 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,11 +25,13 @@ public class RatingPK implements Serializable {
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "RATEDUSER", nullable = false, length = 20)
+    @JsonView({Views.Rating.Out.Public.class})
     private String rateduser;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "RATINGUSER", nullable = false, length = 20)
+    @JsonView({Views.Rating.Out.Public.class})
     private String ratinguser;
 
     public RatingPK() {

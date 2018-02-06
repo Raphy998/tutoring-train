@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import edu.tutoringtrain.entities.Entry;
 import java.io.IOException;
 import oracle.spatial.geometry.JGeometry;
 
@@ -20,6 +21,7 @@ import oracle.spatial.geometry.JGeometry;
 public class JGeometrySerializer extends JsonSerializer<JGeometry> {
     @Override
     public void serialize(JGeometry g, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
-        generator.writeObject(new GeoPoint(g.getPoint()[0], g.getPoint()[1]));
+        Entry parentEntry = (Entry) generator.getCurrentValue();       
+        generator.writeObject(new GeoPoint(g.getPoint()[0], g.getPoint()[1], parentEntry.getLocationName()));
     }
 }

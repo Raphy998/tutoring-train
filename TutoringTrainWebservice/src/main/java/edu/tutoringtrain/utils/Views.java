@@ -58,6 +58,15 @@ public interface Views {
         };
     }
     
+    public static interface Rating {
+        public static interface In {
+            public static interface Create {};
+        };
+        public static interface Out {
+            public static interface Public {};
+        };
+    }
+    
     public static interface Error {
         public static interface Out {
             public static interface Public {};

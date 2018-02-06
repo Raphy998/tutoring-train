@@ -31,11 +31,13 @@ import edu.tutoringtrain.data.error.Language;
 import edu.tutoringtrain.data.exceptions.BlockException;
 import edu.tutoringtrain.data.exceptions.ForbiddenException;
 import edu.tutoringtrain.data.exceptions.UnauthorizedException;
+import edu.tutoringtrain.data.exceptions.UnperformableActionException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.search.SearchCriteria;
 import edu.tutoringtrain.data.search.user.UserSearchCriteriaDeserializer;
 import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.Blocked;
+import edu.tutoringtrain.entities.Rating;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.StringUtils;
 import edu.tutoringtrain.utils.Views;
@@ -54,8 +56,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.RandomStringUtils;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 /**
  * REST Web Service
@@ -779,6 +779,96 @@ public class UserResource extends AbstractResource {
  
         return response.build();
     }
+    
+    @Secured
+    @POST
+    @Path("/rating/{username}")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response rateUser(@Context HttpServletRequest httpServletRequest,
+                            final String rating,
+                            @PathParam("username") String username,
+                            @Context SecurityContext securityContext) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            if (username.equals(securityContext.getUserPrincipal().getName())) {
+                throw new UnperformableActionException(new ErrorBuilder(Error.RATE_OWN));
+            }
+            
+            Rating ratingIn = getMapper().readerWithView(Views.Rating.In.Create.class).forType(Rating.class).readValue(rating);
+            Rating ratingOut = userService.rate(username, securityContext.getUserPrincipal().getName(), ratingIn.getStars(), ratingIn.getText());
+
+            response.entity(getMapper().writerWithView(Views.Rating.Out.Public.class).writeValueAsString(ratingOut));
+        }
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/rating/{username}")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getRatingsOfUser(@Context HttpServletRequest httpServletRequest,
+                            @PathParam("username") String username) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            User u = userService.getUserByUsername(username);
+            response.entity(getMapper().writerWithView(Views.Rating.Out.Public.class).writeValueAsString(u.getRatingsGot()));
+        }
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured
+    @GET
+    @Path("/rating/{username}/given")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getRatedUsers(@Context HttpServletRequest httpServletRequest,
+                            @PathParam("username") String username) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            User u = userService.getUserByUsername(username);
+            response.entity(getMapper().writerWithView(Views.Rating.Out.Public.class).writeValueAsString(u.getRatingsGiven()));
+        }
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
     
     @Secured
     @GET

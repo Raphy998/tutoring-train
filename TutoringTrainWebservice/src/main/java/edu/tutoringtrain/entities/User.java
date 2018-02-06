@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Elias
  */
 @Entity
-@Table(name = "TUSER", catalog = "", uniqueConstraints = {
+@Table(name = "V_USER", catalog = "", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"EMAIL"})})
 @XmlRootElement
 @NamedQueries({
@@ -57,7 +57,7 @@ public class User implements Serializable {
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "USERNAME", nullable = false, length = 20)
-    @JsonView({Views.Entry.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class, Views.Comment.Out.Public.class})
+    @JsonView({Views.Entry.Out.Public.class, Views.User.In.Register.class, Views.User.Out.Public.class, Views.Comment.Out.Public.class, Views.Rating.Out.Public.class})
     private String username;
     @Size(max = 64)
     @Column(name = "PASSWORD", length = 64)

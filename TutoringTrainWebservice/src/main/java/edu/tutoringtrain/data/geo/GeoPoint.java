@@ -12,6 +12,7 @@ package edu.tutoringtrain.data.geo;
 public class GeoPoint {
     private double lon;
     private double lat;
+    private String name;
 
     public GeoPoint() {
     }
@@ -19,6 +20,12 @@ public class GeoPoint {
     public GeoPoint(double lon, double lat) {
         this.lon = lon;
         this.lat = lat;
+    }
+    
+    public GeoPoint(double lon, double lat, String name) {
+        this.lon = lon;
+        this.lat = lat;
+        this.name = name;
     }
 
     public double getLon() {
@@ -36,4 +43,14 @@ public class GeoPoint {
     public void setLat(double lat) {
         this.lat = lat;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
 }

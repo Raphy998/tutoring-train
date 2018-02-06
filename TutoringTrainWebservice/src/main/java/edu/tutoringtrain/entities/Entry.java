@@ -122,7 +122,7 @@ public class Entry implements Serializable {
     private JGeometry location;
     @Size(max = 100)
     @Column(name = "LOCATIONNAME", length = 50)
-    @JsonView({Views.Entry.Out.Public.class})
+    //locationName is included in JSON via JGeometrySerializer
     private String locationName;
     @OneToMany(mappedBy = "entry", cascade = CascadeType.REMOVE)        //remove all comments
     private Collection<Comment> tcommentCollection;

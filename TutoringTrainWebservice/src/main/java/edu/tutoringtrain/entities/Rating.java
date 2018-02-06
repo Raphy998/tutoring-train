@@ -5,6 +5,8 @@
  */
 package edu.tutoringtrain.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -41,17 +43,22 @@ public class Rating implements Serializable {
     protected RatingPK ratingPK;
     @Size(max = 500)
     @Column(name = "TEXT", length = 500)
+    @JsonView({Views.Rating.In.Create.class, Views.Rating.Out.Public.class})
     private String text;
     @Column(name = "STARS")
+    @JsonView({Views.Rating.In.Create.class, Views.Rating.Out.Public.class})
     private Short stars;
     @Column(name = "WRITTENON")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView({Views.Rating.Out.Public.class})
     private Date writtenon;
     @JoinColumn(name = "RATEDUSER", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonView({Views.Rating.Out.Public.class})
     private User ratedUser;
     @JoinColumn(name = "RATINGUSER", referencedColumnName = "USERNAME", nullable = false, insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonView({Views.Rating.Out.Public.class})
     private User ratingUser;
 
     public Rating() {

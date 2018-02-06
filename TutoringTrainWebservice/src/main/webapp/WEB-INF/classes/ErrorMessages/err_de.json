@@ -47,5 +47,6 @@
     "46": "Ungültiger Wert: '%s'",
     "47": "Eintrag (id=%s) nicht gefunden",
     "48": "Andere Admins können nicht gelöscht werden",
-    "49": "Benutzer kann nicht gelöscht werden, da er andere Objekte besitzt"
+    "49": "Benutzer kann nicht gelöscht werden, da er andere Objekte besitzt",
+    "50": "Eigener Benutzer kann nicht bewertet werden"
 }

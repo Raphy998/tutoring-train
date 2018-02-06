@@ -23,18 +23,25 @@ public class GeocodingInterface {
         StringBuilder locName = new StringBuilder();
         
         if (la != null) {
-            if (la.getCity() != null) 
-                locName.append(la.getCity());
-            else if (la.getTown() != null)
-                locName.append(la.getTown());
-            else if (la.getVillage() != null)
-                locName.append(la.getVillage());
-            locName.append(", ");
-
-            locName.append(la.getPostcode());
-            locName.append(", ");
-            locName.append(la.getState());
-            locName.append(", ");
+            if (la.getPostcode() != null) {
+                locName.append(la.getPostcode());
+                locName.append(" ");
+            }
+            
+            if (la.getCity() != null || la.getTown() != null || la.getVillage() != null) {
+                if (la.getCity() != null) 
+                    locName.append(la.getCity());
+                else if (la.getTown() != null)
+                    locName.append(la.getTown());
+                else if (la.getVillage() != null)
+                    locName.append(la.getVillage());
+                locName.append(", ");
+            }
+            
+            if (la.getState() != null) {
+                locName.append(la.getState());
+                locName.append(", ");
+            }
             locName.append(la.getCountry());
         }
 

@@ -47,5 +47,6 @@
     "46": "Invalid Value: '%s'",
     "47": "Entry (id=%s) not found",
     "48": "Cannot delete other admins",
-    "49": "Cannot delete User as he owns other objects"
+    "49": "Cannot delete User as he owns other objects",
+    "50": "Cannot rate own User"
 }

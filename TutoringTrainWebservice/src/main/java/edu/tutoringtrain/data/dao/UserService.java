@@ -23,12 +23,14 @@ import edu.tutoringtrain.data.exceptions.XMPPException;
 import edu.tutoringtrain.data.search.user.UserQueryGenerator;
 import edu.tutoringtrain.data.search.user.UserSearch;
 import edu.tutoringtrain.entities.QUser;
+import edu.tutoringtrain.entities.Rating;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.EmailUtils;
 import edu.tutoringtrain.utils.ImageUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -371,6 +373,39 @@ public class UserService extends AbstractService {
         }
          
          return users;
+    }
+    
+    @Transactional
+    public Rating rate(String ratedUser, String ratingUser, int stars, String text) throws InvalidArgumentException, NullValueException, UserNotFoundException {
+        if (stars < 1 || stars > 5) {
+            throw new InvalidArgumentException(new ErrorBuilder(Error.CONSTRAINT_VIOLATION).withParams("rating must be between 1 and 5 stars"));
+        }
+        
+        Rating returnRating;
+        
+        Rating newRating = new Rating(ratedUser, ratingUser);
+        Rating existingRating = em.find(Rating.class, newRating.getRatingPK());
+        
+        //if "ratingUser" hasn't rated "ratedUser" yet
+        if (existingRating == null) {
+            newRating.setStars((short) stars);
+            newRating.setText(text);
+            newRating.setWrittenon(new Date());     //now
+
+            em.persist(newRating);
+            
+            newRating.setRatedUser(getUserByUsername(ratedUser));
+            newRating.setRatingUser(getUserByUsername(ratingUser));
+            returnRating = newRating;
+        }
+        else {
+            existingRating.setStars((short) stars);
+            existingRating.setText(text);
+            existingRating.setWrittenon(new Date());     //now
+            returnRating = existingRating;
+        }
+
+        return returnRating;
     }
     
     /*
