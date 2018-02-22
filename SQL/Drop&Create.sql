@@ -172,6 +172,17 @@ FROM TUSER;
 
 
 INSERT INTO tuser VALUES (
+    'root',
+    '63a9f0ea7bb98050796b649e85481845',
+    'R',
+    'root@tutoringtrain.com',
+    'Root',
+    NULL,
+    'HTL',
+    'N'
+);
+
+INSERT INTO tuser VALUES (
     'admin',
     '21232f297a57a5a743894a0e4a801fc3',
     'A',
