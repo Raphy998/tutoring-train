@@ -20,6 +20,7 @@ import edu.tutoringtrain.data.search.SearchCriteria;
 import edu.tutoringtrain.data.search.SpatialSearchCriteria;
 import edu.tutoringtrain.data.search.StringSearchCriteria;
 import edu.tutoringtrain.entities.QEntry;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class EntryQueryGenerator extends QueryGenerator<EntryProp> {
     private final QEntry entry = QEntry.entry;
     
     @Override
-    public Predicate[] getPredicates(Search<EntryProp> s) throws ParseException {
+    public Predicate[] getPredicates(Search<EntryProp> s) throws ParseException, IOException {
         List<Predicate> preds = new ArrayList<>();
         
         for (SearchCriteria<EntryProp> crit: s.getCriteria()) {            
@@ -57,10 +58,14 @@ public class EntryQueryGenerator extends QueryGenerator<EntryProp> {
     }
     
     @Override
-    public OrderSpecifier[] getOrders(Search<EntryProp> s) {
+    public OrderSpecifier[] getOrders(Search<EntryProp> s) throws IOException {
         List<OrderSpecifier> orders = new ArrayList<>();
         
         for (OrderElement o: s.getOrder()) {      
+            if (o.getKey() == EntryProp.LOCATION) {
+                throw new IOException("cannot use 'LOCATION' for order");
+            }
+            
             OrderSpecifier os;
             if (o.getDirection() == OrderDirection.ASC) os = getKey(o.getKey()).asc();
             else os = getKey(o.getKey()).desc();

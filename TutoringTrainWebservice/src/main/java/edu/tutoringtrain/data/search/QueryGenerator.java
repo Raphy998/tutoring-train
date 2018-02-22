@@ -15,6 +15,7 @@ import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.StringPath;
 import edu.tutoringtrain.entities.QEntry;
 import edu.tutoringtrain.data.geo.GeoPoint;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,7 +29,7 @@ public abstract class QueryGenerator<T extends EntityProp> {
     public abstract Predicate[] getPredicates(Search<T> s) throws Exception;
     public abstract OrderSpecifier[] getOrders(Search<T> s) throws Exception;
     
-    protected Predicate getPredicate(StringSearchCriteria crit) {
+    protected Predicate getPredicate(StringSearchCriteria crit) throws IOException {
         Predicate pred = null;
         StringPath key = (StringPath) getKey(crit.getKey());
         
@@ -58,7 +59,7 @@ public abstract class QueryGenerator<T extends EntityProp> {
         return pred;
     }
     
-    protected Predicate getPredicate(CharacterSearchCriteria crit) {
+    protected Predicate getPredicate(CharacterSearchCriteria crit) throws IOException {
         Predicate pred = null;
         ComparablePath<Character> key = (ComparablePath<Character>) getKey(crit.getKey());
         
@@ -77,7 +78,7 @@ public abstract class QueryGenerator<T extends EntityProp> {
         return pred;
     }
     
-    protected Predicate getPredicate(BooleanSearchCriteria crit) {
+    protected Predicate getPredicate(BooleanSearchCriteria crit) throws IOException {
         Predicate pred = null;
         ComparablePath<Character> key = (ComparablePath<Character>) getKey(crit.getKey());
         
@@ -94,7 +95,7 @@ public abstract class QueryGenerator<T extends EntityProp> {
         return pred;
     }
     
-    protected Predicate getPredicate(DateSearchCriteria crit) throws ParseException {
+    protected Predicate getPredicate(DateSearchCriteria crit) throws ParseException, IOException {
         Predicate pred = null;
         DateTimePath<Date> key = (DateTimePath<Date>) getKey(crit.getKey());
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
@@ -126,7 +127,7 @@ public abstract class QueryGenerator<T extends EntityProp> {
         return pred;
     }
     
-    protected Predicate getPredicate(NumberSearchCriteria crit) {
+    protected Predicate getPredicate(NumberSearchCriteria crit) throws IOException {
         Predicate pred = null;
         NumberPath key = (NumberPath) getKey(crit.getKey());
         
@@ -184,5 +185,5 @@ public abstract class QueryGenerator<T extends EntityProp> {
         return pred;
     }
     
-    protected abstract ComparableExpressionBase getKey(EntityProp key);
+    protected abstract ComparableExpressionBase getKey(EntityProp key) throws IOException;
 }

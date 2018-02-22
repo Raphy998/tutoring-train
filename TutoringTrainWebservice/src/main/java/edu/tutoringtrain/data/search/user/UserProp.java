@@ -18,7 +18,8 @@ public enum UserProp implements EntityProp {
     NAME(STRING), 
     ROLE(CHAR), 
     EDUCATION(STRING), 
-    GENDER(CHAR);
+    GENDER(CHAR),
+    RATING(NUMBER);
     
     private final DataType dataType;
 

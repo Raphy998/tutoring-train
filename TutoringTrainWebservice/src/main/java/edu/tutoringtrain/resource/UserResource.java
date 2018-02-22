@@ -872,7 +872,7 @@ public class UserResource extends AbstractResource {
     
     @Secured
     @GET
-    @Path("/testNL/{username}")
+    @Path("/newsletter/{username}")
     @Produces(value = MediaType.APPLICATION_JSON)
     public Response testNL(@Context HttpServletRequest httpServletRequest,
                             @PathParam("username") String username) throws Exception {
@@ -881,57 +881,6 @@ public class UserResource extends AbstractResource {
 
         try {
             emailService.sendNewsletter(userService.getUserByUsername(username), false);
-        } 
-        catch (Exception ex) {
-            try {
-                handleException(ex, response, Language.EN);
-            }
-            catch (Exception e) {
-                unknownError(e, response, Language.EN);
-            } 
-        }
- 
-        return response.build();
-    }
-    
-    @GET
-    @Path("/xmpp/{username}")
-    @Produces(value = MediaType.APPLICATION_JSON)
-    public Response getXMPPCredentials(@Context HttpServletRequest httpServletRequest,
-                            @PathParam("username") String username) throws Exception {
-        
-        Response.ResponseBuilder response = Response.status(Response.Status.OK);
-
-        try {
-            User u = userService.getUserByUsername(username);
-            response.entity(xmppService.getCredentials(username, u.getPassword()));
-        } 
-        catch (Exception ex) {
-            try {
-                handleException(ex, response, Language.EN);
-            }
-            catch (Exception e) {
-                unknownError(e, response, Language.EN);
-            } 
-        }
- 
-        return response.build();
-    }
-    
-    @Secured
-    @POST
-    @Path("/xmpp/add/{username}")
-    @Produces(value = MediaType.APPLICATION_JSON)
-    public Response addXMPPRosterContact(@Context HttpServletRequest httpServletRequest,
-                            @PathParam("username") String username,
-                            @Context SecurityContext securityContext) throws Exception {
-        
-        Response.ResponseBuilder response = Response.status(Response.Status.OK);
-
-        try {
-            User thisUser = userService.getUserByUsername(securityContext.getUserPrincipal().getName());
-            User user2add = userService.getUserByUsername(username);
-            xmppService.addToRoster(thisUser.getUsername(), thisUser.getPassword(), user2add.getUsername());
         } 
         catch (Exception ex) {
             try {

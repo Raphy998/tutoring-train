@@ -8,6 +8,7 @@ package edu.tutoringtrain.data.dao;
 import edu.tutoringtrain.data.XMPPCredentials;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.entities.User;
+import edu.tutoringtrain.misc.XmppContactType;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyManagementException;
@@ -15,6 +16,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -23,6 +26,7 @@ import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.SASLMechanism;
 import org.jivesoftware.smack.sasl.javax.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -31,6 +35,11 @@ import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.jxmpp.jid.impl.DomainpartJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Domainpart;
+import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 /**
  *
@@ -81,7 +90,7 @@ public class XMPPService extends AbstractService {
 
             conn.disconnect();
         }
-        catch (IOException | NoSuchAlgorithmException | SmackException | XMPPException ex) {
+        catch (IOException | NoSuchAlgorithmException | SmackException | XMPPException | InterruptedException ex) {
             throw new edu.tutoringtrain.data.exceptions.XMPPException(new ErrorBuilder(edu.tutoringtrain.data.error.Error.XMPP_ERROR));
         }
     }
@@ -105,7 +114,7 @@ public class XMPPService extends AbstractService {
             Map<String, String> attributes = new HashMap<>();
             attributes.put("name", user.getName());
 
-            accountManager.createAccount(user.getUsername().toLowerCase(), getXMPPPassword(user.getPassword()), attributes);
+            accountManager.createAccount(Localpart.from(user.getUsername().toLowerCase()), getXMPPPassword(user.getPassword()), attributes);
             conn.disconnect();
 
             //adding given name to vCard so his name is displayed in converse.js
@@ -175,13 +184,17 @@ public class XMPPService extends AbstractService {
         return stringToEncrypt;
     }
     
-    private AbstractXMPPConnection getXMPPConnection(String username, String password) throws SmackException, IOException, XMPPException {
+    private AbstractXMPPConnection getXMPPConnection(String username, String password) throws SmackException, IOException, XMPPException, InterruptedException {
         AbstractXMPPConnection connection;
         XMPPTCPConnectionConfiguration.Builder config = XMPPTCPConnectionConfiguration.builder();
         config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
 
-        //this is server name in Open fire
-        config.setServiceName(DOMAIN);
+        try {
+            //this is server name in Open fire
+            config.setXmppDomain(JidCreate.domainBareFrom(DOMAIN));
+        } catch (XmppStringprepException ex) {
+            throw new IOException(ex.getMessage());
+        }
         config.setUsernameAndPassword(username, password);
 
         //this is host name in Open fire
@@ -196,7 +209,7 @@ public class XMPPService extends AbstractService {
         config.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
         try {
             TLSUtils.acceptAllCertificates(config);
-            TLSUtils.disableHostnameVerificationForTlsCertificicates(config);
+            TLSUtils.disableHostnameVerificationForTlsCertificates(config);
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
         }
         
@@ -208,7 +221,7 @@ public class XMPPService extends AbstractService {
     }
     
     public XMPPCredentials getCredentials(String username, String password) throws NoSuchAlgorithmException {
-        return new XMPPCredentials(username.toLowerCase()+ "@" + DOMAIN, getXMPPPassword(password));
+        return new XMPPCredentials(username.toLowerCase() + "@" + DOMAIN, getXMPPPassword(password));
     }
     
     public void addToRoster(String username, String password, String usernameToAdd) throws edu.tutoringtrain.data.exceptions.XMPPException {
@@ -217,8 +230,42 @@ public class XMPPService extends AbstractService {
             conn.login(username.toLowerCase(), getXMPPPassword(password));
 
             Presence subscribe = new Presence(Presence.Type.subscribe);
-            subscribe.setTo(usernameToAdd + "@" + DOMAIN);
+            subscribe.setTo(JidCreate.bareFrom(usernameToAdd + "@" + DOMAIN));
             conn.sendStanza(subscribe);
+            
+            conn.disconnect();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            throw new edu.tutoringtrain.data.exceptions.XMPPException(new ErrorBuilder(edu.tutoringtrain.data.error.Error.XMPP_ERROR));
+        }
+    }
+    
+    public XmppContactType getContactType(String username, String password, String otherUsername) throws edu.tutoringtrain.data.exceptions.XMPPException {
+        try {
+            XmppContactType type = XmppContactType.NONE;
+            
+            AbstractXMPPConnection conn = getXMPPConnection(username.toLowerCase(), getXMPPPassword(password));
+            conn.login(username.toLowerCase(), getXMPPPassword(password));
+
+            Roster r = Roster.getInstanceFor(conn);
+            r.setSubscriptionMode(Roster.SubscriptionMode.manual);
+            if (!r.isLoaded()) {
+                r.reloadAndWait();
+            }
+            
+            if (r.contains(JidCreate.bareFrom(otherUsername + "@" + DOMAIN))) {
+                switch (r.getEntry(JidCreate.bareFrom(otherUsername + "@" + DOMAIN)).getType()) {
+                    case none:
+                        type = XmppContactType.REQUESTED;
+                        break;
+                    case both:
+                        type = XmppContactType.ACCEPTED;
+                        break;
+                }
+            }
+            
+            return type;
         }
         catch (Exception ex) {
             ex.printStackTrace();

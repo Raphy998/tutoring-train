@@ -26,6 +26,7 @@ import edu.tutoringtrain.entities.QEntry;
 import edu.tutoringtrain.entities.Subject;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.DateUtils;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -284,27 +285,19 @@ public class EntryService extends AbstractService {
     }
     
     @Transactional
-    public List<Entry> search(EntryType type, EntrySearch searchCriteria) throws ParseException {
+    public List<Entry> search(EntryType type, EntrySearch searchCriteria) throws ParseException, Exception {
         EntryQueryGenerator gen = new EntryQueryGenerator();
         JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
-        List<Entry> e = null;
 
-        try {
-            e = query.from(QEntry.entry)
-                .where(gen.getPredicates(searchCriteria))
-                .where(QEntry.entry.flag.eq(type.getChar()))
-                .orderBy(gen.getOrders(searchCriteria))
-                .list(QEntry.entry);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
-        return e;
+        return query.from(QEntry.entry)
+            .where(gen.getPredicates(searchCriteria))
+            .where(QEntry.entry.flag.eq(type.getChar()))
+            .orderBy(gen.getOrders(searchCriteria))
+            .list(QEntry.entry);
     }
     
     @Transactional
-    public List<Entry> search(EntryType type, EntrySearch searchCriteria, int start, int pageSize) throws ParseException {
+    public List<Entry> search(EntryType type, EntrySearch searchCriteria, int start, int pageSize) throws ParseException, IOException {
         EntryQueryGenerator gen = new EntryQueryGenerator();
         JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
         

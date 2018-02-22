@@ -7,7 +7,6 @@ package edu.tutoringtrain.data.search.user;
 
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
-import com.mysema.query.types.expr.ComparableExpression;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import edu.tutoringtrain.data.search.CharacterSearchCriteria;
 import edu.tutoringtrain.data.search.EntityProp;
@@ -19,6 +18,7 @@ import edu.tutoringtrain.data.search.Search;
 import edu.tutoringtrain.data.search.SearchCriteria;
 import edu.tutoringtrain.data.search.StringSearchCriteria;
 import edu.tutoringtrain.entities.QUser;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class UserQueryGenerator extends QueryGenerator<UserProp> {
     private final QUser user = QUser.user;
     
     @Override
-    public Predicate[] getPredicates(Search<UserProp> s) {
+    public Predicate[] getPredicates(Search<UserProp> s) throws IOException {
         List<Predicate> preds = new ArrayList<>();
         
         for (SearchCriteria<UserProp> crit: s.getCriteria()) {            
@@ -82,6 +82,9 @@ public class UserQueryGenerator extends QueryGenerator<UserProp> {
                 break;
             case ROLE:
                 var = user.role;
+                break;
+            case RATING:
+                var = user.averagerating;
                 break;
         }
         

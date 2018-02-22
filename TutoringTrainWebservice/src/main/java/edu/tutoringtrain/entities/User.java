@@ -7,7 +7,9 @@ package edu.tutoringtrain.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.tutoringtrain.data.error.ConstraintGroups;
+import edu.tutoringtrain.misc.AverageRatingSerializer;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -77,8 +79,9 @@ public class User implements Serializable {
     @JsonView({Views.User.In.Register.class, Views.User.Out.Public.class})
     private String name;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "AVERAGERATING", precision = 2, scale = 1)
+    @Column(name = "AVERAGERATING", precision = 2, scale = 1, insertable = false, updatable = false)
     @JsonView({Views.User.Out.Public.class})
+    @JsonSerialize(using=AverageRatingSerializer.class)
     private BigDecimal averagerating;
     @Size(max = 50)
     @Column(name = "EDUCATION", length = 50)

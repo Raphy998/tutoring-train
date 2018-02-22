@@ -44,7 +44,7 @@ import javax.validation.ConstraintViolationException;
 @ApplicationScoped
 public class UserService extends AbstractService {
     private static final Character DEFAULT_GENDER = Gender.OTHER;
-    private static final boolean IS_XMPP_ACTIVE = false;
+    private static final boolean IS_XMPP_ACTIVE = true;
     
     @Inject
     private XMPPService xmppService;
@@ -73,6 +73,7 @@ public class UserService extends AbstractService {
             if (IS_XMPP_ACTIVE) xmppService.createUser(user);
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             if (ex instanceof javax.persistence.PersistenceException) {
                 ErrorBuilder tmpErrB = getError((SQLIntegrityConstraintViolationException) ex.getCause().getCause(), user);
                 errB.withErrorCode(tmpErrB.getErrorCode()).withParams(tmpErrB.getParams());
@@ -108,7 +109,7 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    public void deleteUser(String username, boolean force) throws UserNotFoundException, NullValueException, UnperformableActionException {
+    public void deleteUser(String username, boolean force) throws UserNotFoundException, NullValueException, UnperformableActionException, XMPPException {
         User user2delete = getUserByUsername(username);
         
         if (!force) {
@@ -121,6 +122,11 @@ public class UserService extends AbstractService {
         }
         
         em.remove(user2delete);
+        em.flush();
+
+        //only delete xmpp user if deletion in TT database was successful (if transaction is not marked for rollback)
+        if (IS_XMPP_ACTIVE) xmppService.deleteUser(user2delete.getUsername(), user2delete.getPassword());
+        
     }
     
     @Transactional(rollbackOn = XMPPException.class)
@@ -334,45 +340,27 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
-    public List<User> search(UserSearch searchCriteria) {
+    public List<User> search(UserSearch searchCriteria) throws Exception {
         UserQueryGenerator gen = new UserQueryGenerator();
         JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
-        List<User> users;
-        
-        try {
-            users = query.from(QUser.user)
+
+        return query.from(QUser.user)
                 .where(gen.getPredicates(searchCriteria))
                 .orderBy(gen.getOrders(searchCriteria))
                 .list(QUser.user);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
-         
-         return users;
     }
     
     @Transactional
-    public List<User> search(UserSearch searchCriteria, int start, int pageSize) {
+    public List<User> search(UserSearch searchCriteria, int start, int pageSize) throws Exception {
         UserQueryGenerator gen = new UserQueryGenerator();
         JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
-        List<User> users;
         
-        try {
-            users = query.from(QUser.user)
+        return query.from(QUser.user)
                 .where(gen.getPredicates(searchCriteria))
                 .orderBy(gen.getOrders(searchCriteria))
                 .offset(start)
                 .limit(pageSize)
                 .list(QUser.user);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
-         
-         return users;
     }
     
     @Transactional

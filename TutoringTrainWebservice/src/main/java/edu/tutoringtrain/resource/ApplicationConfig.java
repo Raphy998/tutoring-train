@@ -57,6 +57,7 @@ public class ApplicationConfig extends Application {
         resources.add(SubjectResource.class);
         resources.add(OfferResource.class);
         resources.add(RequestResource.class);
+        resources.add(XmppResource.class);
         return resources;
     }
 }
