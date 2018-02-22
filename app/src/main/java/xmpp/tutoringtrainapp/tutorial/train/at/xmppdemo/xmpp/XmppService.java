@@ -65,8 +65,32 @@ public class XmppService extends Service {
         }
 
         login(this.username, this.password);
+        startPingThread();
 
         return Service.START_STICKY;
+    }
+
+    private void startPingThread() {
+        Runnable pinger = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        System.out.println("------------ PING: " + xmpp.ping());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        Thread pingThread = new Thread(pinger);
+        pingThread.setDaemon(true);
+        pingThread.start();
     }
 
     @Override
@@ -84,7 +108,7 @@ public class XmppService extends Service {
         };
         disconnectionThread.execute();
 
-        Intent broadcastIntent = new Intent("uk.ac.shef.oak.ActivityRecognition.RestartSensor");
+        Intent broadcastIntent = new Intent("xmpp.tutoringtrainapp.tutorial.train.at.RestartService");
         sendBroadcast(broadcastIntent);
     }
 

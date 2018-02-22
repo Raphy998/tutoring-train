@@ -12,6 +12,6 @@ public class ChatRestartBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         System.out.println(" --------- RESTART SERVICE");
-        context.startService(new Intent(context, XmppService.class));;
+        context.startService(new Intent(context, XmppService.class));
     }
 }

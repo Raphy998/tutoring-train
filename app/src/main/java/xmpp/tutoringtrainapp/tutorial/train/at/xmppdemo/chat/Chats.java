@@ -16,6 +16,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.Random;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 
 
@@ -25,16 +26,16 @@ public class Chats extends Fragment implements OnClickListener {
     private ImageButton sendButton;
     private ListView msgListView;
 
-    private String myUser, otherUser;
+    private Contact myUser, otherUser;
     private Random random;
     private ChatAdapter chatAdapter;
 
-    public void setUsers(String myUser, String otherUser) {
+    public void setUsers(Contact myUser, Contact otherUser) {
         this.myUser = myUser;
 
         if (this.otherUser == null || !this.otherUser.equals(otherUser)) {
             try {
-                XmppHandler.getInstance().loadArchivedMsgs(otherUser);
+                XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername());
             }
             catch (Exception ex) {
                 ex.printStackTrace();
@@ -47,8 +48,8 @@ public class Chats extends Fragment implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            myUser = savedInstanceState.getString("myUser");
-            otherUser = savedInstanceState.getString("otherUser");
+            myUser = new Contact(savedInstanceState.getString("myUser"), savedInstanceState.getString("myUserName"));
+            otherUser = new Contact(savedInstanceState.getString("otherUser"), savedInstanceState.getString("otherUserName"));
         }
 
         random = new Random();
@@ -79,15 +80,17 @@ public class Chats extends Fragment implements OnClickListener {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("myUser", myUser);
-        outState.putString("otherUser", otherUser);
+        outState.putString("myUser", myUser.getUsername());
+        outState.putString("myUserName", myUser.getFullName());
+        outState.putString("otherUser", otherUser.getUsername());
+        outState.putString("otherUserName", otherUser.getFullName());
         super.onSaveInstanceState(outState);
     }
 
     public void sendTextMessage() throws XmppStringprepException {
         String message = msg_edittext.getEditableText().toString();
         if (!message.equalsIgnoreCase("")) {
-            final ChatMessage chatMessage = new ChatMessage(myUser, otherUser,
+            final ChatMessage chatMessage = new ChatMessage(myUser.getUsername(), otherUser.getUsername(),
                     message, "" + random.nextInt(1000), true);
             chatMessage.setMsgID();
             chatMessage.setBody(message);
@@ -112,7 +115,7 @@ public class Chats extends Fragment implements OnClickListener {
         }
     }
 
-    public String getWith() {
+    public Contact getWith() {
         return this.otherUser;
     }
 }

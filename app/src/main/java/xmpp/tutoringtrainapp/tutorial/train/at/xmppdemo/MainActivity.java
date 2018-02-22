@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import java.util.Arrays;
+
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
@@ -67,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
 
     private void handleIntent(Intent intentWithExtras) {
         if (intentWithExtras != null) {
-            System.out.println("++++++++++++++++++ " + intentWithExtras.getExtras());
             Bundle extras = intentWithExtras.getExtras();
             if (extras != null) {
                 String action = extras.getString("action");
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                     switch (Action.valueOf(action)) {
                         case OPEN_CHAT:
                             String[] withUser = extras.getStringArray("withUser");
+                            System.out.println(Arrays.deepToString(withUser));
                             if (withUser != null)
                                 openChatWithUser(this, new Contact(withUser[0], withUser[1], Contact.Type.APPROVED));
                             break;
@@ -130,7 +132,9 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     @Override
     public void openChatWithUser(Object sender, Contact otherUser) {
         try {
-            chats.setUsers(getString(R.string.username), otherUser.getUsername());
+            chats.setUsers(
+                    new Contact(getString(R.string.username), "myFullName"),
+                    otherUser);
             showChat();
         }
         catch (Exception ex) {
@@ -151,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     }
 
     private void showChat() throws Exception {
-        this.setTitle("Chats: " + chats.getWith());
+        this.setTitle("Chats: " + chats.getWith().getFullName());
         setFragmentVisible(roster, false);
         setFragmentVisible(chats, true);
     }

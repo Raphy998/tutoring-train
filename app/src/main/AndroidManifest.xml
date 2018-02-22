@@ -40,7 +40,7 @@ android:versionName="1.0" >
         android:exported="true"
         android:label="RestartServiceWhenStopped">
         <intent-filter>
-            <action android:name="uk.ac.shef.oak.ActivityRecognition.RestartSensor"/>
+            <action android:name="xmpp.tutoringtrainapp.tutorial.train.at.RestartService"/>
         </intent-filter>
     </receiver>
 </application>

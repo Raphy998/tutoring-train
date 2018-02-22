@@ -16,9 +16,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
-import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -34,12 +32,12 @@ import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.mam.element.MamElements;
+import org.jivesoftware.smackx.ping.PingManager;
 import org.jivesoftware.smackx.rsm.packet.RSMSet;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -74,7 +72,6 @@ public class XmppHandler extends Application {
     private static String HOST;
 
     private org.jivesoftware.smack.chat2.Chat chat;
-    private IncomingChatMessageListenerImpl mChatManagerListener;
 
     private XmppHandler(XmppService context, String username,
                         String password) {
@@ -116,7 +113,6 @@ public class XmppHandler extends Application {
 
     private void init() {
         try {
-            mChatManagerListener = new IncomingChatMessageListenerImpl();
             initialiseConnection();
         } catch (XmppStringprepException e) {
             e.printStackTrace();
@@ -308,15 +304,9 @@ public class XmppHandler extends Application {
         XMPPConnectionListener connectionListener = new XMPPConnectionListener();
         connection.addConnectionListener(connectionListener);
         addStanzaListener();
-        addIncomingChatListener();
 
         ReconnectionManager manager = ReconnectionManager.getInstanceFor(connection);
         manager.enableAutomaticReconnection();
-    }
-
-    private void addIncomingChatListener() {
-        ChatManager.getInstanceFor(connection).addIncomingListener(
-                mChatManagerListener);
     }
 
     private void addStanzaListener() {
@@ -352,8 +342,13 @@ public class XmppHandler extends Application {
             public boolean accept(Stanza stanza) {
                 boolean accept = false;
 
+                System.out.println("************************** NEW STANZA: " + stanza);
                 if (stanza instanceof Presence)
                     accept = true;
+                else if (stanza instanceof Message) {
+                    Message msg = (Message) stanza;
+                    processMessage(msg);
+                }
 
                 return accept;
             }
@@ -395,31 +390,27 @@ public class XmppHandler extends Application {
         }
     }
 
-    private class IncomingChatMessageListenerImpl implements IncomingChatMessageListener {
-        @Override
-        public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-            processMessage(chat, message);
+    private void processMessage(final Message message) {
+        if (message.getType() == Message.Type.chat && message.getBody() != null) {
+            final ChatMessage chatMessage = new ChatMessage(
+                    message.getFrom().getLocalpartOrNull().toString(),
+                    message.getTo().toString(),
+                    message.getBody(),
+                    message.getStanzaId(),
+                    false);
+            chatMessage.setDateTime(new Date());        //now
+
+            processMessage(chatMessage);
         }
+    }
 
-        private void processMessage(final org.jivesoftware.smack.chat2.Chat chat,
-                                   final Message message) {
-            if (message.getType() == Message.Type.chat && message.getBody() != null) {
-                final ChatMessage chatMessage = new ChatMessage(message.getFrom().toString(), message.getTo().toString(), message.getBody(),
-                        message.getStanzaId(), false);
-                chatMessage.setDateTime(new Date());        //now
+    private void processMessage(final ChatMessage chatMessage) {
 
-                processMessage(chatMessage);
-            }
-        }
+        chatMessage.setMine(false);
+        ds.addChatMessage(chatMessage);
 
-        private void processMessage(final ChatMessage chatMessage) {
-
-            chatMessage.setMine(false);
-            ds.addChatMessage(chatMessage);
-
-            if (!isActivityVisible()) {
-                showNewMessageNotification(chatMessage);
-            }
+        if (!isActivityVisible()) {
+            showNewMessageNotification(chatMessage);
         }
     }
 
@@ -539,18 +530,10 @@ public class XmppHandler extends Application {
     }
 
     public void showNewMessageNotification(ChatMessage msg) {
-        String senderName = msg.getSenderName();
-        try {
-            VCard vCard = getVCard(JidCreate.bareFrom(msg.getSender()));
-            if (vCard.getFirstName() != null)
-                senderName = vCard.getFirstName();
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        Contact sender = ds.getContactByUsername(msg.getSender());
 
         Notification.Builder m_notificationBuilder = new Notification.Builder(context)
-                .setContentTitle("New Message from " + senderName)
+                .setContentTitle("New Message from " + sender.getFullName())
                 .setContentText(msg.getBody())
                 .setSmallIcon(R.drawable.send_button)
                 .setAutoCancel(true);
@@ -559,7 +542,7 @@ public class XmppHandler extends Application {
         Intent intent = new Intent(context, MainActivity.class);
         Bundle extras = new Bundle();
         extras.putString("action", Action.OPEN_CHAT.name());
-        extras.putStringArray("withUser", new String[] { msg.getSender(), senderName });
+        extras.putStringArray("withUser", new String[] { sender.getUsername(), sender.getFullName() });
         intent.putExtras(extras);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -576,5 +559,10 @@ public class XmppHandler extends Application {
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean ping() throws SmackException.NotConnectedException, InterruptedException {
+        PingManager pinger = PingManager.getInstanceFor(connection);
+        return pinger.pingMyServer();
     }
 }

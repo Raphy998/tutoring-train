@@ -42,6 +42,7 @@ public class DataStore extends Application {
         this.roster.addOnListChangedCallback(cb);
     }
 
+    //might be broken
     public void updateContact(Contact c) {
         synchronized (this) {
             int i = this.roster.indexOf(c);
@@ -51,6 +52,12 @@ public class DataStore extends Application {
             } else {
                 this.roster.set(i, c);
             }
+        }
+    }
+
+    public Contact getContactByUsername(String username) {
+        synchronized (this) {
+            return this.roster.get(this.roster.indexOf(new Contact(username, "")));
         }
     }
 

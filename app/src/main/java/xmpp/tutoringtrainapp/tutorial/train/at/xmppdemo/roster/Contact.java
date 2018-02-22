@@ -17,6 +17,12 @@ public class Contact {
         this.type = type;
     }
 
+    public Contact(String username, String fullName) {
+        this.username = username;
+        this.fullName = fullName;
+        this.type = Type.APPROVED;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -48,5 +54,20 @@ public class Contact {
                 ", fullName='" + fullName + '\'' +
                 ", type=" + type +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Contact contact = (Contact) o;
+
+        return username.equals(contact.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return username.hashCode();
     }
 }
