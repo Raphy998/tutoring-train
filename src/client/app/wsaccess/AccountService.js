@@ -10,6 +10,7 @@ export default class AccountService {
   static get urlGetOwnUserDetails() { return '/user' };
   static get urlGetGenders() { return '/user/gender' };
   static get urlGetOwnAvatar() { return '/user/avatar'};
+  static get urlGetAvatarOfUser() { return '/user/avatar'};
   static get urlUpdateOwnUser() { return "/user/update/own" };
   static get urlUploadProfileImage() { return "/user/avatar/B64" };
 
@@ -179,6 +180,30 @@ export default class AccountService {
       })
       .then((text) => {
         ro.message = text;
+        resolve(ro);
+      })
+      .catch((ex) => {
+        reject(ex);
+      })
+    });
+  }
+
+  static async getAvatarOfUser(sessionKey, username) {
+    let ro = new ResponseObject();
+    return new Promise((resolve, reject) => {
+      fetch(UrlConstants.BASE_URL + this.urlGetAvatarOfUser + '/' + username, {
+        method: "GET",
+        headers: {
+          'Authorization': 'Bearer ' + sessionKey,
+          "Content-type": "application/json; charset=UTF-8"
+        }
+      }).then((response) => {
+        ro.code = response.status;
+        return response.blob();
+      })
+      .then((blob) => {
+        var objectURL = URL.createObjectURL(blob);
+        ro.message = objectURL;
         resolve(ro);
       })
       .catch((ex) => {

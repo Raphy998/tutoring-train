@@ -55,7 +55,7 @@ export default class EditAccountDetails extends React.Component {
         let userDetails = JSON.parse(ro.message);
         this.setState({
           editName: userDetails.name,
-          editGender: userDetails.gender,
+          //accountGender: userDetails.gender,
           editEmail: userDetails.email,
           editEducation: userDetails.education,
           editUsername: userDetails.username
@@ -124,7 +124,7 @@ export default class EditAccountDetails extends React.Component {
   */
   btnUpdate_Click = () => {
     AccountService.updateOwnUser(localStorage.getItem('session-key'),
-    new UpdateOwnUser(this.state.accountName, this.state.accountEmail, null, this.state.accountEducation, this.state.editGender))
+    new UpdateOwnUser(this.state.accountName, this.state.accountEmail, null, this.state.accountEducation, this.state.accountGender))
     .then((ro) => {
       if(ro.code == 200) {
         this.showSnackbar("Details updated successfully.");
@@ -136,8 +136,7 @@ export default class EditAccountDetails extends React.Component {
   }
 
   handleGenderChange = (event, index, value) => {
-    this.setState({editGender: value});
-    console.log("val" + value);
+    this.setState({accountGender: value});
   }
   showSnackbar = (value) => {
     this.setState({snackbarMessage: value, showSnackbarMessage: true});
@@ -229,10 +228,10 @@ export default class EditAccountDetails extends React.Component {
               <br/>
                 <Col xs={12}>
                   {
-                  <DropDownMenu value={this.state.accountGender.code} style={{width: "100%", marginLeft: 0, marginRight: 0}} onChange={this.handleGenderChange}>
+                  <DropDownMenu value={this.state.accountGender} style={{width: "100%", marginLeft: 0, marginRight: 0}} onChange={this.handleGenderChange}>
                     {
                       this.state.genders.map((value, index) => {
-                        return <MenuItem key={value.code} value={value.code} primaryText={value.name}/>
+                        return <MenuItem key={index} value={value.code} primaryText={value.name}/>
                       })
                     }
                   </DropDownMenu>
@@ -247,7 +246,7 @@ export default class EditAccountDetails extends React.Component {
           </Row>
         </Card>
         <Snackbar
-          open={this.showSnackbar}
+          open={this.state.showSnackbarMessage}
           message={this.state.snackbarMessage}
           onRequestClose={this.onSnackbarRequestClose}
           autoHideDuration={4000}/>

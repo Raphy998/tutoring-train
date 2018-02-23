@@ -10,7 +10,6 @@ import AccountService from 'app/wsaccess/AccountService.js';
 import LoginUser from 'app/entities/LoginUser.js';
 import {Redirect} from 'react-router-dom';
 
-
 export default class LoginTabComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -61,6 +60,12 @@ export default class LoginTabComponent extends React.Component {
     });
   }
 
+  onFormEnter = (ev) => {
+    if(ev.key == 'Enter') {
+      this.btnLogin_Click();
+    }
+  }
+
   render() {
     return(
         <div id="divLoginRegisterInner">
@@ -68,9 +73,9 @@ export default class LoginTabComponent extends React.Component {
             <Redirect to="/mainapp/home"/> : null
           }
           <div className="divTabsLoginRegister">
-            <TextField required className="login-field-mail" name="loginUsername" floatingLabelText="Username" onChange={this.handleLoginInputChange}/><br/>
+            <TextField required className="login-field-mail" name="loginUsername" floatingLabelText="Username" onChange={this.handleLoginInputChange} onKeyPress={this.onFormEnter}/><br/>
             <br/>
-            <TextField required className="login-field-password" name="loginPassword" floatingLabelText="Password" type="Password" onChange={this.handleLoginInputChange}/><br/>
+            <TextField required className="login-field-password" name="loginPassword" floatingLabelText="Password" type="Password" onChange={this.handleLoginInputChange} onKeyPress={this.onFormEnter}/><br/>
             <br/>
             <RaisedButton fullWidth={true} label="LOG IN" className="btnLogin" onClick={this.btnLogin_Click}/>
           </div>

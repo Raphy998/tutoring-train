@@ -10,6 +10,7 @@ import RegisterUser from 'app/entities/RegisterUser'
 import AccountService from 'app/wsaccess/AccountService';
 import LoginTabComponent from './LoginTabComponent';
 import RegisterTabComponent from './RegisterTabComponent'
+import imgLogo from 'app/Login/resources/logo.png';
 require("app/Login/styles/style.less");
 
 export default class LoginRegisterSelector extends React.Component {
@@ -40,7 +41,6 @@ export default class LoginRegisterSelector extends React.Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log(name);
     this.setState({
       [name]: value
     });
@@ -50,7 +50,7 @@ export default class LoginRegisterSelector extends React.Component {
     return(
       <div id="divMainLogin">
       <div id="divLoginRegister">
-        <img src="../app/Login/resources/logo.png" className="loginLogo"/>
+        <img src={imgLogo} className="loginLogo"/>
         <br/>
           <div id="divLoginRegisterInner">
               <Tabs value={this.state.tabVal} onChange={this.handleTabChange}>

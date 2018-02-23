@@ -26,9 +26,13 @@ module.exports = {
         query: {
           cacheDirectory: true,
           presets: [
-            'react', 'es2015'
+            'react', ['es2015', {modules: false}]
           ],
-          plugins: ['transform-class-properties']
+          plugins: ['transform-class-properties',
+		    ["transform-strict-mode", {
+		      "strict": false
+		    }]
+		  ]
         }
       }, {
         test: /\.less$/,

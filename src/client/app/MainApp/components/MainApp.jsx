@@ -12,6 +12,9 @@ import AccountService from 'app/wsaccess/AccountService.js';
 import LoginUser from 'app/entities/LoginUser.js';
 import {Redirect} from 'react-router-dom';
 import Menu from 'material-ui/Menu';
+import {getProfileImage, setProfileImage} from 'app/entities/redux/ActionCreators.jsx';
+import getStore from 'app/entities/redux/StoreProvider';
+let store = getStore();
 
 export default class MainApp extends React.Component {
   constructor(props) {
@@ -19,8 +22,21 @@ export default class MainApp extends React.Component {
     this.state = {
       menuDrawerOpen: false,
       redirectTo: '',
-      redirect: false
+      redirect: false,
+      avatar: require('app/resources/default_avatar.png')
     }
+    this.loadProfileImage();
+  }
+
+  loadProfileImage = () => {
+    //Loading account avatar
+    AccountService.getOwnAvatar(localStorage.getItem('session-key'), localStorage.getItem('username'))
+    .then((ro) => {
+      if(ro.code == 200) { //Avatar returned
+        this.setState({avatar: ro.message});
+        store.dispatch(setProfileImage(ro.message));
+      }
+    });
   }
 
   btnMenu_Click = () => {
@@ -55,8 +71,10 @@ export default class MainApp extends React.Component {
           onLeftIconButtonTouchTap={this.btnMenu_Click}
         />
         <Drawer open={this.state.menuDrawerOpen}
+        docked={false}
           open={this.state.menuDrawerOpen}
           onRequestChange={(open) => this.setState({menuDrawerOpen: open})}>
+          <img src={this.state.avatar} style={{width:'100%',height:'auto'}}/>
           <Menu onChange={this.menuClick}>
             <MenuItem primaryText="Home" value="Home"/>
             <MenuItem primaryText="Profile" value="Profile"/>

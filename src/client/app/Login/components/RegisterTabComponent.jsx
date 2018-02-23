@@ -26,7 +26,7 @@ export default class RegisterTabComponent extends React.Component {
       .then((ro) => {
         switch(ro.code) {
           case 200:
-            this.state.showSnackbar('Your registration was successful. Please check your mail acoount in order to finish the registration process.');
+            this.state.showSnackbar('Your registration was successful. Please check your e-mail in order to finish the registration process.');
           break;
           case 409:
             this.state.showSnackbar('An account with the given username already exists.');
@@ -52,15 +52,21 @@ export default class RegisterTabComponent extends React.Component {
     });
   }
 
+  onFormEnter = (ev) => {
+    if(ev.key == 'Enter') {
+      this.btnRegister_Click();
+    }
+  }
+
   render() {
     return(
           <div id="divLoginRegisterInner">
             <div className="divTabsLoginRegister">
-              <TextField className="login-field-mail" name="tfMailRegister" floatingLabelText="E-mail" onChange={this.handleRegisterInputChange}/><br/>
+              <TextField className="login-field-mail" name="tfMailRegister" floatingLabelText="E-mail" onChange={this.handleRegisterInputChange} onKeyPress={this.onFormEnter}/><br/>
               <br/>
-              <TextField className="login-field-username" name="tfUsernameRegister" floatingLabelText="Username" onChange={this.handleRegisterInputChange}/><br/>
+              <TextField className="login-field-username" name="tfUsernameRegister" floatingLabelText="Username" onChange={this.handleRegisterInputChange} onKeyPress={this.onFormEnter}/><br/>
               <br/>
-              <TextField className="login-field-password" name="tfPasswordRegister" floatingLabelText="Password" type="Password" onChange={this.handleRegisterInputChange}/><br/>
+              <TextField className="login-field-password" name="tfPasswordRegister" floatingLabelText="Password" type="Password" onChange={this.handleRegisterInputChange} onKeyPress={this.onFormEnter}/><br/>
               <br/>
               <RaisedButton fullWidth={true} label="REGISTER" className="btnLogin" onClick={this.btnRegister_Click}/>
             </div>

@@ -27,10 +27,3 @@ ReactDOM.render(
   document.getElementById('app')
 );
 let injectTapEventPlugin = require("react-tap-event-plugin");
-/*
-injectTapEventPlugin({
-  shouldRejectClick: function (lastTouchEventTimestamp, clickEventTimestamp) {
-    return true;
-  }
-});
-*/

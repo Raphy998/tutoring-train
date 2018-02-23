@@ -61,17 +61,21 @@ export default class NewOfferDialog extends React.Component {
   }
 
   btnCreateOfferClick = () => {
-    OfferService.createOffer(localStorage.getItem('session-key'), new Offer(-1, this.state.newOfferDate, true, this.state.newOfferDescription, this.state.selectedSubject.id, localStorage.getItem('username')))
-    .then((ro) => {
-      //console.log(new Offer(-1, new Date(), true, this.state.newOfferDescription, this.state.newOfferSubject, localStorage.getItem('username')));
-        if(ro.code == 200) {
-          this.state.showSnackbar('Offer created successfully')
-          this.state.onNewOfferDialogClose();
-        }
-        else {
-          this.state.showSnackbar("Error creating offer");
-        }
-      });
+    if(this.state.newOfferDescription && this.state.selectedSubject && this.state.newOfferHeadline) {
+      OfferService.createOffer(localStorage.getItem('session-key'), new Offer(-1, this.state.newOfferHeadline, this.state.newOfferDate, true, this.state.newOfferDescription, this.state.selectedSubject.id, localStorage.getItem('username')))
+      .then((ro) => {
+          if(ro.code == 200) {
+            this.state.showSnackbar('Offer created successfully')
+            this.state.onNewOfferDialogClose();
+          }
+          else {
+            this.state.showSnackbar("Error creating offer");
+          }
+        });
+      }
+      else {
+        this.state.showSnackbar("Please enter all fields before trying to create an offer!");
+      }
     }
 
   btnCancelCreateOffer = () => {
@@ -93,16 +97,21 @@ export default class NewOfferDialog extends React.Component {
       return(
         <Dialog
           title="Create offer"
-          //actions={actions}
           modal={false}
           open={this.state.open}
           onRequestClose={this.btnCancelCreateOffer}>
-            <Grid className="gridNewOfferDialog">
-              <br/>
+            <Grid className="gridNewOfferDialog" style={{width:'100%'}}>
               <Row>
-                <Col xs={12} className="colNewOfferGrid">Description <TextField id="tfDescription" fullWidth={false} name="newOfferDescription" hintText="Short description about your offer." multiLine={true} rows={1} rowsMax={4} onChange={this.handleCreateOfferInputChange}/></Col>
-              <br/>
-                <Col xs={12} className="colNewOfferGrid">Subject
+                <Col xs>Headline</Col>
+                <Col xs><TextField id="tfHeadline" fullWidth={false} name="newOfferHeadline" hintText="Headline for your offer." multiLine={true} rows={1} rowsMax={1} onChange={this.handleCreateOfferInputChange}/></Col>
+              </Row>
+              <Row>
+                <Col xs>Description</Col>
+                <Col xs><TextField id="tfDescription" fullWidth={false} name="newOfferDescription" hintText="Short description about your offer." multiLine={true} rows={1} rowsMax={4} onChange={this.handleCreateOfferInputChange}/></Col>
+              </Row>
+              <Row>
+                <Col xs>Subject</Col>
+                <Col xs>
                   <DropDownMenu style={{width: 400, paddingLeft: 0, marginLeft: 0}} autoWidth={false} name="newOfferSubject" value={this.state.selectedSubject} onChange={this.handleSubjectChange}>
                     {
                       this.state.availableSubjects != null ? (
@@ -115,11 +124,15 @@ export default class NewOfferDialog extends React.Component {
                   </DropDownMenu>
                 </Col>
               </Row>
-            <br/>
-              <Col xs={6} className="colNewOfferGrid">
-                  <RaisedButton primary label="Create" className="btnCreateOffer" onClick={this.btnCreateOfferClick}/>
+              <br/>
+              <Row>
+                <Col xs>
+                    <RaisedButton primary label="Create" className="btnCreateOffer" onClick={this.btnCreateOfferClick}/>
+                </Col>
+                <Col xs>
                   <RaisedButton primary label="Cancel" className="btnCancelCreateOffer" onClick={this.btnCancelCreateOffer}/>
                 </Col>
+              </Row>
             </Grid>
       </Dialog>
       );

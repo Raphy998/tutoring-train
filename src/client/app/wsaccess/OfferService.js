@@ -12,6 +12,7 @@ export default class OfferService {
 
   static get urlCreateOffer() { return '/offer' };
   static get urlGetNewestOffers() { return "/offer/new" };
+  static get urlGetNumberOfOffers() { return "/offer/count"}
 
   static async createOffer(sessionKey, newOffer) {
     let ro = new ResponseObject();
@@ -38,8 +39,33 @@ export default class OfferService {
   static async getNewestOffers(sessionKey, startIndex, itemsPerPage) {
     let ro = new ResponseObject();
     return new Promise((resolve, reject) => {
-      console.log((UrlConstants.BASE_URL + this.urlGetNewestOffers) + '/?start=' + startIndex + '&pageSize=' + itemsPerPage);
       fetch(UrlConstants.BASE_URL + this.urlGetNewestOffers + '/?start=' + startIndex + '&pageSize=' + itemsPerPage, {
+        method: "GET",
+        headers: {
+          'Authorization': 'Bearer ' + sessionKey,
+          "Content-type": "application/json; charset=UTF-8"
+        }
+      }).then((response) => {
+        ro.code = response.status;
+        return response.text();
+      }).then((data) => {
+        ro.message = data;
+        if(ro.code == 200) {
+          resolve(ro);
+        }
+        else {
+          reject(ro);
+        }
+      }).catch((ex) => {
+        reject(ex);
+      });
+    });
+  }
+
+  static async getNumberOfExistingOffers(sessionKey) {
+    let ro = new ResponseObject();
+    return new Promise((resolve, reject) => {
+      fetch(UrlConstants.BASE_URL + this.urlGetNumberOfOffers, {
         method: "GET",
         headers: {
           'Authorization': 'Bearer ' + sessionKey,
