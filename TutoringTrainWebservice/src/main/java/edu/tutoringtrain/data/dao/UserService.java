@@ -44,7 +44,7 @@ import javax.validation.ConstraintViolationException;
 @ApplicationScoped
 public class UserService extends AbstractService {
     private static final Character DEFAULT_GENDER = Gender.OTHER;
-    private static final boolean IS_XMPP_ACTIVE = true;
+    private static final boolean IS_XMPP_ACTIVE = false;
     
     @Inject
     private XMPPService xmppService;

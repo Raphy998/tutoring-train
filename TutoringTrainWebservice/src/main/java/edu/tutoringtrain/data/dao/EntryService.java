@@ -219,10 +219,11 @@ public class EntryService extends AbstractService {
         if (dataEntry.getDuedate() != null) dbEntry.setDuedate(dataEntry.getDuedate());
         if (dataEntry.getPostedon() != null) dbEntry.setPostedon(dataEntry.getPostedon());
         if (dataEntry.getIsactive() != null) dbEntry.setIsactive(dataEntry.getIsactive());
+        if (dataEntry.getPrice() != null) dbEntry.setPrice(dataEntry.getPrice());
         if (dataEntry.getLocation()!= null) dbEntry.setLocation(dataEntry.getLocation());
         if (dataEntry.getLocation() != null) {
                 dbEntry.setLocationName(GeocodingInterface.getLocationName(dataEntry.getLocation()));
-            }
+        }
         if (dataEntry.getSubject() != null) {
             Subject s = subjectService.getSubject(dataEntry.getSubject().getId());
             if (s == null) {
@@ -273,13 +274,16 @@ public class EntryService extends AbstractService {
     }
     
     @Transactional
-    private void resetProp(Entry offer, ResettableEntryProp prop) {
+    private void resetProp(Entry entry, ResettableEntryProp prop) {
         switch (prop) {
             case DUEDATE:
-                offer.setDuedate(null);
+                entry.setDuedate(null);
                 break;
             case LOCATION:
-                offer.setLocation(null);
+                entry.setLocation(null);
+                break;
+            case PRICE:
+                entry.setPrice(null);
                 break;
         }
     }

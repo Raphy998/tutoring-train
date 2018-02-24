@@ -102,6 +102,9 @@ public class EntryQueryGenerator extends QueryGenerator<EntryProp> {
             case USERNAME:
                 var = entry.user.username;
                 break;
+            case PRICE:
+                var = entry.price;
+                break;
         }
         
         return var;

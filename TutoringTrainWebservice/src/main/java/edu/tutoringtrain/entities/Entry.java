@@ -126,6 +126,9 @@ public class Entry implements Serializable {
     private String locationName;
     @OneToMany(mappedBy = "entry", cascade = CascadeType.REMOVE)        //remove all comments
     private Collection<Comment> tcommentCollection;
+    @Column(name = "PRICE", precision = 2, scale = 1)
+    @JsonView({Views.Entry.Out.Public.class, Views.Entry.In.Create.class}) 
+    private BigDecimal price;
 
     public Entry() {
     }
@@ -254,5 +257,13 @@ public class Entry implements Serializable {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }
