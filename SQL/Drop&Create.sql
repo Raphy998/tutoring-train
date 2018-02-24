@@ -92,6 +92,7 @@ CREATE TABLE entry (
     headline      VARCHAR2(50),
     location      mdsys.sdo_geometry,
     locationname  VARCHAR2(150),
+    price  	  NUMBER,
     CONSTRAINT pk_entry PRIMARY KEY ( id ),
     CONSTRAINT fk_entry_user FOREIGN KEY ( username )
         REFERENCES tuser ( username ),
