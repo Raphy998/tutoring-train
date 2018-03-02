@@ -30,6 +30,7 @@ import getStore from 'app/entities/redux/StoreProvider';
 let store = getStore();
 import { SET_OFFERS, ADD_OFFERS } from 'app/entities/redux/ActionCreators.jsx';
 import InfoIcon from 'material-ui/svg-icons/action/info';
+import DropdownMenu from 'react-dd-menu';
 
 export default class GridListOffers extends React.Component {
   constructor(props) {
@@ -144,6 +145,10 @@ export default class GridListOffers extends React.Component {
                  }}
                  hintText="Search offers"
                />
+               <DropdownMenu>
+                  <li><a href="#">Offers</a></li>
+                  <li><a href="#">Requests</a></li>
+              </DropdownMenu>
              </ToolbarGroup>
                <ToolbarGroup>
                  <RaisedButton label="Create Offer" primary={true} onClick={this.btnCreateOfferClick}/>
