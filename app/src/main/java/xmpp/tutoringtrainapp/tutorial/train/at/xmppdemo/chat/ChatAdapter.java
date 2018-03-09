@@ -2,7 +2,6 @@ package xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat;
 
 import android.app.Activity;
 import android.content.Context;
-import android.databinding.ObservableList;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,40 +23,9 @@ public class ChatAdapter extends BaseAdapter {
     private DataStore ds;
     private ChatAdapter adapter;
     private Activity activity;
+    private String withUser;
 
-    private DateFormat df = SimpleDateFormat.getTimeInstance();
-
-    private class OnChatsChangedCallback extends ObservableList.OnListChangedCallback implements Runnable {
-        @Override
-        public void onChanged(ObservableList observableList) {
-            activity.runOnUiThread(this);
-        }
-
-        @Override
-        public void onItemRangeChanged(ObservableList observableList, int i, int i1) {
-            activity.runOnUiThread(this);
-        }
-
-        @Override
-        public void onItemRangeInserted(ObservableList observableList, int i, int i1) {
-            activity.runOnUiThread(this);
-        }
-
-        @Override
-        public void onItemRangeMoved(ObservableList observableList, int i, int i1, int i2) {
-            activity.runOnUiThread(this);
-        }
-
-        @Override
-        public void onItemRangeRemoved(ObservableList observableList, int i, int i1) {
-            activity.runOnUiThread(this);
-        }
-
-        @Override
-        public void run() {
-            adapter.notifyDataSetChanged();
-        }
-    }
+    private DateFormat df = SimpleDateFormat.getDateTimeInstance();
 
     public ChatAdapter(Activity activity) {
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -65,12 +33,20 @@ public class ChatAdapter extends BaseAdapter {
         this.ds = DataStore.getInstance();
         this.adapter = this;
 
-        this.ds.addOnChatsChangedCallback(new OnChatsChangedCallback());
+        this.ds.addOnChatsChangedObserver(this);
+    }
+
+    public String getWithUser() {
+        return withUser;
+    }
+
+    public void setWithUser(String withUser) {
+        this.withUser = withUser;
     }
 
     @Override
     public int getCount() {
-        return ds.getChatMessageCount();
+        return ds.getChatMessageCount(withUser);
     }
 
     @Override
@@ -85,7 +61,7 @@ public class ChatAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ChatMessage message = ds.getChatMessageAt(position);
+        ChatMessage message = ds.getChatMessageAt(position, withUser);
         View vi = convertView;
         if (convertView == null)
             vi = inflater.inflate(R.layout.chatbubble, null);

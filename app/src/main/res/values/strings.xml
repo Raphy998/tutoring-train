@@ -4,7 +4,7 @@
     <string name="title_favourites">Favourites</string>
     <string name="title_chats">Chats</string>
     <string name="title_contacts">Contacts</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="requested">Requested</string>
 
     <string name="domain">tutoringtrain.hopto.org</string>
     <string name="host">tutoringtrain.hopto.org</string>

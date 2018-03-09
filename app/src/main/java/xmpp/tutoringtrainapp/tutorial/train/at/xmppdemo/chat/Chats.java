@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -17,6 +18,7 @@ import java.util.Random;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 
 
@@ -35,7 +37,12 @@ public class Chats extends Fragment implements OnClickListener {
 
         if (this.otherUser == null || !this.otherUser.equals(otherUser)) {
             try {
-                XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername());
+                chatAdapter.setWithUser(otherUser.getUsername());
+                XmppHandler.setChatCreated(false);
+                if (!DataStore.getInstance().isChatLoaded(otherUser.getUsername())) {
+                    XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername(),
+                            DataStore.getInstance().getLastQueryResult());
+                }
             }
             catch (Exception ex) {
                 ex.printStackTrace();
@@ -64,12 +71,50 @@ public class Chats extends Fragment implements OnClickListener {
         sendButton.setOnClickListener(this);
 
         // ----Set autoscroll of listview when a new message arrives----//
-        msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        //msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msgListView.setStackFromBottom(true);
 
         chatAdapter = new ChatAdapter(getActivity());
         msgListView.setAdapter(chatAdapter);
+
+        msgListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                /*try {
+                    if (listIsAtTop()) {
+                        Thread th = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername(),
+                                            DataStore.getInstance().getLastQueryResult());
+                                }
+                                catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        });
+                        th.setDaemon(true);
+                        th.start();
+                    }
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                }*/
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
         return view;
+    }
+
+    private boolean listIsAtTop()   {
+        if(msgListView.getChildCount() == 0) return true;
+        return msgListView.getChildAt(0).getTop() == 0;
     }
 
     private void getViews(View view) {
@@ -80,10 +125,10 @@ public class Chats extends Fragment implements OnClickListener {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("myUser", myUser.getUsername());
-        outState.putString("myUserName", myUser.getFullName());
-        outState.putString("otherUser", otherUser.getUsername());
-        outState.putString("otherUserName", otherUser.getFullName());
+        outState.putString("myUser", myUser != null ? myUser.getUsername() : null);
+        outState.putString("myUserName", myUser != null ? myUser.getFullName() : null);
+        outState.putString("otherUser", otherUser != null ? otherUser.getUsername() : null);
+        outState.putString("otherUserName", otherUser != null ? otherUser.getFullName() : null);
         super.onSaveInstanceState(outState);
     }
 

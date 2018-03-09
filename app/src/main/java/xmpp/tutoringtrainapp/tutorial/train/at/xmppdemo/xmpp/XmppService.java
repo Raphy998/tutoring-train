@@ -97,7 +97,6 @@ public class XmppService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-
         AsyncTask<Void, Void, Boolean> disconnectionThread = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected synchronized Boolean doInBackground(Void... arg0) {

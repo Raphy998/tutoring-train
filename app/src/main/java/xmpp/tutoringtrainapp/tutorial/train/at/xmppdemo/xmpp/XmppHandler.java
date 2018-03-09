@@ -7,14 +7,15 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.filter.StanzaFilter;
@@ -23,7 +24,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
-import org.jivesoftware.smack.roster.RosterListener;
+import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.sasl.SASLMechanism;
 import org.jivesoftware.smack.sasl.provided.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -38,6 +39,7 @@ import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -47,6 +49,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.Action;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.MainActivity;
@@ -60,8 +64,9 @@ public class XmppHandler extends Application {
     private static XmppHandler instance = null;
 
     private static boolean isToasted = true;
-    private static boolean chat_created;
+    private static boolean chatCreated;
     private static Boolean activityVisible;
+    private static boolean loadingMessages = false;
 
     private XMPPTCPConnection connection;
     private String username;
@@ -119,9 +124,26 @@ public class XmppHandler extends Application {
         }
     }
 
+    public RosterEntry getRosterEntry(BareJid jid) {
+        Roster roster = Roster.getInstanceFor(connection);
+        roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
+        if (!roster.isLoaded()) {
+            try {
+                roster.reloadAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return roster.getEntry(jid);
+    }
+
     private void loadRoster() {
         try {
             Roster roster = Roster.getInstanceFor(connection);
+
+            ds.setMsgRoster("Loading ...");
+
             //important to make server resent unaccepted requests over & over on re-login
             roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
 
@@ -136,23 +158,37 @@ public class XmppHandler extends Application {
             ds.clearRoster();
             Collection<RosterEntry> entries = roster.getEntries();
             for (RosterEntry entry : entries) {
-                VCard vCardOfUser = getVCard(entry.getJid());
-                String fullName = (vCardOfUser != null && vCardOfUser.getFirstName() != null) ?
-                        vCardOfUser.getFirstName() :
-                        entry.getJid().getLocalpartOrNull().toString();
-
-                Contact newContact = new Contact(
-                        entry.getJid().getLocalpartOrNull().toString(),
-                        fullName,
-                        Contact.Type.APPROVED);
-
-                ds.addContact(newContact);
+                ds.addContact(getContact(entry));
+            }
+            if (entries.isEmpty()) {
+                ds.setMsgRoster("No Contacts yet");
+            }
+            else {
+                ds.setMsgRoster("");
             }
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            showToast("Error loading ROSTER");
+            log("Error loading ROSTER");
         }
+    }
+
+    private Contact getContact(RosterEntry entry) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
+        VCard vCardOfUser = getVCard(entry.getJid());
+        String fullName = (vCardOfUser != null && vCardOfUser.getFirstName() != null) ?
+                vCardOfUser.getFirstName() :
+                entry.getJid().getLocalpartOrNull().toString();
+
+
+        Contact.Type type = Contact.Type.APPROVED;
+        if (entry.isSubscriptionPending()) {
+            type = Contact.Type.REQUESTED_BY_ME;
+        }
+
+        return new Contact(
+                entry.getJid().getLocalpartOrNull().toString(),
+                fullName,
+                type);
     }
 
     public void removeFromRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
@@ -161,96 +197,99 @@ public class XmppHandler extends Application {
         connection.sendStanza(subscribe);
     }
 
-    public void addToRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
-        if (c.getType().equals(Contact.Type.REQUESTED)) {
+    public void addToRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        if (c.getType().equals(Contact.Type.REQUESTED_BY_OTHER)) {
             Presence subscribe = new Presence(Presence.Type.subscribed);
             subscribe.setTo(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN));
             connection.sendStanza(subscribe);
         }
+        else if (c.getType().equals(Contact.Type.NONE)) {
+            Presence subRequest = new Presence(Presence.Type.subscribe);
+            subRequest.setTo(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN));
+            connection.sendStanza(subRequest);
+
+            RosterEntry re = getRosterEntry(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN));
+            c = getContact(re);
+            c.setType(Contact.Type.REQUESTED_BY_ME);
+            ds.addContact(c);
+        }
     }
 
-    private void intiRoster() throws SmackException.NotLoggedInException, InterruptedException, SmackException.NotConnectedException {
+    public void addToRoster(String username) throws SmackException.NotConnectedException, XmppStringprepException, InterruptedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        addToRoster(new Contact(username, null, Contact.Type.NONE));
+    }
+
+    protected void intiRoster() throws SmackException.NotLoggedInException, InterruptedException, SmackException.NotConnectedException {
         loadRoster();
 
         Roster roster = Roster.getInstanceFor(connection);
-        roster.addRosterListener(new RosterListener() {
-            @Override
-            public void entriesAdded(Collection<Jid> addresses) {
-                System.out.println("---------------- ENTRIES ADDED: " + addresses);
-                //loadRoster();
-            }
-
-            @Override
-            public void entriesUpdated(Collection<Jid> addresses) {
-                System.out.println("---------------- ENTRIES UPDATED: " + addresses);
-                //loadRoster();
-            }
-
-            @Override
-            public void entriesDeleted(Collection<Jid> addresses) {
-                System.out.println("---------------- ENTRIES DELETED: " + addresses);
-                //loadRoster();
-            }
-
-            @Override
-            public void presenceChanged(Presence presence) {
-                System.out.println("---------------- PRESENCE CHANGED: " + presence);
-                //loadRoster();
-            }
-        });
+        roster.addRosterListener(new RosterListenerImpl());
     }
 
-    public void loadArchivedMsgs(String username) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException, SmackException.NotLoggedInException, XmppStringprepException {
+    public synchronized void loadArchivedMsgs(String username, MamManager.MamQueryResult last) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException, SmackException.NotLoggedInException, XmppStringprepException {
         MamManager mamManager = MamManager.getInstanceFor(connection);
         boolean isSupported = mamManager.isSupported();
 
         final Jid to = JidCreate.entityBareFrom(username + "@" + DOMAIN);
 
-        if (isSupported) {
+        if (isSupported && !loadingMessages) {
 
-            MamManager.MamQueryResult mamQueryResult = getArchivedMessages(to.toString(), 20);
+            loadingMessages = true;
+            MamManager.MamQueryResult mamQueryResult = getArchivedMessages(to.toString(), Integer.MAX_VALUE, last);
+            log("MAM query successful! (" + username + ", " + mamQueryResult.forwardedMessages.size() + ")");
 
-            showToast("MAM query successful!");
+            if (ds.getChatMessageCount(username) < mamQueryResult.mamFin.getRSMSet().getCount()) {
 
-            ds.clearChatMessages();
-            Message message;
-            for (Forwarded fm: mamQueryResult.forwardedMessages) {
-                message = (Message) fm.getForwardedStanza();
+                //ds.setLastQueryResult(mamQueryResult);
 
-                ChatMessage chatMessage = new ChatMessage(
-                        message.getFrom().toString(),
-                        message.getTo().toString(),
-                        message.getBody(),
-                        message.getStanzaId(),
-                        false);
-                chatMessage.setDateTime(fm.getDelayInformation().getStamp());        //now
+                Message message;
+                for (Forwarded fm: mamQueryResult.forwardedMessages) {
+                    message = (Message) fm.getForwardedStanza();
 
-                if (message.getFrom().getLocalpartOrNull().toString().equals(username)) {
-                    chatMessage.setMine(true);
+                    ChatMessage chatMessage = new ChatMessage(
+                            message.getFrom().toString(),
+                            message.getTo().toString(),
+                            message.getBody(),
+                            message.getStanzaId(),
+                            true);
+                    chatMessage.setDateTime(fm.getDelayInformation().getStamp());
+
+                    if (message.getFrom().getLocalpartOrNull().toString().equals(username)) {
+                        chatMessage.setMine(false);
+                    }
+
+                    ds.addChatMessage(chatMessage, username);
                 }
-
-                ds.addChatMessage(chatMessage);
             }
+
+
+            loadingMessages = false;
         }
     }
 
-    private MamManager.MamQueryResult getArchivedMessages(String jid, int maxResults) {
+    private MamManager.MamQueryResult getArchivedMessages(String jid, int maxResults, MamManager.MamQueryResult last) {
 
         MamManager mamManager = MamManager.getInstanceFor(connection);
         try {
-            DataForm form = new DataForm(DataForm.Type.submit);
-            FormField field = new FormField(FormField.FORM_TYPE);
-            field.setType(FormField.Type.hidden);
-            field.addValue(MamElements.NAMESPACE);
-            form.addField(field);
+            MamManager.MamQueryResult mamQueryResult;
 
-            FormField formField = new FormField("with");
-            formField.addValue(jid);
-            form.addField(formField);
+            if (last == null) {
+                DataForm form = new DataForm(DataForm.Type.submit);
+                FormField field = new FormField(FormField.FORM_TYPE);
+                field.setType(FormField.Type.hidden);
+                field.addValue(MamElements.NAMESPACE);
+                form.addField(field);
 
-            // "" empty string for before
-            RSMSet rsmSet = new RSMSet(maxResults, "", RSMSet.PageDirection.before);
-            MamManager.MamQueryResult mamQueryResult = mamManager.page(form, rsmSet);
+                FormField formField = new FormField("with");
+                formField.addValue(jid);
+                form.addField(formField);
+
+                RSMSet rsmSet = new RSMSet(maxResults, "", RSMSet.PageDirection.before);
+                mamQueryResult = mamManager.page(form, rsmSet);
+            }
+            else {
+                mamQueryResult = mamManager.pagePrevious(last, maxResults);
+            }
 
             return mamQueryResult;
 
@@ -260,17 +299,22 @@ public class XmppHandler extends Application {
         return null;
     }
 
-    public void showToast(final String msg) {
-        /*if (isToasted) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
+    public void log(final String msg) {
+        Logger.getLogger("XmppHandler").log(Level.INFO, msg);
+    }
 
-                @Override
-                public void run() {
-
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }*/
+    public void log(final String msg, boolean showToast) {
+        Logger.getLogger("XmppHandler").log(Level.INFO, msg);
+        if (showToast) {
+            if (isToasted) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 
     private void initialiseConnection() throws XmppStringprepException {
@@ -301,8 +345,8 @@ public class XmppHandler extends Application {
         connection.setReplyTimeout(15000);
         connection.setPacketReplyTimeout(15000);
 
-        XMPPConnectionListener connectionListener = new XMPPConnectionListener();
-        connection.addConnectionListener(connectionListener);
+        addConnectionListener();
+        addIncomingChatListener();
         addStanzaListener();
 
         ReconnectionManager manager = ReconnectionManager.getInstanceFor(connection);
@@ -316,9 +360,23 @@ public class XmppHandler extends Application {
 
               try {
                   Presence p = (Presence) packet;
-                  System.out.println("---------------- STANZA RECEIVED: " + p.getType());
 
                   if (p.getType().equals(Presence.Type.subscribe)) {
+                      RosterEntry rosterEntry = getRosterEntry(p.getFrom().asBareJid());
+                      Contact.Type cType;
+
+                      //if I have already subscribed to the user, immediately add him
+                      if (rosterEntry != null && rosterEntry.getType().equals(RosterPacket.ItemType.to)) {
+                          Presence subscribe = new Presence(Presence.Type.subscribed);
+                          subscribe.setTo(p.getFrom().asBareJid());
+                          connection.sendStanza(subscribe);
+                          cType = Contact.Type.APPROVED;
+                      }
+                      //otherwise display in contact list
+                      else {
+                          cType = Contact.Type.REQUESTED_BY_OTHER;
+                      }
+
                       VCard vCardOfUser = getVCard(p.getFrom());
                       String fullName = (vCardOfUser != null && vCardOfUser.getFirstName() != null) ?
                               vCardOfUser.getFirstName() :
@@ -327,9 +385,17 @@ public class XmppHandler extends Application {
                       Contact newContact = new Contact(
                               p.getFrom().getLocalpartOrNull().toString(),
                               fullName,
-                              Contact.Type.REQUESTED);
+                              cType);
 
                       ds.addContact(newContact);
+                  }
+                  else if (p.getType().equals(Presence.Type.unsubscribed) || p.getType().equals(Presence.Type.unsubscribe)) {
+                      Contact contactToRemove = new Contact(
+                              p.getFrom().getLocalpartOrNull().toString(),
+                              null,
+                              Contact.Type.NONE);
+
+                      ds.removeContact(contactToRemove);
                   }
               }
               catch (Exception ex) {
@@ -341,21 +407,24 @@ public class XmppHandler extends Application {
             @Override
             public boolean accept(Stanza stanza) {
                 boolean accept = false;
-
-                System.out.println("************************** NEW STANZA: " + stanza);
                 if (stanza instanceof Presence)
                     accept = true;
-                else if (stanza instanceof Message) {
-                    Message msg = (Message) stanza;
-                    processMessage(msg);
-                }
 
                 return accept;
             }
         });
     }
 
-    private VCard getVCard(Jid user) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
+    private void addIncomingChatListener() {
+        ChatManager.getInstanceFor(connection).addIncomingListener(
+                new IncomingChatMessageListenerImpl(this));
+    }
+
+    private void addConnectionListener() {
+        connection.addConnectionListener(new ConnectionListenerImpl(this));
+    }
+
+    public VCard getVCard(Jid user) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
         VCard vCard = null;
 
         VCardManager vCardManager = VCardManager.getInstanceFor(connection);
@@ -380,7 +449,7 @@ public class XmppHandler extends Application {
         connector.execute();
     }
 
-    private void login() {
+    protected void login() {
         try {
             connection.login(username, password);
 
@@ -390,37 +459,13 @@ public class XmppHandler extends Application {
         }
     }
 
-    private void processMessage(final Message message) {
-        if (message.getType() == Message.Type.chat && message.getBody() != null) {
-            final ChatMessage chatMessage = new ChatMessage(
-                    message.getFrom().getLocalpartOrNull().toString(),
-                    message.getTo().toString(),
-                    message.getBody(),
-                    message.getStanzaId(),
-                    false);
-            chatMessage.setDateTime(new Date());        //now
-
-            processMessage(chatMessage);
-        }
-    }
-
-    private void processMessage(final ChatMessage chatMessage) {
-
-        chatMessage.setMine(false);
-        ds.addChatMessage(chatMessage);
-
-        if (!isActivityVisible()) {
-            showNewMessageNotification(chatMessage);
-        }
-    }
-
     public void sendMessage(ChatMessage chatMessage) throws XmppStringprepException {
-        if (!chat_created) {
+        if (!chatCreated) {
             final Jid to = JidCreate.entityBareFrom(chatMessage.getReceiver() + "@"
                     + DOMAIN);
 
             chat = ChatManager.getInstanceFor(connection).chatWith(to.asEntityBareJidOrThrow());
-            chat_created = true;
+            setChatCreated(true);
         }
 
         try {
@@ -433,7 +478,7 @@ public class XmppHandler extends Application {
                 chat.send(msg);
 
                 chatMessage.setDateTime(new Date());        //now
-                ds.addChatMessage(chatMessage);
+                ds.addChatMessage(chatMessage, chatMessage.getReceiver());
 
             } else {
 
@@ -443,57 +488,6 @@ public class XmppHandler extends Application {
             e.printStackTrace();
         }
 
-    }
-
-    public class XMPPConnectionListener implements ConnectionListener {
-        @Override
-        public void connected(final XMPPConnection connection) {
-            if (!connection.isAuthenticated()) {
-                login();
-            }
-        }
-
-        @Override
-        public void connectionClosed() {
-            showToast("Connection Closed");
-            chat_created = false;
-        }
-
-        @Override
-        public void connectionClosedOnError(Exception arg0) {
-            showToast("Connection Closed On Error");
-            chat_created = false;
-        }
-
-        @Override
-        public void reconnectingIn(int arg0) {
-
-        }
-
-        @Override
-        public void reconnectionFailed(Exception arg0) {
-            showToast("Reconnection Failed");
-            chat_created = false;
-        }
-
-        @Override
-        public void reconnectionSuccessful() {
-            showToast("Reconnected");
-            chat_created = false;
-        }
-
-        @Override
-        public void authenticated(XMPPConnection arg0, boolean arg1) {
-            try {
-                intiRoster();
-            }
-            catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-            chat_created = false;
-            showToast("Connected");
-        }
     }
 
     public XMPPTCPConnection getConnection() {
@@ -559,6 +553,14 @@ public class XmppHandler extends Application {
 
     public String getPassword() {
         return password;
+    }
+
+    public static boolean isChatCreated() {
+        return chatCreated;
+    }
+
+    public static void setChatCreated(boolean chatCreated) {
+        XmppHandler.chatCreated = chatCreated;
     }
 
     public boolean ping() throws SmackException.NotConnectedException, InterruptedException {

@@ -9,19 +9,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import java.util.Arrays;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Roster;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppService;
 
 public class MainActivity extends AppCompatActivity implements FragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
-    private Context ctx;
     private Chats chats;
     private Roster roster;
 
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         setContentView(R.layout.activity_main);
 
         try {
-            this.ctx = this;
+            DataStore.getInstance().setCtx(this);
             getViews();
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
             }
 
             System.out.println(" ------------ RUNNING: " + isMyServiceRunning(XmppService.class));
-            Intent serviceIntent = new Intent(ctx, XmppService.class);
+            Intent serviceIntent = new Intent(this, XmppService.class);
             Bundle credentials = new Bundle();
             credentials.putString("username", getString(R.string.username));
             credentials.putString("password", getString(R.string.password));
@@ -76,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                     switch (Action.valueOf(action)) {
                         case OPEN_CHAT:
                             String[] withUser = extras.getStringArray("withUser");
-                            System.out.println(Arrays.deepToString(withUser));
                             if (withUser != null)
                                 openChatWithUser(this, new Contact(withUser[0], withUser[1], Contact.Type.APPROVED));
                             break;
@@ -179,5 +180,23 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        try {
+            XmppHandler.getInstance().addToRoster("admin");
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return true;
     }
 }

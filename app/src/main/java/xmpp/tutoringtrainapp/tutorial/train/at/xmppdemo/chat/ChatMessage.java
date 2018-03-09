@@ -1,9 +1,11 @@
 package xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat;
 
+import android.support.annotation.NonNull;
+
 import java.util.Date;
 import java.util.Random;
 
-public class ChatMessage {
+public class ChatMessage implements Comparable<ChatMessage> {
 
     private String body, sender, receiver, senderName;
     private Date dateTime;
@@ -80,5 +82,10 @@ public class ChatMessage {
 
         msgid += "-" + String.format("%02d", new Random().nextInt(100));
         ;
+    }
+
+    @Override
+    public int compareTo(@NonNull ChatMessage o) {
+        return this.getDateTime().compareTo(o.getDateTime());
     }
 }

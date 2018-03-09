@@ -34,7 +34,8 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
         View view = inflater.inflate(R.layout.roster_layout, container, false);
         contactsListView = (ListView) view.findViewById(R.id.rosterListView);
 
-        rosterAdapter = new RosterAdapter(getActivity(), this);
+        rosterAdapter = new RosterAdapter(getActivity(), this, contactsListView);
+
         contactsListView.setAdapter(rosterAdapter);
         contactsListView.setOnItemClickListener(this);
         return view;
@@ -58,9 +59,7 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
     @Override
     public void removeFromRoster(Contact c) {
         try {
-            System.out.println("------ REMOVE FROM ROSTER: " + c);
             XmppHandler.getInstance().removeFromRoster(c);
-            DataStore.getInstance().removeContact(c);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -70,7 +69,6 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
     @Override
     public void addToRoster(Contact c) {
         try {
-            System.out.println("------ ADD TO ROSTER: " + c);
             XmppHandler.getInstance().addToRoster(c);
             c.setType(Contact.Type.APPROVED);
             DataStore.getInstance().updateContact(c);

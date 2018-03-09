@@ -1,14 +1,21 @@
 package xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp;
 
 
+import android.app.Activity;
 import android.app.Application;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
+import android.widget.BaseAdapter;
+
+import org.jivesoftware.smackx.mam.MamManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.ChatMessage;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.MessageChangeListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 
 /**
@@ -18,12 +25,18 @@ import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 public class DataStore extends Application {
     private static DataStore instance;
 
-    private ObservableArrayList<ChatMessage> chats;
+    private Activity ctx;
+    private HashMap<String, ArrayList<ChatMessage>> chats;
+    private BaseAdapter chatChangedListener;
+
     private ObservableArrayList<Contact> roster;
+    private String msgRoster;
+    private MessageChangeListener rosterMsgListener;
+    private MamManager.MamQueryResult lastQueryResult;
 
     private DataStore() {
         super();
-        this.chats = new ObservableArrayList<>();
+        this.chats = new HashMap<>();
         this.roster = new ObservableArrayList<>();
     }
 
@@ -34,12 +47,16 @@ public class DataStore extends Application {
         return instance;
     }
 
-    public void addOnChatsChangedCallback(ObservableList.OnListChangedCallback cb) {
-        this.chats.addOnListChangedCallback(cb);
+    public void addOnChatsChangedObserver(BaseAdapter listener) {
+        this.chatChangedListener = listener;
     }
 
     public void addOnRosterChangedCallback(ObservableList.OnListChangedCallback cb) {
         this.roster.addOnListChangedCallback(cb);
+    }
+
+    public void addOnErrorMsgRosterChangedCallback(MessageChangeListener listener) {
+        this.rosterMsgListener = listener;
     }
 
     //might be broken
@@ -65,21 +82,50 @@ public class DataStore extends Application {
         return this.roster.size();
     }
 
-    public int getChatMessageCount() {
-        return this.chats.size();
+    public boolean isChatLoaded(String username) {
+        return this.chats.get(username) != null;
     }
 
-    public ChatMessage getChatMessageAt(int index) {
-        return this.chats.get(index);
+    public int getChatMessageCount(String username) {
+        return (this.chats.get(username) != null) ? this.chats.get(username).size() : 0;
+    }
+
+    public ChatMessage getChatMessageAt(int index, String username) {
+        synchronized (this) {
+            if (this.chats.get(username) == null) {
+                this.chats.put(username, new ArrayList<ChatMessage>());
+            }
+
+            Collections.sort(this.chats.get(username));
+            return this.chats.get(username).get(index);
+        }
     }
 
     public Contact getContactAt(int index) {
-        return this.roster.get(index);
+        synchronized (this) {
+            Collections.sort(this.roster);
+            return this.roster.get(index);
+        }
     }
 
-    public void clearChatMessages() {
+    private void notifyChatListener() {
+        if (chatChangedListener != null) {
+            chatChangedListener.notifyDataSetChanged();
+        }
+    }
+
+    public void clearChatMessages(final String username) {
         synchronized (this) {
-            this.chats.clear();
+            ctx.runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                      if (instance.chats.get(username) != null && !instance.chats.get(username).isEmpty()) {
+                          instance.chats.get(username).clear();
+                          notifyChatListener();
+                      }
+                  }
+              }
+            );
         }
     }
 
@@ -91,6 +137,9 @@ public class DataStore extends Application {
 
     public void addContact(Contact c) {
         synchronized (this) {
+            if (roster.contains(c)) {
+                removeContact(c);
+            }
             this.roster.add(c);
         }
     }
@@ -101,17 +150,58 @@ public class DataStore extends Application {
         }
     }
 
-    public void addChatMessage(ChatMessage msg) {
+    public void addChatMessage(final ChatMessage msg, final String username) {
         synchronized (this) {
-            this.chats.add(msg);
+            ctx.runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                      if (instance.chats.get(username) == null) {
+                          instance.chats.put(username, new ArrayList<ChatMessage>());
+                      }
+                      instance.chats.get(username).add(msg);
+                      notifyChatListener();
+                  }
+              }
+            );
         }
     }
 
-    private ArrayList<ChatMessage> getChats() {
-        return new ArrayList<>(Arrays.asList(this.chats.toArray(new ChatMessage[0])));
+    private ArrayList<ChatMessage> getChats(String username) {
+        if (this.chats.get(username) == null) {
+            this.chats.put(username, new ArrayList<ChatMessage>());
+        }
+
+        return this.chats.get(username);
     }
 
     private ArrayList<Contact> getRoster() {
         return new ArrayList<>(Arrays.asList(this.roster.toArray(new Contact[0])));
+    }
+
+    public void setMsgRoster(String msgRoster) {
+        this.msgRoster = msgRoster;
+        if (this.rosterMsgListener != null) {
+            this.rosterMsgListener.onMessageUpdated(msgRoster);
+        }
+    }
+
+    public String getMsgRoster() {
+        return msgRoster;
+    }
+
+    public MamManager.MamQueryResult getLastQueryResult() {
+        return lastQueryResult;
+    }
+
+    public void setLastQueryResult(MamManager.MamQueryResult lastQueryResult) {
+        this.lastQueryResult = lastQueryResult;
+    }
+
+    public Activity getCtx() {
+        return ctx;
+    }
+
+    public void setCtx(Activity ctx) {
+        this.ctx = ctx;
     }
 }

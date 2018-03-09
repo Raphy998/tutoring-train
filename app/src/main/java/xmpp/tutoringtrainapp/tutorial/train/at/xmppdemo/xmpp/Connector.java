@@ -42,7 +42,13 @@ public class Connector extends AsyncTask<Void, Void, Boolean> {
                 }
             });
 
-        } catch (IOException | SmackException | XMPPException | InterruptedException ex) {
+        }
+        catch (SmackException.ConnectionException ex) {
+            ex.printStackTrace();
+            XmppHandler.getInstance().log(ex.getMessage(), true);
+            DataStore.getInstance().setMsgRoster(ex.getMessage());
+        }
+        catch (IOException | SmackException | XMPPException | InterruptedException ex) {
             ex.printStackTrace();
         }
         return false;
