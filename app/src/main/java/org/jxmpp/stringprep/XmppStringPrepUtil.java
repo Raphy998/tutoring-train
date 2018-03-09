@@ -1,19 +1,3 @@
-/**
- *
- * Copyright © 2014 Florian Schmaus
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jxmpp.stringprep;
 
 import org.jxmpp.stringprep.simple.SimpleXmppStringprep;
@@ -27,9 +11,9 @@ public class XmppStringPrepUtil {
 		SimpleXmppStringprep.setup();
 	}
 
-	private static final Cache<String, String> NODEPREP_CACHE = new LruCache<String, String>(100);
-	private static final Cache<String, String> DOMAINPREP_CACHE = new LruCache<String, String>(100);
-	private static final Cache<String, String> RESOURCEPREP_CACHE = new LruCache<String, String>(100);
+	private static final Cache<String, String> NODEPREP_CACHE = new LruCache<>(100);
+	private static final Cache<String, String> DOMAINPREP_CACHE = new LruCache<>(100);
+	private static final Cache<String, String> RESOURCEPREP_CACHE = new LruCache<>(100);
 
 	private static XmppStringprep xmppStringprep;
 
@@ -91,11 +75,10 @@ public class XmppStringPrepUtil {
 	/**
 	 * Throws a XMPP Stringprep exception if string is the empty string.
 	 *
-	 * @param string
-	 * @throws XmppStringprepException
+	 * @param string String
+	 * @throws XmppStringprepException Exception
 	 */
 	private static void throwIfEmptyString(String string) throws XmppStringprepException {
-		// TODO replace with string.isEmpty() once Smack's min Android SDK level is > 8
 		if (string.length() == 0) {
 			throw new XmppStringprepException(string, "Argument can't be the empty string");
 		}

@@ -25,8 +25,8 @@ public class ChatAdapter extends BaseAdapter {
     private Activity activity;
     private String withUser;
 
-    private DateFormat df = SimpleDateFormat.getDateInstance(DateFormat.LONG);
-    private DateFormat tf = SimpleDateFormat.getTimeInstance();
+    private DateFormat df = SimpleDateFormat.getDateInstance(DateFormat.LONG);      // dd. MON. yyyy
+    private DateFormat tf = SimpleDateFormat.getTimeInstance(DateFormat.SHORT);     // hh:mm
 
     public ChatAdapter(Activity activity) {
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -101,7 +101,7 @@ public class ChatAdapter extends BaseAdapter {
         holder.sec_hr.setVisibility(View.VISIBLE);
 
         try {
-            if (position -1 >= 0) {
+            if (position - 1 >= 0) {
                 ChatMessage prevMessage = ds.getChatMessageAt(position - 1, withUser);
                 if (df.format(message.getDateTime()).equals(df.format(prevMessage.getDateTime()))) {
                     holder.sec_hr.setVisibility(View.GONE);

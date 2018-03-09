@@ -351,6 +351,7 @@ public class XmppHandler extends Application {
 
         ReconnectionManager manager = ReconnectionManager.getInstanceFor(connection);
         manager.enableAutomaticReconnection();
+        manager.setFixedDelay(5);
     }
 
     private void addStanzaListener() {
@@ -481,7 +482,7 @@ public class XmppHandler extends Application {
                 ds.addChatMessage(chatMessage, chatMessage.getReceiver());
 
             } else {
-
+                log("No Connection to Server", true);
                 login();
             }
         } catch (Exception e) {
@@ -495,7 +496,6 @@ public class XmppHandler extends Application {
     }
 
     public static boolean isActivityVisible() {
-
         if (activityVisible == null) {
             SharedPreferences settings = instance.context.getSharedPreferences(PREFS_NAME, 0);
             activityVisible = settings.getBoolean("activityVisible", false);
@@ -507,6 +507,45 @@ public class XmppHandler extends Application {
     public static void activityResumed() {
         activityVisible = true;
         saveActivityState(true);
+        //reconnectIfRequired();
+    }
+
+    private static void reconnectIfRequired() {
+        Runnable reconnector = new Runnable() {
+            @Override
+            public void run() {
+            while (true) {
+                try {
+                    XmppHandler xmppHandler = XmppHandler.getInstance();
+                    if (!(xmppHandler.isConnected())) {
+
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            }
+        };
+        Thread reconnThread = new Thread(reconnector);
+        reconnThread.setDaemon(true);
+        reconnThread.start();
+    }
+
+    private boolean isConnected() {
+        boolean isConnected;
+        try {
+            ping();
+            isConnected = true;
+        }
+        catch (Exception ex) {
+            isConnected = false;
+        }
+        return isConnected;
     }
 
     public static void activityPaused() {
@@ -544,7 +583,7 @@ public class XmppHandler extends Application {
 
         // send the notification
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        mNotificationManager.notify(001, m_notificationBuilder.build());
+        mNotificationManager.notify(1, m_notificationBuilder.build());
     }
 
     public String getUsername() {
