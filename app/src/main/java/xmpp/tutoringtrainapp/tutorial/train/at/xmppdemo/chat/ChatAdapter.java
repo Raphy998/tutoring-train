@@ -25,7 +25,8 @@ public class ChatAdapter extends BaseAdapter {
     private Activity activity;
     private String withUser;
 
-    private DateFormat df = SimpleDateFormat.getDateTimeInstance();
+    private DateFormat df = SimpleDateFormat.getDateInstance(DateFormat.LONG);
+    private DateFormat tf = SimpleDateFormat.getTimeInstance();
 
     public ChatAdapter(Activity activity) {
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -61,32 +62,64 @@ public class ChatAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+
+        if (convertView == null) {
+            holder = new ViewHolder();
+
+            convertView = inflater.inflate(R.layout.chatbubble, null);
+            holder.msg = (TextView) convertView.findViewById(R.id.message_text);
+            holder.timestamp = (TextView) convertView.findViewById(R.id.message_timestamp);
+            holder.layout = (LinearLayout) convertView.findViewById(R.id.bubble_layout);
+            holder.parent_layout = (LinearLayout) convertView.findViewById(R.id.bubble_layout_parent);
+            holder.sec_hr = (TextView) convertView.findViewById(R.id.sec_header);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
         ChatMessage message = ds.getChatMessageAt(position, withUser);
-        View vi = convertView;
-        if (convertView == null)
-            vi = inflater.inflate(R.layout.chatbubble, null);
 
-        TextView msg = (TextView) vi.findViewById(R.id.message_text);
-        msg.setText(message.getBody());
-        TextView timestamp = (TextView) vi.findViewById(R.id.message_timestamp);
-        timestamp.setText(df.format(message.getDateTime()));
-
-        LinearLayout layout = (LinearLayout) vi
-                .findViewById(R.id.bubble_layout);
-        LinearLayout parent_layout = (LinearLayout) vi
-                .findViewById(R.id.bubble_layout_parent);
+        holder.msg.setText(message.getBody());
+        holder.timestamp.setText(tf.format(message.getDateTime()));
 
         // if message is mine then align to right
         if (message.isMine()) {
-            layout.setBackgroundResource(R.drawable.bubble2);
-            parent_layout.setGravity(Gravity.END);
+            holder.layout.setBackgroundResource(R.drawable.bubble2);
+            holder.parent_layout.setGravity(Gravity.END);
         }
         // If not mine then align to left
         else {
-            layout.setBackgroundResource(R.drawable.bubble1);
-            parent_layout.setGravity(Gravity.START);
+            holder.layout.setBackgroundResource(R.drawable.bubble1);
+            holder.parent_layout.setGravity(Gravity.START);
         }
-        msg.setTextColor(Color.BLACK);
-        return vi;
+        holder.msg.setTextColor(Color.BLACK);
+
+
+        holder.sec_hr.setText(df.format(message.getDateTime()));
+        holder.sec_hr.setVisibility(View.VISIBLE);
+
+        try {
+            if (position -1 >= 0) {
+                ChatMessage prevMessage = ds.getChatMessageAt(position - 1, withUser);
+                if (df.format(message.getDateTime()).equals(df.format(prevMessage.getDateTime()))) {
+                    holder.sec_hr.setVisibility(View.GONE);
+                }
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return convertView;
+    }
+
+    static class ViewHolder {
+        TextView msg;
+        TextView timestamp;
+        LinearLayout layout;
+        LinearLayout parent_layout;
+        TextView sec_hr;
     }
 }
