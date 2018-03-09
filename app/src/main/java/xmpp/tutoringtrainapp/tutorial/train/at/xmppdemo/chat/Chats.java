@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -71,43 +70,12 @@ public class Chats extends Fragment implements OnClickListener {
         sendButton.setOnClickListener(this);
 
         // ----Set autoscroll of listview when a new message arrives----//
-        //msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msgListView.setStackFromBottom(true);
 
         chatAdapter = new ChatAdapter(getActivity());
+        chatAdapter.setWithUser(otherUser != null ? otherUser.getUsername() : null);
         msgListView.setAdapter(chatAdapter);
-
-        msgListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                /*try {
-                    if (listIsAtTop()) {
-                        Thread th = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername(),
-                                            DataStore.getInstance().getLastQueryResult());
-                                }
-                                catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        });
-                        th.setDaemon(true);
-                        th.start();
-                    }
-                }
-                catch (Exception ex) {
-                    ex.printStackTrace();
-                }*/
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-            }
-        });
 
         return view;
     }

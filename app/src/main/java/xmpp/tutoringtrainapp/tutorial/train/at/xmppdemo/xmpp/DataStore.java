@@ -55,7 +55,7 @@ public class DataStore extends Application {
         this.roster.addOnListChangedCallback(cb);
     }
 
-    public void addOnErrorMsgRosterChangedCallback(MessageChangeListener listener) {
+    public void addOnMsgRosterChangedCallback(MessageChangeListener listener) {
         this.rosterMsgListener = listener;
     }
 

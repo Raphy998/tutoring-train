@@ -8,16 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.MessageChangeListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.RosterInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 
 
-public class Roster extends Fragment implements RosterInteractionListener, AdapterView.OnItemClickListener {
+public class Roster extends Fragment implements RosterInteractionListener, AdapterView.OnItemClickListener, MessageChangeListener {
 
     private RosterAdapter rosterAdapter;
     private ListView contactsListView;
@@ -35,10 +37,31 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
         contactsListView = (ListView) view.findViewById(R.id.rosterListView);
 
         rosterAdapter = new RosterAdapter(getActivity(), this, contactsListView);
-
         contactsListView.setAdapter(rosterAdapter);
+        initEmptyMessage(view);
+
         contactsListView.setOnItemClickListener(this);
         return view;
+    }
+
+    private void initEmptyMessage(View view) {
+        TextView emptyResults = (TextView) view.findViewById(R.id.emptyResults);
+        emptyResults.setText(DataStore.getInstance().getMsgRoster());
+        contactsListView.setEmptyView(emptyResults);
+
+        DataStore.getInstance().addOnMsgRosterChangedCallback(this);
+    }
+
+    @Override
+    public void onMessageUpdated(final String newMsg) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView emptyView = (TextView) getActivity().findViewById(R.id.emptyResults);
+                emptyView.setText(newMsg);
+                contactsListView.setEmptyView(emptyView);
+            }
+        });
     }
 
     @Override

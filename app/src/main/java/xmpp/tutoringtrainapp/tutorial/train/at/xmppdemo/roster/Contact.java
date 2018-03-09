@@ -65,6 +65,10 @@ public class Contact implements Comparable<Contact> {
 
         Contact contact = (Contact) o;
 
+        if (this.username == null || contact.getUsername() == null) {
+            return false;
+        }
+
         return username.equals(contact.username);
     }
 

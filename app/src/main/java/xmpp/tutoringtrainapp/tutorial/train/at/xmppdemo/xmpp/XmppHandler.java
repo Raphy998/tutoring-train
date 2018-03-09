@@ -87,6 +87,8 @@ public class XmppHandler extends Application {
 
         DOMAIN = context.getString(R.string.domain);
         HOST = context.getString(R.string.host);
+
+        ds.setMsgRoster("Loading ...");
         init();
     }
 
@@ -141,8 +143,6 @@ public class XmppHandler extends Application {
     private void loadRoster() {
         try {
             Roster roster = Roster.getInstanceFor(connection);
-
-            ds.setMsgRoster("Loading ...");
 
             //important to make server resent unaccepted requests over & over on re-login
             roster.setSubscriptionMode(Roster.SubscriptionMode.manual);

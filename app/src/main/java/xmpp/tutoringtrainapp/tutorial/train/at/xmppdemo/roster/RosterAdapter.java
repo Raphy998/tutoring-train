@@ -12,11 +12,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.R;
-import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.MessageChangeListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.RosterInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 
-public class RosterAdapter extends BaseAdapter implements MessageChangeListener {
+public class RosterAdapter extends BaseAdapter {
 
     private static LayoutInflater inflater = null;
     private DataStore ds;
@@ -25,17 +24,7 @@ public class RosterAdapter extends BaseAdapter implements MessageChangeListener 
     private RosterInteractionListener listener;
     private ListView lv;
 
-    @Override
-    public void onMessageUpdated(final String newMsg) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TextView emptyView = (TextView) activity.findViewById(R.id.emptyResults);
-                emptyView.setText(newMsg);
-                lv.setEmptyView(emptyView);
-            }
-        });
-    }
+
 
     private class OnRosterChangedCallback extends ObservableList.OnListChangedCallback implements Runnable {
         @Override
@@ -78,7 +67,6 @@ public class RosterAdapter extends BaseAdapter implements MessageChangeListener 
         this.lv = lv;
 
         this.ds.addOnRosterChangedCallback(new OnRosterChangedCallback());
-        this.ds.addOnErrorMsgRosterChangedCallback(this);
     }
 
     @Override
