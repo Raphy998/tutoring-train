@@ -10,10 +10,9 @@ import android.support.annotation.Nullable;
 
 public class XmppService extends Service {
     public static final String PREFS_NAME = "TutoringTrainXMPP";
-
-    private XmppHandler xmpp;
     private String username;
     private String password;
+    private static XmppService instance;
 
     public void login(String username, String password) {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -22,35 +21,34 @@ public class XmppService extends Service {
         editor.putString("password", password);
         editor.apply();
 
-        if (xmpp == null || !xmpp.getUsername().equals(username) || !xmpp.getPassword().equals(password)) {
+        if (!XmppHandler.getInstance(instance, username, password).getUsername().equals(username) ||
+                !XmppHandler.getInstance(instance, username, password).getPassword().equals(password)) {
             disconnectXmpp();
-            xmpp = null;
             connectXmpp(username, password);
         }
     }
 
-    private void connectXmpp(String username, String password) {
-        this.xmpp = XmppHandler.getInstance(this, username, password);
-        this.xmpp.connect("onStartCommand");
+    public static void connectXmpp(String username, String password) {
+        XmppHandler.getInstance(instance, username, password).connect("onStartCommand");
+    }
+
+    public static void connectXmpp() {
+        XmppHandler.getInstance(instance, instance.username, instance.password).connect("onStartCommand");
     }
 
     private void disconnectXmpp() {
-        if (this.xmpp != null) {
-            this.xmpp.disconnect();
-        }
+        XmppHandler.getInstance().disconnect();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
     }
 
     @Override
     public int onStartCommand(final Intent intent, final int flags,
                               final int startId) {
-
-        System.out.println(" ------- ON START COMMAND CALLED");
-
         if (intent != null && intent.getExtras() != null) {
             Bundle credentials = intent.getExtras();
             this.username = credentials.getString("username");
@@ -76,8 +74,8 @@ public class XmppService extends Service {
         AsyncTask<Void, Void, Boolean> disconnectionThread = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected synchronized Boolean doInBackground(Void... arg0) {
-                if (xmpp.getConnection().isConnected())
-                    xmpp.getConnection().disconnect();
+                if (XmppHandler.getInstance().getConnection().isConnected())
+                    XmppHandler.getInstance().getConnection().disconnect();
                 return false;
             }
         };

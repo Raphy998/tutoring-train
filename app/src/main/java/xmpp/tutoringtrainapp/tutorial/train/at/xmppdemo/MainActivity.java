@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                 showRoster();
             }
 
-            System.out.println(" ------------ RUNNING: " + isMyServiceRunning(XmppService.class));
             Intent serviceIntent = new Intent(this, XmppService.class);
             Bundle credentials = new Bundle();
             credentials.putString("username", getString(R.string.username));

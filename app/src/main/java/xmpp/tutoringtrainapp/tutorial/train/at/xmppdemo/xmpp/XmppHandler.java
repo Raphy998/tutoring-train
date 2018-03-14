@@ -507,7 +507,7 @@ public class XmppHandler extends Application {
     public static void activityResumed() {
         activityVisible = true;
         saveActivityState(true);
-        //reconnectIfRequired();
+        reconnectIfRequired();
     }
 
     private static void reconnectIfRequired() {
@@ -517,8 +517,9 @@ public class XmppHandler extends Application {
             while (true) {
                 try {
                     XmppHandler xmppHandler = XmppHandler.getInstance();
-                    if (!(xmppHandler.isConnected())) {
-
+                    if (xmppHandler.getUsername() != null && xmppHandler.getPassword() != null && !(xmppHandler.isConnected())) {
+                        System.out.println("------------------ RECONNECT");
+                        XmppService.connectXmpp();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
