@@ -24,6 +24,7 @@ import edu.tutoringtrain.data.exceptions.EntryNotFoundException;
 import edu.tutoringtrain.data.exceptions.QueryStringException;
 import edu.tutoringtrain.data.exceptions.UserNotFoundException;
 import edu.tutoringtrain.data.search.SearchCriteria;
+import edu.tutoringtrain.data.search.entry.EntryProp;
 import edu.tutoringtrain.data.search.entry.EntrySearch;
 import edu.tutoringtrain.data.search.entry.EntrySearchCriteriaDeserializer;
 import edu.tutoringtrain.entities.Comment;
@@ -31,6 +32,7 @@ import edu.tutoringtrain.entities.Entry;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.utils.Views;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -319,7 +321,7 @@ public class OfferResource extends AbstractResource {
         try {
             checkStartPageSize(start, pageSize);
             
-            //register module to deserialize SearchCriteria for user
+            //register module to deserialize SearchCriteria for offer
             ObjectMapper customMapper = getMapper().copy();
             final SimpleModule module = new SimpleModule();
             module.addDeserializer(SearchCriteria.class, new EntrySearchCriteriaDeserializer());
@@ -488,6 +490,44 @@ public class OfferResource extends AbstractResource {
             } 
         }
 
+        return response.build();
+    }
+    
+    @Secured
+    @POST
+    @Path("/simpleSearch")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response simpleSearchOffers(@Context HttpServletRequest httpServletRequest,
+                    @QueryParam(value = "start") Integer start,
+                    @QueryParam(value = "pageSize") Integer pageSize,
+                    @QueryParam(value = "searchStr") String searchStr) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            checkStartPageSize(start, pageSize);
+            if (searchStr == null) {
+                throw new QueryStringException(new ErrorBuilder(Error.SEARCH_STRING_NULL));
+            }
+            
+            List<Entry> offers;
+            if (start != null && pageSize != null) offers = entryService.simpleSearch(type, searchStr, start, pageSize);
+            else offers = entryService.simpleSearch(type, searchStr);
+            
+            response.entity(getMapper().writerWithView(Views.Entry.Out.Public.class)
+                    .writeValueAsString(offers));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
         return response.build();
     }
 }

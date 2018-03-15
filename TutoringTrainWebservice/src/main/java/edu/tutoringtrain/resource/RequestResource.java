@@ -489,4 +489,42 @@ public class RequestResource extends AbstractResource {
 
         return response.build();
     }
+    
+    @Secured
+    @POST
+    @Path("/simpleSearch")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response simpleSearchOffers(@Context HttpServletRequest httpServletRequest,
+                    @QueryParam(value = "start") Integer start,
+                    @QueryParam(value = "pageSize") Integer pageSize,
+                    @QueryParam(value = "searchStr") String searchStr) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+
+        try {
+            checkStartPageSize(start, pageSize);
+            if (searchStr == null) {
+                throw new QueryStringException(new ErrorBuilder(Error.SEARCH_STRING_NULL));
+            }
+            
+            List<Entry> offers;
+            if (start != null && pageSize != null) offers = entryService.simpleSearch(type, searchStr, start, pageSize);
+            else offers = entryService.simpleSearch(type, searchStr);
+            
+            response.entity(getMapper().writerWithView(Views.Entry.Out.Public.class)
+                    .writeValueAsString(offers));
+        } 
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
 }

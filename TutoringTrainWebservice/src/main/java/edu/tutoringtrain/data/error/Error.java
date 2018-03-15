@@ -63,6 +63,7 @@ public class Error {
     public static final int DELETE_ADMIN = 48;
     public static final int DELETE_NO_CASCADE = 49;
     public static final int RATE_OWN = 50;
+    public static final int SEARCH_STRING_NULL = 51;
     
     
     @JsonView({Views.Error.Out.Public.class})
@@ -76,7 +77,7 @@ public class Error {
     }
     
     public static int getMaxErrorCode() {
-        return RATE_OWN;
+        return SEARCH_STRING_NULL;
     }
 
     public Error() {

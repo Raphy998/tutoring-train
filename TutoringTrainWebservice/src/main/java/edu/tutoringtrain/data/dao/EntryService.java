@@ -313,4 +313,36 @@ public class EntryService extends AbstractService {
             .limit(pageSize)
             .list(QEntry.entry);
     }
+    
+    @Transactional
+    public List<Entry> simpleSearch(EntryType type, String searchString, int start, int pageSize) throws ParseException, IOException {
+        JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        
+        return query.from(QEntry.entry)
+            .where(QEntry.entry.headline.contains(searchString)
+                .or(QEntry.entry.description.contains(searchString))
+                .or(QEntry.entry.subject.enname.contains(searchString))
+                .or(QEntry.entry.subject.dename.contains(searchString))
+                .or(QEntry.entry.locationName.contains(searchString)))
+            .where(QEntry.entry.flag.eq(type.getChar()))
+            .orderBy(QEntry.entry.postedon.asc())
+            .offset(start)
+            .limit(pageSize)
+            .list(QEntry.entry);
+    }
+    
+    @Transactional
+    public List<Entry> simpleSearch(EntryType type, String searchString) throws ParseException, IOException {
+        JPQLQuery query = new JPAQuery (em, EclipseLinkTemplates.DEFAULT);
+        
+        return query.from(QEntry.entry)
+            .where(QEntry.entry.headline.contains(searchString)
+                .or(QEntry.entry.description.contains(searchString))
+                .or(QEntry.entry.subject.enname.contains(searchString))
+                .or(QEntry.entry.subject.dename.contains(searchString))
+                .or(QEntry.entry.locationName.contains(searchString)))
+            .where(QEntry.entry.flag.eq(type.getChar()))
+            .orderBy(QEntry.entry.postedon.asc())
+            .list(QEntry.entry);
+    }
 }

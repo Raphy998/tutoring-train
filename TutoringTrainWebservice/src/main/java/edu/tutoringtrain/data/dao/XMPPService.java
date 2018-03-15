@@ -10,14 +10,10 @@ import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.entities.User;
 import edu.tutoringtrain.misc.XmppContactType;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.KeyManagementException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -35,9 +31,7 @@ import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-import org.jxmpp.jid.impl.DomainpartJid;
 import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.jid.parts.Domainpart;
 import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -51,8 +45,8 @@ public class XMPPService extends AbstractService {
     private static final String DOMAIN = "tutoringtrain.hopto.org";     //The domain set in XMPP Server
     private static final String HOST = "tutoringtrain.hopto.org";             //The IP Address of the XMPP Server 
     private static final int PORT = 5222;                       //The Port for XMPP Connections (Default: 5222)
-    private static final String ADMIN_USERNAME = "admin";       //The Username of the XNPP Server Admin (for creating new users)
-    private static final String ADMIN_PASSWORD = "Moe998!";       //The Password of the XNPP Server Admin (for creating new users)
+    private static final String ADMIN_USERNAME = "admin";       //The Username of the XMPP Server Admin (for creating new users)
+    private static final String ADMIN_PASSWORD = "21232f297a57a5a743894a0e4a801fc3";       //The Password of the XMPP Server Admin (for creating new users)
 
     public XMPPService() {
     }
@@ -111,10 +105,14 @@ public class XMPPService extends AbstractService {
             AccountManager accountManager = AccountManager.getInstance(conn);
             accountManager.sensitiveOperationOverInsecureConnection(true);
 
-            Map<String, String> attributes = new HashMap<>();
-            attributes.put("name", user.getName());
-
-            accountManager.createAccount(Localpart.from(user.getUsername().toLowerCase()), getXMPPPassword(user.getPassword()), attributes);
+            if (user.getName() != null) {
+                Map<String, String> attributes = new HashMap<>();
+                attributes.put("name", user.getName());
+                accountManager.createAccount(Localpart.from(user.getUsername().toLowerCase()), getXMPPPassword(user.getPassword()), attributes);
+            }
+            else {
+                accountManager.createAccount(Localpart.from(user.getUsername().toLowerCase()), getXMPPPassword(user.getPassword()));
+            }
             conn.disconnect();
 
             //adding given name to vCard so his name is displayed in converse.js
