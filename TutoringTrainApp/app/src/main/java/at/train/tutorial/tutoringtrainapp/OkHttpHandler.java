@@ -7,6 +7,7 @@ import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
 import at.train.tutorial.tutoringtrainapp.Data.URLExtension;
 import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
+import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListenerUser;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -152,6 +153,44 @@ public class OkHttpHandler {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     listener.onSuccess(response);
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadUsers(final okHttpHandlerListenerUser listener, int start, int pageSize) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        String urlExtension = "";
+
+        urlExtension = urlExtension.concat(URLExtension.ALL_USERS);
+
+        try{
+            HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
+            urlBuilder.addQueryParameter("start", Integer.toString(start));
+            urlBuilder.addQueryParameter("pageSize", Integer.toString(pageSize));
+            String url = urlBuilder.build().toString();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            if ((sessionKey = Database.getInstance().getSessionKey()) != null) {
+                request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
+            }
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    listener.onFailureUser(e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    listener.onSuccessUser(response);
                 }
             });
         }

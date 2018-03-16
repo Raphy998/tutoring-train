@@ -1,12 +1,14 @@
 package at.train.tutorial.tutoringtrainapp;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,7 +23,7 @@ import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
 
-public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener, View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Entry> entries =new ArrayList();
@@ -37,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
 
         recView = (RecyclerView) findViewById(R.id.lv_test);
 
@@ -76,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
             e.printStackTrace();
         }
     }
+
+
 
     @Override
     public void onFailure(Error e) {
@@ -124,5 +131,22 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
         Intent myIntent = new Intent(this, EntryActivity.class);
         myIntent.putExtra("EntryId",item.getId()); //Optional parameters
         this.startActivity(myIntent);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Intent myIntent;
+        switch (item.getItemId()){
+            case R.id.c_user2:
+                myIntent = new Intent(this, xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.MainActivity.class);
+                this.startActivity(myIntent);
+                break;
+
+            case R.id.c_users:
+                myIntent = new Intent(this, UserActivity.class);
+                this.startActivity(myIntent);
+                break;
+        }
+        return false;
     }
 }

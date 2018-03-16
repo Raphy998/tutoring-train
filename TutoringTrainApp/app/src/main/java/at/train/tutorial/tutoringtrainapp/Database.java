@@ -11,7 +11,9 @@ import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
+import at.train.tutorial.tutoringtrainapp.Data.User;
 import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
+import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListenerUser;
 import okhttp3.Response;
 import okhttp3.internal.http.HttpMethod;
 
@@ -19,10 +21,11 @@ import okhttp3.internal.http.HttpMethod;
  * @author moserr
  */
 
-public class Database implements okHttpHandlerListener {
+public class Database implements okHttpHandlerListener, okHttpHandlerListenerUser {
     private static Database instance;
     private SharedPreferences prefs;
     private ArrayList<Entry> entries;
+    private ArrayList<User> users;
     private String sharedPrefsSessionKey = "tutoring.train.session.key";
     private String sessionKey = null;
     private String url = null;
@@ -30,6 +33,7 @@ public class Database implements okHttpHandlerListener {
 
     private Database(){
         entries = new ArrayList<>();
+        users = new ArrayList<>();
     }
 
     public static Database getInstance(){
@@ -75,6 +79,12 @@ public class Database implements okHttpHandlerListener {
        OkHttpHandler.loadEntries(EntryType.OFFER,this,0,5);
     }
 
+    public void loadUsers() throws Exception{
+        users.clear();
+        OkHttpHandler.loadUsers(this,0,5);
+        System.out.println("----------------- load User --------------------");
+    }
+
     public void loadRequest() throws Exception{
         entries.clear();
         OkHttpHandler.loadEntries(EntryType.REQUEST,this,0,5);
@@ -83,6 +93,8 @@ public class Database implements okHttpHandlerListener {
     public ArrayList<Entry> getEntries(){
         return entries;
     }
+
+    public ArrayList<User> getUsers() {return users;}
 
     private void notifySuccessToListener(){
         if(listener != null){
@@ -106,6 +118,32 @@ public class Database implements okHttpHandlerListener {
         if(response.code() == HttpURLConnection.HTTP_OK){
             try {
                 entries.addAll(JSONConverter.JsonToEntry(response.body().string()));
+                notifySuccessToListener();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            try {
+                notifyFailureToListener(JSONConverter.jsonToError(response.body().string()));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onFailureUser(String response) {
+
+    }
+
+    @Override
+    public void onSuccessUser(Response response) {
+        System.out.println("++++++++++++++++++++++++ load User end --------------------");
+        if(response.code() == HttpURLConnection.HTTP_OK){
+            try {
+                users.addAll(JSONConverter.JsonToUser(response.body().string()));
                 notifySuccessToListener();
             } catch (IOException e) {
                 e.printStackTrace();

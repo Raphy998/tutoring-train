@@ -9,4 +9,5 @@
     <color name="colorContrastDark">#7F1F08</color>
     <color name="colorContrastLight">#E5380E</color>
     <color name="colorBlack">#000</color>
+    <color name="colorChatTimestamp">#949494</color>
 </resources>

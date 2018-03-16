@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import at.train.tutorial.tutoringtrainapp.Data.Comment;
@@ -106,5 +107,17 @@ public class JSONConverter {
             e.printStackTrace();
         }
         return error;
+    }
+
+    public static ArrayList <User> JsonToUser(String json) {
+        ArrayList<User> users = new ArrayList<>();
+        try {
+            ObjectMapper mapper = getMapper();
+            mapper.readerWithView(Views.Entry.In.loadNewest.class);
+            users = mapper.readValue(json,new TypeReference<ArrayList<User>>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 }

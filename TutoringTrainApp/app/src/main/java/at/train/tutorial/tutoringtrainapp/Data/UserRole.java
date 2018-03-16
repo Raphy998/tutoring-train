@@ -5,5 +5,5 @@ package at.train.tutorial.tutoringtrainapp.Data;
  */
 
 public enum UserRole {
-    U,A,M
+    U,A,M,R
 }
