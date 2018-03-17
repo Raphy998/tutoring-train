@@ -12,6 +12,7 @@ import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewes
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSimpleSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestResetPropertyOfOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestUpdateOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestDeleteRequestListener;
@@ -19,6 +20,7 @@ import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNew
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSimpleSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestResetPropertyOfRequestListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestUpdateRequestListener;
 import at.tutoringtrain.adminclient.io.network.listener.subject.RequestAllSubjectsListener;
@@ -915,6 +917,20 @@ public class Communicator {
         return enqueueRequest(HttpMethod.DELTE, true, "offer/" + offer.getId(), requestCallback);
     }
     
+    public boolean requestOfferSimpleSearch(RequestOfferSimpleSearchListener listener, String query) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestOfferSimpleSearchListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestOfferSimpleSearchFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "offer/simpleSearch", requestCallback, json, "", new QueryParameter("searchStr", query));
+    }
+    
     //REQUESTS
     
     public boolean requestNewestRequests(RequestNewestRequestsListener listener, int startIndex, int maxCount) throws Exception {
@@ -1044,5 +1060,19 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.DELTE, true, "request/" + request.getId(), requestCallback);
+    }
+    
+    public boolean requestRequestSimpleSearch(RequestRequestSimpleSearchListener listener, String query) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestRequestSimpleSearchListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestRequestSimpleSearchFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "request/simpleSearch", requestCallback, json, "", new QueryParameter("searchStr", query));
     }
 } 

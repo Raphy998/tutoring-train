@@ -28,7 +28,7 @@
             </StackPane>
          </children>
       </HBox>
-      <VBox fx:id="boxEntryDetails" layoutX="25.0" layoutY="25.0" prefWidth="500.0" spacing="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="190.0" AnchorPane.topAnchor="0.0">
+      <VBox fx:id="boxEntryDetails" layoutX="25.0" layoutY="25.0" prefWidth="350.0" spacing="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="190.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label fx:id="lblHeadline" text="Headline" wrapText="true" VBox.vgrow="ALWAYS">
                <font>

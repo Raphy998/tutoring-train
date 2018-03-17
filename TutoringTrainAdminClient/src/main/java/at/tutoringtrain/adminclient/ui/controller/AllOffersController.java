@@ -16,6 +16,7 @@ import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.MessageListener;
+import at.tutoringtrain.adminclient.ui.listener.RemoveItemListener;
 import at.tutoringtrain.adminclient.ui.search.BooleanOperation;
 import at.tutoringtrain.adminclient.ui.search.BooleanSearchCriteria;
 import at.tutoringtrain.adminclient.ui.search.DateOperation;
@@ -56,7 +57,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class AllOffersController implements Initializable, TutoringTrainWindow, MessageListener, RequestNewestOffersListener, RequestOfferSearchListener {
+public class AllOffersController implements Initializable, TutoringTrainWindow, MessageListener, RequestNewestOffersListener, RequestOfferSearchListener, RemoveItemListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -320,6 +321,7 @@ public class AllOffersController implements Initializable, TutoringTrainWindow, 
         return pickerDate.getValue();
     }
     
+    @Override
     public boolean removeListItem(AnchorPane listItem) {
         return listItems.remove(listItem);
     }

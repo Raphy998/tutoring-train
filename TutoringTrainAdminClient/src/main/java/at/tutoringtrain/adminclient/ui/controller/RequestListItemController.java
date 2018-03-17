@@ -13,6 +13,7 @@ import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.MessageListener;
+import at.tutoringtrain.adminclient.ui.listener.RemoveItemListener;
 import at.tutoringtrain.adminclient.ui.listener.RequestChangedListener;
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
@@ -74,7 +75,7 @@ public class RequestListItemController implements Initializable, RequestChangedL
     private WindowService windowService;
     private Communicator communicator;
     private DataStorage dataStorage;
-    private AllRequestsController parentController;
+    private RemoveItemListener removeItemListener;
     private MessageListener messageListener;
     private Request request;
     
@@ -133,8 +134,8 @@ public class RequestListItemController implements Initializable, RequestChangedL
         this.messageListener = listener;
     }
 
-    public void setParentController(AllRequestsController parentController) {
-        this.parentController = parentController;
+    public void setRemoveItemListener(RemoveItemListener removeItemListener) {
+        this.removeItemListener = removeItemListener;
     }
     
     private void displayMessage(MessageContainer container) {
@@ -184,7 +185,7 @@ public class RequestListItemController implements Initializable, RequestChangedL
     public void requestDeleteRequestFinished(RequestResult result) {
         if (result.isSuccessful()) {
             displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageRequestSuccessfullyRemoved")));
-            Platform.runLater(() -> parentController.removeListItem(pane));            
+            Platform.runLater(() -> removeItemListener.removeListItem(pane));            
         } else {
             displayMessage(result.getMessageContainer());
             logger.debug(result.getMessageContainer().toString());

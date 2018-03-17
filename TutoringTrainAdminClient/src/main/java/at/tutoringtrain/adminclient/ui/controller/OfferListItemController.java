@@ -14,6 +14,7 @@ import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.MessageListener;
 import at.tutoringtrain.adminclient.ui.listener.OfferChangedListener;
+import at.tutoringtrain.adminclient.ui.listener.RemoveItemListener;
 import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -74,7 +75,7 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     private WindowService windowService;
     private Communicator communicator;
     private DataStorage dataStorage;
-    private AllOffersController parentController;
+    private RemoveItemListener removeItemListener;
     private MessageListener messageListener;
     private Offer offer;
     
@@ -133,8 +134,8 @@ public class OfferListItemController implements Initializable, OfferChangedListe
         this.messageListener = listener;
     }
 
-    public void setParentController(AllOffersController parentController) {
-        this.parentController = parentController;
+    public void setRemoveItemListener(RemoveItemListener removeItemListener) {
+        this.removeItemListener = removeItemListener;
     }
     
     private void displayMessage(MessageContainer container) {
@@ -184,7 +185,7 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     public void requestDeleteOfferFinished(RequestResult result) {
         if (result.isSuccessful()) {
             displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageOfferSuccessfullyRemoved")));
-            Platform.runLater(() -> parentController.removeListItem(pane));            
+            Platform.runLater(() -> removeItemListener.removeListItem(pane));            
         } else {
             displayMessage(result.getMessageContainer());
             logger.debug(result.getMessageContainer().toString());

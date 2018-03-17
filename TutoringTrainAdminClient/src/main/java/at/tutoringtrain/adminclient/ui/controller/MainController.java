@@ -1,23 +1,37 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
+import at.tutoringtrain.adminclient.data.entry.Offer;
+import at.tutoringtrain.adminclient.data.entry.Request;
+import at.tutoringtrain.adminclient.data.mapper.DataMapper;
+import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
 import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.io.network.Communicator;
+import at.tutoringtrain.adminclient.io.network.RequestResult;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSimpleSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSimpleSearchListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
+import at.tutoringtrain.adminclient.main.ListItemFactory;
 import at.tutoringtrain.adminclient.main.MessageCodes;
 import at.tutoringtrain.adminclient.main.MessageContainer;
 import at.tutoringtrain.adminclient.ui.TutoringTrainWindow;
 import at.tutoringtrain.adminclient.ui.WindowService;
 import at.tutoringtrain.adminclient.ui.listener.ApplicationExitListener;
+import at.tutoringtrain.adminclient.ui.listener.MessageListener;
+import at.tutoringtrain.adminclient.ui.listener.RemoveItemListener;
 import at.tutoringtrain.adminclient.ui.listener.UserDataChangedListner;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextField;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,7 +45,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindow, UserDataChangedListner {
+public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindow, UserDataChangedListner, RequestOfferSimpleSearchListener, RequestRequestSimpleSearchListener, MessageListener, RemoveItemListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -53,14 +67,29 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     private JFXButton btnExit;
     @FXML
+    private JFXTextField txtSearch;
+    @FXML
+    private JFXButton btnSearch;
+    @FXML
+    private JFXButton btnClear;
+    @FXML
+    private JFXSpinner spinner;
+    @FXML
+    private JFXListView<AnchorPane> lvEntries;
+    @FXML
     private Label lblWelcome;
     
     private JFXSnackbar snackbar; 
     private ApplicationManager applicationManager;
+    private DataMapper dataMapper;
     private Logger logger;
     private WindowService windowService;
     private LocalizedValueProvider localizedValueProvider;
+    private ListItemFactory listItemFactory;
     private Communicator communicator;
+    private boolean loadedReq, loadedOff;
+    
+    private ObservableList<AnchorPane> listItems;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -68,14 +97,26 @@ public class MainController implements Initializable, ApplicationExitListener, T
         windowService = WindowService.getInstance();
         logger = LogManager.getLogger(this);
         communicator = Communicator.getInstance();
+        dataMapper = DataMapper.getINSTANCE();
         applicationManager = ApplicationManager.getInstance();
         applicationManager.registerMainApplicationExitListener(this);
+        listItemFactory = ListItemFactory.getINSTANCE();
         applicationManager.addCurrentUserDataChangedListener(this);
+        listItems = lvEntries.getItems();
         snackbar = new JFXSnackbar(pane);
         if (UserRole.valueOf(applicationManager.getCurrentUser().getRole()) == UserRole.ROOT) {
             btnMyAccount.setDisable(true);
         }
         setWelcomeMessage(applicationManager.getCurrentUser());
+    }
+    
+    private void disableControls(boolean disable) {
+        Platform.runLater(() -> { 
+            btnSearch.setDisable(disable);
+            btnClear.setDisable(disable);
+            spinner.setVisible(disable);
+            lvEntries.setDisable(disable);
+        });
     }
     
     @FXML
@@ -181,6 +222,34 @@ public class MainController implements Initializable, ApplicationExitListener, T
         }
     }
     
+    @FXML
+    void onBtnClear(ActionEvent event) {
+        try {
+            txtSearch.setText("");
+            listItems.clear();
+        } catch (Exception ex) {
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+        }
+    }
+    
+    @FXML
+    void onBtnSearch(ActionEvent event) {
+        try {
+            disableControls(true);
+            loadedOff = false;
+            loadedReq = false;
+            listItems.clear();
+            if (!communicator.requestRequestSimpleSearch(this, txtSearch.getText()) || !communicator.requestOfferSimpleSearch(this, txtSearch.getText())) {
+                disableControls(false);
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            }
+        } catch (Exception ex) {
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+        }
+    }
+    
     @Override
     public void applicationExit() {
         closeWindow();
@@ -205,5 +274,76 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @Override
     public void userDataChanged(User user) {
         setWelcomeMessage(user);
+    }
+
+    @Override
+    public void requestOfferSimpleSearchFinished(RequestResult result) {
+        if (result.isSuccessful()) {
+            Platform.runLater(() -> {
+                try {          
+                    for (Offer offer : dataMapper.toOfferArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
+                        listItems.add(listItemFactory.generateOfferListItem(offer, this, this));
+                    }
+                    loadedOff = true;
+                    if (loadedReq) {
+                        disableControls(false);
+                        if (listItems.isEmpty()) {
+                            listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
+                        }
+                    }
+                } catch (IOException ioex) {
+                    disableControls(false);
+                    logger.error("requestRequestSimpleSearchFinished: loading requests failed", ioex);
+                }
+            });         
+        } else {     
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
+        } 
+    }
+
+    @Override
+    public void requestRequestSimpleSearchFinished(RequestResult result) {
+        if (result.isSuccessful()) {
+            Platform.runLater(() -> {
+                try {          
+                    for (Request request : dataMapper.toRequestArrayList(result.getData(), DataMappingViews.Entry.In.Get.class)) {
+                        listItems.add(listItemFactory.generateRequestListItem(request, this, this));
+                    }
+                    loadedReq = true;
+                    if (loadedOff) {
+                        disableControls(false);
+                        if (listItems.isEmpty()) {
+                            listItems.add(listItemFactory.generateMessageListItem("messageNoEntries", true));
+                        }
+                    }
+                } catch (IOException ioex) {
+                    disableControls(false);
+                    logger.error("requestRequestSimpleSearchFinished: loading requests failed", ioex);
+                }
+            });         
+        } else {     
+            if (result.getMessageContainer().getCode() == 3 || result.getMessageContainer().getCode() == 4) {
+                displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
+            } else {
+                displayMessage(result.getMessageContainer());
+            }
+        }  
+    }
+    
+    @Override
+    public void requestFailed(RequestResult result) {
+        disableControls(false);
+        displayMessage(new MessageContainer(MessageCodes.REQUEST_FAILED, localizedValueProvider.getString("messageUnexpectedFailure")));
+        logger.error("Request failed with status code:" + result.getStatusCode());
+        logger.error(result.getMessageContainer().toString());
+    }
+    
+    @Override
+    public boolean removeListItem(AnchorPane item) {
+        return listItems.remove(item);
     }
 }
