@@ -243,8 +243,6 @@ public class XmppHandler extends Application {
 
             if (ds.getChatMessageCount(username) < mamQueryResult.mamFin.getRSMSet().getCount()) {
 
-                //ds.setLastQueryResult(mamQueryResult);
-
                 Message message;
                 for (Forwarded fm: mamQueryResult.forwardedMessages) {
                     message = (Message) fm.getForwardedStanza();

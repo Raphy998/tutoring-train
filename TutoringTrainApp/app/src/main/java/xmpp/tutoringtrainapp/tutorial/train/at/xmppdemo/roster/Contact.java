@@ -10,6 +10,7 @@ public class Contact implements Comparable<Contact> {
     private String username;
     private String fullName;
     private Type type;
+    private int countNewMsgs;
 
     public enum Type {APPROVED, REQUESTED_BY_OTHER, REQUESTED_BY_ME, NONE}
 
@@ -17,12 +18,11 @@ public class Contact implements Comparable<Contact> {
         this.username = username;
         this.fullName = fullName;
         this.type = type;
+        this.countNewMsgs = 0;
     }
 
     public Contact(String username, String fullName) {
-        this.username = username;
-        this.fullName = fullName;
-        this.type = Type.APPROVED;
+        this(username, fullName, Type.APPROVED);
     }
 
     public String getUsername() {
@@ -49,12 +49,25 @@ public class Contact implements Comparable<Contact> {
         this.type = type;
     }
 
+    public int getCountNewMsgs() {
+        return countNewMsgs;
+    }
+
+    public void setCountNewMsgs(int countNewMsgs) {
+        this.countNewMsgs = countNewMsgs;
+    }
+
+    public synchronized void newMessage() {
+        countNewMsgs++;
+    }
+
     @Override
     public String toString() {
         return "Contact{" +
                 "username='" + username + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", type=" + type +
+                ", countNewMsgs=" + countNewMsgs +
                 '}';
     }
 

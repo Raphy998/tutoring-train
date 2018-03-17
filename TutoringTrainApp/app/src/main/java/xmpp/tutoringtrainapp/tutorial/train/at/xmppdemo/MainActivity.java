@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     public void onBackPressed() {
         try {
             if (!chats.isHidden()) {
+                chats.getWith().setCountNewMsgs(0);
                 showRoster();
             }
             else {

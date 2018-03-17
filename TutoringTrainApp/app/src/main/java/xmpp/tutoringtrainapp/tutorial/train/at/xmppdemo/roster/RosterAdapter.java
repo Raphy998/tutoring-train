@@ -24,8 +24,6 @@ public class RosterAdapter extends BaseAdapter {
     private RosterInteractionListener listener;
     private ListView lv;
 
-
-
     private class OnRosterChangedCallback extends ObservableList.OnListChangedCallback implements Runnable {
         @Override
         public void onChanged(ObservableList observableList) {
@@ -112,8 +110,17 @@ public class RosterAdapter extends BaseAdapter {
 
         TextView txtName = (TextView) vi.findViewById(R.id.name);
         TextView txtUsername = (TextView) vi.findViewById(R.id.username);
+        TextView txtNumNewMsgs = (TextView) vi.findViewById(R.id.numNewMsgs);
+
         txtName.setText(c.getFullName());
         txtUsername.setText("@" + c.getUsername());
+        txtNumNewMsgs.setText(Integer.toString(c.getCountNewMsgs()));
+        if (c.getCountNewMsgs() > 0) {
+            txtNumNewMsgs.setVisibility(View.VISIBLE);
+        }
+        else {
+            txtNumNewMsgs.setVisibility(View.INVISIBLE);
+        }
 
         ImageButton btnRemove = (ImageButton) vi.findViewById(R.id.btnRemoveContact);
         btnRemove.setOnClickListener(new View.OnClickListener() {

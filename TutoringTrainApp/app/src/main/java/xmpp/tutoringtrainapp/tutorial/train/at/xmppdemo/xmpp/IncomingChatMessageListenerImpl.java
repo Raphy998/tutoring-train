@@ -45,7 +45,7 @@ public class IncomingChatMessageListenerImpl implements IncomingChatMessageListe
     private void processMessage(final ChatMessage chatMessage) {
 
         chatMessage.setMine(false);
-        ds.addChatMessage(chatMessage, chatMessage.getReceiver());
+        ds.addChatMessage(chatMessage, chatMessage.getSender());
 
         if (!XmppHandler.isActivityVisible()) {
             handler.showNewMessageNotification(chatMessage);

@@ -81,7 +81,19 @@ public class ChatMessage implements Comparable<ChatMessage> {
     public void setMsgID() {
 
         msgid += "-" + String.format("%02d", new Random().nextInt(100));
-        ;
+    }
+
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "body='" + body + '\'' +
+                ", sender='" + sender + '\'' +
+                ", receiver='" + receiver + '\'' +
+                ", senderName='" + senderName + '\'' +
+                ", dateTime=" + dateTime +
+                ", msgid='" + msgid + '\'' +
+                ", isMine=" + isMine +
+                '}';
     }
 
     @Override

@@ -92,7 +92,6 @@ public class RosterListenerImpl implements RosterListener {
                     null,
                     Contact.Type.NONE);
 
-            //XmppHandler.getInstance().removeFromRoster(contactToRemove);
             DataStore.getInstance().removeContact(contactToRemove);
         }
         catch (Exception ex) {

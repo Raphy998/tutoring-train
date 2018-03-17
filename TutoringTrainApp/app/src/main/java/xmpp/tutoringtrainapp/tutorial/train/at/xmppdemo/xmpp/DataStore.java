@@ -59,7 +59,6 @@ public class DataStore extends Application {
         this.rosterMsgListener = listener;
     }
 
-    //might be broken
     public void updateContact(Contact c) {
         synchronized (this) {
             int i = this.roster.indexOf(c);
@@ -155,11 +154,18 @@ public class DataStore extends Application {
             ctx.runOnUiThread(new Runnable() {
                   @Override
                   public void run() {
-                      if (instance.chats.get(username) == null) {
-                          instance.chats.put(username, new ArrayList<ChatMessage>());
+                      synchronized (roster) {
+                          if (instance.chats.get(username) == null) {
+                              instance.chats.put(username, new ArrayList<ChatMessage>());
+                          }
+                          instance.chats.get(username).add(msg);
+                          notifyChatListener();
+
+                          Contact c = getContactByUsername(username);
+                          removeContact(c);
+                          c.newMessage();
+                          addContact(c);
                       }
-                      instance.chats.get(username).add(msg);
-                      notifyChatListener();
                   }
               }
             );
