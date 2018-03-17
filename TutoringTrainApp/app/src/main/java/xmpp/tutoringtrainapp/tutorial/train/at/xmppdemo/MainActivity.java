@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import at.train.tutorial.tutoringtrainapp.R;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
@@ -21,6 +20,7 @@ import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Roster;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppService;
+import at.train.tutorial.tutoringtrainapp.R;
 
 public class MainActivity extends AppCompatActivity implements FragmentInteractionListener {
 
