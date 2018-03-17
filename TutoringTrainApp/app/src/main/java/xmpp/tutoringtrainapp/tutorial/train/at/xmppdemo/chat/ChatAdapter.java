@@ -14,6 +14,8 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import at.train.tutorial.tutoringtrainapp.R;
+
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 
 public class ChatAdapter extends BaseAdapter {
