@@ -70,6 +70,11 @@ public abstract class Entry {
     })
     private User user;
     
+    @JsonView({
+        DataMappingViews.Entry.In.Get.class,
+    })
+    private Location location;
+    
     public Entry() {
     }
 
@@ -141,6 +146,14 @@ public abstract class Entry {
         this.duedate = duedate;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+    
     @Override
     public String toString() {
         return "Entry {" + "id=" + id + ", headline=" + headline + ", description=" + description + ", postedon=" + postedon + ", isactive=" + isactive + ", subject=" + subject + ", user=" + user + '}';

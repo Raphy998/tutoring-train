@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.LoadingListItemController">
+   <children>
+      <JFXSpinner startingAngle="0.0" AnchorPane.bottomAnchor="10.0" AnchorPane.topAnchor="10.0" />
+   </children>
+</AnchorPane>

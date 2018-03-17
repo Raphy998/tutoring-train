@@ -1,5 +1,6 @@
 package at.tutoringtrain.adminclient.ui;
 
+import at.tutoringtrain.adminclient.data.entry.Entry;
 import at.tutoringtrain.adminclient.data.entry.Offer;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
@@ -16,6 +17,7 @@ import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
 import at.tutoringtrain.adminclient.ui.controller.AuthenticationController;
 import at.tutoringtrain.adminclient.ui.controller.BlockUserController;
 import at.tutoringtrain.adminclient.ui.controller.CreditsController;
+import at.tutoringtrain.adminclient.ui.controller.LocationMapController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterUserController;
 import at.tutoringtrain.adminclient.ui.controller.SettingsController;
@@ -222,6 +224,24 @@ public class WindowService {
         stage.showAndWait();
     }
     
+    public void openLocationMapWindow(Entry entry) throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        LocationMapController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/LocationMap.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (LocationMapController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(true);
+        stage.setScene(new Scene(root));
+        controller.setEntry(entry);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
     public void openBlockUserWindow(UserBlockListner listener, User user) throws Exception {
         Parent root;
         Stage stage;
@@ -253,7 +273,7 @@ public class WindowService {
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
@@ -270,7 +290,7 @@ public class WindowService {
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
@@ -287,7 +307,7 @@ public class WindowService {
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
@@ -304,7 +324,7 @@ public class WindowService {
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();

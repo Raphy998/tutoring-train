@@ -5,7 +5,6 @@ import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.security.PasswordHashGenerator;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
 
 /**
  *
@@ -77,7 +76,10 @@ public final class User {
     })
     private Blocked block;
     
-    private BigDecimal averagerating;
+    @JsonView ({
+        DataMappingViews.User.In.Get.class
+    })
+    private String averagerating;
     private BufferedImage avatar;
     
     
@@ -142,11 +144,11 @@ public final class User {
         this.avatar = avatar;
     }
 
-    public BigDecimal getAveragerating() {
+    public String getAveragerating() {
         return averagerating;
     }
 
-    public void setAveragerating(BigDecimal averagerating) {
+    public void setAveragerating(String averagerating) {
         this.averagerating = averagerating;
     }
 

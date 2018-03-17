@@ -11,85 +11,112 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" prefHeight="640.0" prefWidth="1000.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.AllRequestsController">
+<AnchorPane fx:id="pane" prefHeight="640.0" prefWidth="1000.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.AllRequestsController">
    <children>
-      <VBox alignment="CENTER" layoutX="260.0" layoutY="15.0" prefHeight="50.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Label alignment="CENTER" text="%titleAllRequests" textAlignment="CENTER" textFill="#084c61" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+         <padding>
+            <Insets bottom="10.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </Label>
+      <StackPane AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
          <children>
-            <Label alignment="CENTER" text="%titleAllRequests" textAlignment="CENTER" textFill="#084c61">
+            <JFXSpinner fx:id="spinner" radius="25.0" startingAngle="0.0" />
+            <JFXListView fx:id="lvOffers" depth="1" prefHeight="395.0" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="8.0" right="8.0" top="5.0" />
+         </padding>
+      </StackPane>
+      <HBox alignment="CENTER_RIGHT" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <JFXButton fx:id="btnClose" buttonType="RAISED" onAction="#onBtnClose" prefHeight="30.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%close">
                <font>
-                  <Font name="System Bold" size="20.0" />
+                  <Font name="System Bold" size="13.0" />
                </font>
-            </Label>
-         </children>
-      </VBox>
-      <VBox alignment="TOP_CENTER" layoutX="71.0" layoutY="-2.0" spacing="12.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
-         <children>
-            <VBox spacing="5.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="30.0" prefWidth="980.0" spacing="5.0">
-                     <children>
-                        <JFXComboBox fx:id="comboProperty" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%property" unFocusColor="#86bab8" />
-                        <JFXComboBox fx:id="comboOperation" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%operation" unFocusColor="#86bab8" />
-                        <JFXTextField fx:id="txtSearch" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="510.0" promptText="%search" unFocusColor="#86bab8">
-                           <HBox.margin>
-                              <Insets />
-                           </HBox.margin>
-                        </JFXTextField>
-                        <JFXComboBox fx:id="comboOrder" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="110.0" promptText="%order" unFocusColor="#86bab8" />
-                        <JFXComboBox fx:id="comboStatus" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="110.0" promptText="%state" unFocusColor="#86bab8" />
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="15.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <HBox alignment="CENTER" spacing="5.0">
-                     <children>
-                        <JFXComboBox fx:id="comboPropertyDate" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%property" unFocusColor="#86bab8" />
-                        <JFXComboBox fx:id="comboOperationDate" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%operation" unFocusColor="#86bab8" />
-                        <JFXDatePicker fx:id="pickerDate" defaultColor="#86bab8" prefHeight="30.0" prefWidth="220.0" promptText="%date" />
-                        <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" onAction="#onBtnSearch" prefHeight="30.0" prefWidth="100.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%search">
-                           <font>
-                              <Font name="System Bold" size="13.0" />
-                           </font>
-                           <padding>
-                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                           </padding>
-                           <HBox.margin>
-                              <Insets left="420.0" />
-                           </HBox.margin>
-                        </JFXButton>
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-            </VBox>
-            <StackPane>
-               <children>
-                  <JFXSpinner fx:id="spinner" radius="25.0" startingAngle="0.0" />
-                  <JFXListView fx:id="lvOffers" depth="1" prefHeight="395.0" />
-               </children>
-            </StackPane>
-            <HBox alignment="CENTER_RIGHT" prefHeight="30.0">
-               <children>
-                  <JFXButton fx:id="btnClose" buttonType="RAISED" onAction="#onBtnClose" prefHeight="30.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%close">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </JFXButton>
-               </children>
-               <VBox.margin>
+               <HBox.margin>
                   <Insets />
-               </VBox.margin>
-            </HBox>
+               </HBox.margin>
+            </JFXButton>
          </children>
-      </VBox>
+         <padding>
+            <Insets bottom="5.0" left="8.0" right="8.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="10.0" spacing="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <JFXComboBox fx:id="comboProperty" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%property" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXComboBox fx:id="comboOperation" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%operation" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXTextField fx:id="txtSearch" focusColor="#084c61" labelFloat="true" prefHeight="30.0" promptText="%search" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXTextField>
+            <JFXComboBox fx:id="comboOrder" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%order" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+               <HBox.margin>
+                  <Insets right="8.0" />
+               </HBox.margin>
+            </JFXComboBox>
+            <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" onAction="#onBtnSearch" prefHeight="30.0" prefWidth="110.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%search" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+               <padding>
+                  <Insets bottom="5.0" left="1.0" right="1.0" top="5.0" />
+               </padding>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </JFXButton>
+         </children>
+         <padding>
+            <Insets bottom="15.0" left="16.0" right="16.0" />
+         </padding>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="10.0" spacing="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="95.0">
+         <children>
+            <JFXComboBox fx:id="comboPropertyDate" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%property" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXComboBox fx:id="comboOperationDate" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%operation" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXDatePicker fx:id="pickerDate" defaultColor="#86bab8" prefHeight="30.0" prefWidth="220.0" promptText="%date" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXDatePicker>
+            <JFXComboBox fx:id="comboStatus" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%state" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+         </children>
+         <padding>
+            <Insets bottom="25.0" left="16.0" right="16.0" />
+         </padding>
+      </HBox>
    </children>
 </AnchorPane>

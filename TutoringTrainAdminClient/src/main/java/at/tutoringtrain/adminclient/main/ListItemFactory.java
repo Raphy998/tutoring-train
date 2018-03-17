@@ -8,6 +8,7 @@ import at.tutoringtrain.adminclient.ui.controller.AllOffersController;
 import at.tutoringtrain.adminclient.ui.controller.AllRequestsController;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
+import at.tutoringtrain.adminclient.ui.controller.LoadingListItemController;
 import at.tutoringtrain.adminclient.ui.controller.MessageListItemController;
 import at.tutoringtrain.adminclient.ui.controller.OfferListItemController;
 import at.tutoringtrain.adminclient.ui.controller.RequestListItemController;
@@ -76,6 +77,21 @@ public class ListItemFactory {
         } catch (IOException ioex) {
             itemPane = null;
             logger.error("Generating message-list-item failed", ioex);
+        }
+        return itemPane;
+    }
+    
+     public AnchorPane generateLoadingListItem() {
+        AnchorPane itemPane;
+        FXMLLoader loader;
+         LoadingListItemController controller;
+        try {
+            loader = new FXMLLoader(getClass().getResource("/fxml/LoadingListItem.fxml"), resourceBundle);
+            itemPane = loader.<AnchorPane>load();
+            controller = (LoadingListItemController)loader.getController();
+        } catch (IOException ioex) {
+            itemPane = null;
+            logger.error("Generating loading-list-item failed", ioex);
         }
         return itemPane;
     }

@@ -11,13 +11,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.RequestListItemController">
+<AnchorPane fx:id="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.RequestListItemController">
    <children>
-      <HBox fx:id="boxImage" alignment="CENTER" layoutX="655.0" layoutY="32.0" prefWidth="220.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <HBox fx:id="boxImage" alignment="CENTER" layoutX="655.0" layoutY="32.0" prefHeight="150.0" prefWidth="150.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <StackPane prefHeight="220.0" prefWidth="220.0">
+            <StackPane prefHeight="110.0" prefWidth="110.0">
                <children>
-                  <ImageView fx:id="ivIcon" fitHeight="180.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="ivIcon" fitHeight="110.0" fitWidth="110.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/default_request.png" />
                      </image></ImageView>
@@ -28,9 +28,9 @@
             </StackPane>
          </children>
       </HBox>
-      <VBox fx:id="boxEntryDetails" layoutX="25.0" layoutY="25.0" prefWidth="510.0" spacing="3.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="190.0" AnchorPane.topAnchor="5.0">
+      <VBox fx:id="boxEntryDetails" layoutX="25.0" layoutY="25.0" prefWidth="500.0" spacing="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="190.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="lblHeadline" prefWidth="510.0" text="Headline" wrapText="true" VBox.vgrow="ALWAYS">
+            <Label fx:id="lblHeadline" text="Headline" wrapText="true" VBox.vgrow="ALWAYS">
                <font>
                   <Font name="System Bold" size="22.0" />
                </font>
@@ -38,39 +38,49 @@
                   <Insets bottom="2.0" />
                </VBox.margin>
             </Label>
-            <Label fx:id="lblActive" prefWidth="510.0" text="active/inactive" wrapText="true">
+            <Label fx:id="lblActive" text="active/inactive" wrapText="true">
                <font>
                   <Font name="System Italic" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="lblPostedOn" prefWidth="510.0" text="postedon" wrapText="true">
+            <Label fx:id="lblPostedOn" text="postedon" wrapText="true">
                <font>
                   <Font name="System Italic" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="lblSubject" prefWidth="510.0" text="subject" wrapText="true">
+            <Label fx:id="lblSubject" text="subject" wrapText="true">
                <font>
                   <Font name="System Italic" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="lblUsername" prefWidth="510.0" text="username" wrapText="true">
+            <Label fx:id="lblUsername" text="username" wrapText="true">
                <font>
                   <Font name="System Italic" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="lblDescription" alignment="TOP_LEFT" prefWidth="506.0" text="description" wrapText="true">
+            <Label fx:id="lblLocation" alignment="TOP_LEFT" text="location" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblDescription" alignment="TOP_LEFT" text="description" wrapText="true">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
          </children>
          <padding>
-            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            <Insets left="8.0" />
          </padding>
       </VBox>
-      <VBox fx:id="boxButtons" alignment="CENTER" layoutX="756.0" layoutY="25.0" prefWidth="180.0" spacing="12.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <VBox fx:id="boxButtons" alignment="CENTER" layoutX="756.0" layoutY="25.0" prefWidth="180.0" spacing="12.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <JFXButton fx:id="btnEdit" alignment="CENTER" buttonType="RAISED" onAction="#onBtnEdit" prefWidth="170.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%edit">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </JFXButton>
+            <JFXButton fx:id="btnLocation" alignment="CENTER" buttonType="RAISED" onAction="#onBtnLocation" prefWidth="170.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%showMap">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
@@ -83,4 +93,7 @@
          </children>
       </VBox>
    </children>
+   <padding>
+      <Insets bottom="5.0" left="8.0" right="8.0" top="5.0" />
+   </padding>
 </AnchorPane>

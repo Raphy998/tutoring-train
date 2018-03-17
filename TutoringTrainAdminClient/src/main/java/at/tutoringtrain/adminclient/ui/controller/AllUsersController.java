@@ -212,7 +212,7 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
             } else {
                 displayMessage(result.getMessageContainer());
             }
-        }    
+        } 
     }
     
     @Override

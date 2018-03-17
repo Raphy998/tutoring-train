@@ -11,13 +11,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="130.0" prefWidth="950.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.SubjectListItemController">
+<AnchorPane fx:id="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.SubjectListItemController">
    <children>
-      <HBox alignment="CENTER" layoutX="655.0" layoutY="32.0" prefHeight="110.0" prefWidth="220.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER" layoutX="655.0" layoutY="32.0" prefHeight="150.0" prefWidth="150.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <StackPane prefHeight="110.0" prefWidth="220.0">
+            <StackPane prefHeight="110.0" prefWidth="110.0">
                <children>
-                  <ImageView fx:id="ivIcon" fitHeight="110.0" fitWidth="220.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="ivIcon" fitHeight="110.0" fitWidth="110.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/default_subject.png" />
                      </image></ImageView>
@@ -28,9 +28,9 @@
             </StackPane>
          </children>
       </HBox>
-      <VBox alignment="CENTER_LEFT" layoutX="25.0" layoutY="25.0" prefHeight="190.0" prefWidth="510.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER_LEFT" layoutX="25.0" layoutY="25.0" prefWidth="500.0" spacing="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="190.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="lblName" prefWidth="510.0" text="Name" VBox.vgrow="ALWAYS">
+            <Label fx:id="lblName" text="Name" VBox.vgrow="ALWAYS">
                <font>
                   <Font name="System Bold" size="22.0" />
                </font>
@@ -38,35 +38,32 @@
                   <Insets bottom="2.0" />
                </VBox.margin>
             </Label>
-            <Label fx:id="lblActive" prefWidth="510.0" text="active/inactive">
+            <Label fx:id="lblActive" text="active/inactive">
                <font>
                   <Font name="System Italic" size="16.0" />
                </font>
             </Label>
          </children>
          <padding>
-            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            <Insets left="8.0" />
          </padding>
       </VBox>
-      <VBox alignment="CENTER" layoutX="756.0" layoutY="25.0" prefWidth="150.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutX="756.0" layoutY="25.0" prefWidth="180.0" spacing="12.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <JFXButton fx:id="btnEdit" alignment="CENTER" buttonType="RAISED" onAction="#onBtnEdit" prefHeight="35.0" prefWidth="150.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%edit">
+            <JFXButton fx:id="btnEdit" alignment="CENTER" buttonType="RAISED" onAction="#onBtnEdit" prefWidth="170.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%edit" wrapText="true">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
-            <JFXButton fx:id="btnRemove" alignment="CENTER" buttonType="RAISED" onAction="#onBtnRemove" prefHeight="35.0" prefWidth="150.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%remove">
+            <JFXButton fx:id="btnRemove" alignment="CENTER" buttonType="RAISED" onAction="#onBtnRemove" prefWidth="170.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%remove" wrapText="true">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
       </VBox>
    </children>
    <padding>
-      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+      <Insets bottom="5.0" left="8.0" right="8.0" top="5.0" />
    </padding>
 </AnchorPane>

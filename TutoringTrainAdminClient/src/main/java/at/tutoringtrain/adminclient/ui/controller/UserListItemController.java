@@ -64,6 +64,8 @@ public class UserListItemController implements Initializable, UserDataChangedLis
     @FXML
     private Label lblEducation;
     @FXML
+    private Label lblRating;
+    @FXML
     private Label lblEmail;
     @FXML
     private VBox boxBlocked;
@@ -224,6 +226,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
             lblName.setText(user.getName() + (user.isCurrentUser() ? (" (" + localizedValueProvider.getString("myAccount") + ")") : ""));
             lblEducation.setText(user.getEducation());
             lblGender.setText(dataStorage.getGender(user.getGender()).getName());
+            lblRating.setText(localizedValueProvider.getString("rating") + ": " + user.getAveragerating());
             lblEmail.setText(user.getEmail());        
             displayAvatar();
             displayBlocked();
@@ -242,6 +245,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
             lblName.setText("NULL");
             lblEducation.setText("NULL");
             lblGender.setText("NULL");
+            lblRating.setText("NULL");
             lblEmail.setText("NULL");
             setDefualtAvatar();
             disableButtonControls(true);

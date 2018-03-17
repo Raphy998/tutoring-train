@@ -58,11 +58,15 @@ public class OfferListItemController implements Initializable, OfferChangedListe
     @FXML
     private Label lblDescription;
     @FXML
+    private Label lblLocation;
+    @FXML
     private VBox boxButtons;
     @FXML
     private JFXButton btnEdit;
     @FXML
     private JFXButton btnDelete;
+    @FXML
+    private JFXButton btnLocation;
 
     private Logger logger;
     private Language language;
@@ -111,6 +115,20 @@ public class OfferListItemController implements Initializable, OfferChangedListe
         }
     }
     
+    @FXML
+    void onBtnLocation(ActionEvent event) {
+        try {
+            if (offer.getLocation() != null) {
+                windowService.openLocationMapWindow(offer);
+            } else {
+               displayMessage(new MessageContainer(MessageCodes.INFO, localizedValueProvider.getString("messageNoLocationAvailable"))); 
+            }
+        } catch (Exception e) {
+            displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
+            logger.error("onBtnLocation: exception occurred", e);
+        }
+    }
+    
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
     }
@@ -138,6 +156,7 @@ public class OfferListItemController implements Initializable, OfferChangedListe
             lblSubject.setText("NULL");
             lblUsername.setText("NULL");
             lblDescription.setText("NULL");
+            lblLocation.setText("NULL");
             ivIcon.setOpacity(0);
             btnDelete.setDisable(true);
             btnEdit.setDisable(true);
@@ -146,8 +165,9 @@ public class OfferListItemController implements Initializable, OfferChangedListe
             lblPostedOn.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(offer.getPostedon()));
             lblActive.setText(localizedValueProvider.getString(offer.getIsactive() ? "active" : "inactive"));
             lblSubject.setText(offer.getSubject().getName());
-            lblUsername.setText("@" + offer.getUser().getUsername() + " - " + offer.getUser().getName());
+            lblUsername.setText("@" + offer.getUser().getUsername() + " (" + offer.getUser().getName() + ")");
             lblDescription.setText(offer.getDescription());
+            lblLocation.setText(offer.getLocation() != null ? offer.getLocation().getName() : "");
             ivIcon.setOpacity(offer.getIsactive()? 1 : 0.5);
             btnDelete.setDisable(false);
             btnEdit.setDisable(false);

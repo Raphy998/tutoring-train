@@ -56,6 +56,8 @@ public class RequestListItemController implements Initializable, RequestChangedL
     @FXML
     private Label lblUsername;
     @FXML
+    private Label lblLocation;
+    @FXML
     private Label lblDescription;
     @FXML
     private VBox boxButtons;
@@ -63,6 +65,8 @@ public class RequestListItemController implements Initializable, RequestChangedL
     private JFXButton btnEdit;
     @FXML
     private JFXButton btnDelete;
+    @FXML
+    private JFXButton btnLocation;
 
     private Logger logger;
     private Language language;
@@ -111,6 +115,20 @@ public class RequestListItemController implements Initializable, RequestChangedL
         }
     }
     
+    @FXML
+    void onBtnLocation(ActionEvent event) {
+        try {
+            if (request.getLocation() != null) {
+                windowService.openLocationMapWindow(request);
+            } else {
+               displayMessage(new MessageContainer(MessageCodes.INFO, localizedValueProvider.getString("messageNoLocationAvailable"))); 
+            }
+        } catch (Exception e) {
+            displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
+            logger.error("onBtnLocation: exception occurred", e);
+        }
+    }
+    
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
     }
@@ -138,6 +156,7 @@ public class RequestListItemController implements Initializable, RequestChangedL
             lblSubject.setText("NULL");
             lblUsername.setText("NULL");
             lblDescription.setText("NULL");
+            lblLocation.setText("NULL");
             ivIcon.setOpacity(0);
             btnDelete.setDisable(true);
             btnEdit.setDisable(true);
@@ -146,8 +165,9 @@ public class RequestListItemController implements Initializable, RequestChangedL
             lblPostedOn.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(request.getPostedon()));
             lblActive.setText(localizedValueProvider.getString(request.getIsactive() ? "active" : "inactive"));
             lblSubject.setText(request.getSubject().getName());
-            lblUsername.setText("@" + request.getUser().getUsername() + " - " + request.getUser().getName());
+            lblUsername.setText("@" + request.getUser().getUsername() + " (" + request.getUser().getName() + ")");
             lblDescription.setText(request.getDescription());
+            lblLocation.setText(request.getLocation() != null ? request.getLocation().getName() : "");
             ivIcon.setOpacity(request.getIsactive()? 1 : 0.5);
             btnDelete.setDisable(false);
             btnEdit.setDisable(false);

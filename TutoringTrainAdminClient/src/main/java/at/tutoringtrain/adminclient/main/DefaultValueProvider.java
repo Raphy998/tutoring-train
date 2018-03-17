@@ -77,7 +77,7 @@ public final class DefaultValueProvider {
         this.jsonMediaType = MediaType.parse("application/json; charset=utf-8");
         this.pngImageMediaType = MediaType.parse("image/png");
         this.jpgImageMediaType = MediaType.parse("image/jpg");
-        this.defaultWebserviceHostInfo = new WebserviceHostInfo("tutoringtrain.zapto.org", 8080);
+        this.defaultWebserviceHostInfo = new WebserviceHostInfo("tutoringtrain.hopto.org", 8080);
         this.defaultWebserviceFallbackHosts = new ArrayList<>();
         this.defaultWebServiceProtokoll = "http";
         this.defaultWebServiceRootPath = "/TutoringTrainWebservice/services/";
@@ -103,7 +103,7 @@ public final class DefaultValueProvider {
     }
     
     private void initializeDefaultWebserviceFallbackHosts() {
-        defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("tutoringtrain.hopto.org", 8080));
+        //defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("tutoringtrain.hopto.org", 8080));
         //defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
     }
 
