@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
 
             Intent serviceIntent = new Intent(this, XmppService.class);
             Bundle credentials = new Bundle();
-            credentials.putString("username", getString(R.string.username));
-            credentials.putString("password", getString(R.string.password));
+            credentials.putString("username", getString(R.string.xmpp_username));
+            credentials.putString("password", getString(R.string.xmpp_password));
             serviceIntent.putExtras(credentials);
             startService(serviceIntent);
 
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     public void openChatWithUser(Object sender, Contact otherUser) {
         try {
             chats.setUsers(
-                    new Contact(getString(R.string.username), "myFullName"),
+                    new Contact(getString(R.string.xmpp_username), "myFullName"),
                     otherUser);
             showChat();
         }

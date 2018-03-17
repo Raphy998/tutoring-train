@@ -54,14 +54,19 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
 
     @Override
     public void onMessageUpdated(final String newMsg) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TextView emptyView = (TextView) getActivity().findViewById(R.id.emptyResults);
-                emptyView.setText(newMsg);
-                contactsListView.setEmptyView(emptyView);
-            }
-        });
+        try {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView emptyView = (TextView) getActivity().findViewById(R.id.emptyResults);
+                    emptyView.setText(newMsg);
+                    contactsListView.setEmptyView(emptyView);
+                }
+            });
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

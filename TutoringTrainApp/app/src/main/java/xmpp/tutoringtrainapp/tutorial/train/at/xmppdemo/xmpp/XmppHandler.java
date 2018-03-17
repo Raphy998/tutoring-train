@@ -85,8 +85,8 @@ public class XmppHandler extends Application {
         this.context = context;
         this.ds = DataStore.getInstance();
 
-        DOMAIN = context.getString(R.string.domain);
-        HOST = context.getString(R.string.host);
+        DOMAIN = context.getString(R.string.xmpp_domain);
+        HOST = context.getString(R.string.xmpp_host);
 
         ds.setMsgRoster("Loading ...");
         init();
@@ -191,10 +191,13 @@ public class XmppHandler extends Application {
                 type);
     }
 
-    public void removeFromRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
+    public void removeFromRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException, SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
         Presence subscribe = new Presence(Presence.Type.unsubscribed);
         subscribe.setTo(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN));
         connection.sendStanza(subscribe);
+
+        Roster roster = Roster.getInstanceFor(connection);
+        roster.removeEntry(roster.getEntry(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN)));
     }
 
     public void addToRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {

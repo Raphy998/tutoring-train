@@ -54,6 +54,11 @@ dependencies {
     compile group: 'org.igniterealtime.smack', name: 'smack-sasl-provided', version: '4.2.2'
     compile group: 'org.igniterealtime.smack', name: 'smack-experimental', version: '4.2.2'
 
+    compile group: 'org.jxmpp', name: 'jxmpp-core', version: '0.6.0'
+    compile group: 'org.jxmpp', name: 'jxmpp-util-cache', version: '0.6.0'
+    compile group: 'org.jxmpp', name: 'jxmpp-jid', version: '0.6.0'
+    compile group: 'org.jxmpp', name: 'jxmpp-stringprep-libidn', version: '0.6.0'
+
     testCompile 'junit:junit:4.12'
 
 }

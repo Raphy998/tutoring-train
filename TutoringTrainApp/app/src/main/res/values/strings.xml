@@ -29,8 +29,9 @@
     <string name="title_contacts">Contacts</string>
     <string name="requested">Requested</string>
 
-    <string name="domain">tutoringtrain.hopto.org</string>
-    <string name="host">tutoringtrain.hopto.org</string>
-    <string name="username">user4</string>
+    <string name="xmpp_domain">tutoringtrain.hopto.org</string>
+    <string name="xmpp_host">tutoringtrain.hopto.org</string>
+    <string name="xmpp_username">user4</string>
+    <string name="xmpp_password">3f02ebe3d7929b091e3d8ccfde2f3bc6</string>
 
 </resources>
