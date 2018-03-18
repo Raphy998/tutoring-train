@@ -1,5 +1,6 @@
 package at.tutoringtrain.adminclient.io.network;
 
+import at.tutoringtrain.adminclient.data.entry.EntryType;
 import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.data.subject.Subject;
@@ -7,6 +8,8 @@ import at.tutoringtrain.adminclient.data.user.BlockRequest;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.exception.ParameterValueException;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
+import at.tutoringtrain.adminclient.io.network.listener.entry.comment.RequestCommentsOfEntryListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.comment.RequestDeleteCommentListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestDeleteOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersOfUserListener;
@@ -53,6 +56,7 @@ import at.tutoringtrain.adminclient.ui.search.entry.EntrySearch;
 import at.tutoringtrain.adminclient.ui.search.user.UserSearch;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import okhttp3.Call;
@@ -621,7 +625,7 @@ public class Communicator {
         return enqueueRequest(HttpMethod.PUT, true, "user/role/" + user.getUsername(), requestCallback, json, dataMapper.toJSON(user, DataMappingViews.User.Out.UpdateRole.class));
     }
     
-    public boolean requestDeleteUser(RequestDeleteUserListener listener, User user) throws Exception {
+    public boolean requestDeleteUser(RequestDeleteUserListener listener, User user, boolean force) throws Exception {
         RequestCallback requestCallback;  
         if (listener == null) {
             throw new RequiredParameterException(listener, "must not be null");
@@ -635,7 +639,7 @@ public class Communicator {
                 listener.requestDeleteUserFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.DELTE, true, "user/" + user.getUsername(), requestCallback, new QueryParameter("force", "true"));
+        return enqueueRequest(HttpMethod.DELTE, true, "user/" + user.getUsername(), requestCallback, new QueryParameter("force", Boolean.toString(force)));
     }
     
     /**
@@ -1074,5 +1078,36 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.POST, true, "request/simpleSearch", requestCallback, json, "", new QueryParameter("searchStr", query));
+    }
+    
+    //COMMENTS
+    
+    public boolean requestCommentsOfEntry(RequestCommentsOfEntryListener listener, BigDecimal entryId, EntryType entryType) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestCommentsOfEntryListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestGetCommentsOfEntryFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        logger.warn(entryType.toString() + "/" + entryId + "/comments");
+        return enqueueRequest(HttpMethod.GET, true, entryType.toString() + "/" + entryId + "/comments", requestCallback);
+    }
+    
+    public boolean requestDeleteComment(RequestDeleteCommentListener listener, BigDecimal entryId, EntryType entryType, BigDecimal commentId) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestDeleteCommentListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestDeleteCommentFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.DELTE, true, entryType.toString() + "/" + entryId + "/comments/" + commentId, requestCallback);
     }
 } 

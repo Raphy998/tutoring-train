@@ -63,10 +63,37 @@
             </JFXButton>
          </children>
          <padding>
+            <Insets bottom="15.0" left="16.0" right="16.0" />
+         </padding>
+      </HBox>
+      <HBox disable="true" layoutX="10.0" layoutY="10.0" spacing="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="95.0">
+         <children>
+            <JFXComboBox fx:id="comboGender" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%gender" unFocusColor="#86bab8">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXComboBox fx:id="comboRole" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%role" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXComboBox fx:id="comboPropertyRating" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%rating" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXComboBox fx:id="comboOperationRating" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%operation" unFocusColor="#86bab8" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+         </children>
+         <padding>
             <Insets bottom="25.0" left="16.0" right="16.0" />
          </padding>
       </HBox>
-      <StackPane AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="105.0">
+      <StackPane AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
          <children>
             <JFXSpinner fx:id="spinner" radius="25.0" startingAngle="0.0" StackPane.alignment="CENTER" />
             <JFXListView fx:id="lvUsers" depth="1" StackPane.alignment="CENTER" />

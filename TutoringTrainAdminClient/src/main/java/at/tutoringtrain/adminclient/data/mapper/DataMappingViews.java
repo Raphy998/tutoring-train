@@ -6,6 +6,11 @@ package at.tutoringtrain.adminclient.data.mapper;
  */
 public interface DataMappingViews {
     public static interface Entry {
+        public static interface Comment {
+            public static interface In {
+                public static interface Get{};
+            }
+        }
         public static interface In {
             public static interface Get{};
             public static interface Create{};

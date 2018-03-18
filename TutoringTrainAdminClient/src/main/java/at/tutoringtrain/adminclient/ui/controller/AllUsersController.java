@@ -67,6 +67,14 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
     private JFXTextField txtSearch;
     @FXML
     private JFXButton btnSearch;
+    @FXML
+    private JFXComboBox<Void> comboGender;
+    @FXML
+    private JFXComboBox<Void> comboRole;
+    @FXML
+    private JFXComboBox<Void> comboPropertyRating;
+    @FXML
+    private JFXComboBox<Void> comboOperationRating;
 
     private JFXSnackbar snackbar;  
     

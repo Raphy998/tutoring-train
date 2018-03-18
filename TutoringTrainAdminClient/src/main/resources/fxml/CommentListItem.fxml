@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.CommentListItemController">
+   <children>
+      <HBox alignment="CENTER" layoutX="655.0" layoutY="32.0" prefHeight="150.0" prefWidth="150.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <StackPane prefHeight="110.0" prefWidth="110.0">
+               <children>
+                  <ImageView fitHeight="110.0" fitWidth="110.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/default_comment.png" />
+                     </image>
+                  </ImageView>
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </StackPane>
+         </children>
+      </HBox>
+      <VBox alignment="CENTER_LEFT" layoutX="25.0" layoutY="25.0" prefWidth="350.0" spacing="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="190.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="lblUsername" text="username" wrapText="true">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblPostedOn" text="postedon" wrapText="true">
+               <font>
+                  <Font name="System Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblText" alignment="TOP_LEFT" text="text" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets left="8.0" />
+         </padding>
+      </VBox>
+      <VBox alignment="CENTER" layoutX="756.0" layoutY="25.0" prefWidth="180.0" spacing="12.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXButton fx:id="btnDelete" alignment="CENTER" buttonType="RAISED" onAction="#onBtnDelete" prefWidth="170.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%delete">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </JFXButton>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="8.0" right="8.0" top="5.0" />
+   </padding>
+</AnchorPane>

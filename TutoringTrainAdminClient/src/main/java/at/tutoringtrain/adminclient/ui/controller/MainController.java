@@ -132,6 +132,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     void onBtnAllOffers(ActionEvent event) {
         try {
+            btnClear.fire();
             windowService.openShowAllOffersWindow();
         } catch (Exception ex) {
             logger.error(ex);
@@ -142,6 +143,7 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     void onBtnAllRequests(ActionEvent event) {
         try {
+            btnClear.fire();
             windowService.openShowAllRequestsWindow();
         } catch (Exception ex) {
             logger.error(ex);

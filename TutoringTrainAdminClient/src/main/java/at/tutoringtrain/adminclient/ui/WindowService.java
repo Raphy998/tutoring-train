@@ -1,6 +1,7 @@
 package at.tutoringtrain.adminclient.ui;
 
 import at.tutoringtrain.adminclient.data.entry.Entry;
+import at.tutoringtrain.adminclient.data.entry.EntryType;
 import at.tutoringtrain.adminclient.data.entry.Offer;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
@@ -10,6 +11,7 @@ import at.tutoringtrain.adminclient.internationalization.StringPlaceholder;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.main.MessageContainer;
+import at.tutoringtrain.adminclient.ui.controller.AllCommentsController;
 import at.tutoringtrain.adminclient.ui.controller.AllOffersController;
 import at.tutoringtrain.adminclient.ui.controller.AllRequestsController;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
@@ -330,6 +332,24 @@ public class WindowService {
         stage.showAndWait();
     }
     
+    public void openShowAllCommentsWindow(Entry entry, EntryType entryType) throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        AllCommentsController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/AllComments.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (AllCommentsController)loader.getController();
+        controller.setEntry(entry, entryType);
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(true);
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
     public void openSettingsWindow() throws Exception {
         openSettingsWindow(false);
     }
@@ -388,6 +408,18 @@ public class WindowService {
         alert.setTitle(localizedValueProvider.getString("titleApplication"));
         alert.setHeaderText(localizedValueProvider.getString(headerKey, placeholders));
         alert.setContentText(localizedValueProvider.getString(contentKey, placeholders));
+        return alert.showAndWait(); 
+    }
+    
+    public Optional<ButtonType> openYesNoDialog(String headerKey, String contentKey, StringPlaceholder... placeholders) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        alert.setTitle(localizedValueProvider.getString("titleApplication"));
+        alert.setHeaderText(localizedValueProvider.getString(headerKey, placeholders));
+        alert.setContentText(localizedValueProvider.getString(contentKey, placeholders));
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().add(ButtonType.YES);
+        alert.getButtonTypes().add(ButtonType.NO);
         return alert.showAndWait(); 
     }
 }

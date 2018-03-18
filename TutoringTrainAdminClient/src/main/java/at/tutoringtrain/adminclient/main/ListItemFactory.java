@@ -1,11 +1,15 @@
 package at.tutoringtrain.adminclient.main;
 
+import at.tutoringtrain.adminclient.data.entry.Comment;
+import at.tutoringtrain.adminclient.data.entry.Entry;
+import at.tutoringtrain.adminclient.data.entry.EntryType;
 import at.tutoringtrain.adminclient.data.entry.Offer;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.ui.controller.AllSubjectsController;
 import at.tutoringtrain.adminclient.ui.controller.AllUsersController;
+import at.tutoringtrain.adminclient.ui.controller.CommentListItemController;
 import at.tutoringtrain.adminclient.ui.controller.LoadingListItemController;
 import at.tutoringtrain.adminclient.ui.controller.MessageListItemController;
 import at.tutoringtrain.adminclient.ui.controller.OfferListItemController;
@@ -145,6 +149,25 @@ public class ListItemFactory {
         } catch (IOException ioex) {
             itemPane = null;
             logger.error("Generating request-list-item failed", ioex);
+        }
+        return itemPane;
+    }
+    
+    public AnchorPane generateCommentListItem(Entry entry, EntryType entryType, Comment comment, MessageListener listener, RemoveItemListener removeItemListener) {
+        AnchorPane itemPane;
+        FXMLLoader loader;
+        CommentListItemController controller;
+        try {
+            loader = new FXMLLoader(getClass().getResource("/fxml/CommentListItem.fxml"), resourceBundle);
+            itemPane = loader.<AnchorPane>load();
+            controller = (CommentListItemController)loader.getController();
+            controller.setEntry(entry, entryType);
+            controller.setComment(comment);
+            controller.setRemoveItemListener(removeItemListener);
+            controller.setMessageListener(listener);
+        } catch (IOException ioex) {
+            itemPane = null;
+            logger.error("Generating comment-list-item failed", ioex);
         }
         return itemPane;
     }

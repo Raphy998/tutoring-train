@@ -1,5 +1,6 @@
 package at.tutoringtrain.adminclient.ui.controller;
 
+import at.tutoringtrain.adminclient.data.entry.EntryType;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.internationalization.Language;
 import at.tutoringtrain.adminclient.internationalization.LocalizedValueProvider;
@@ -68,6 +69,8 @@ public class RequestListItemController implements Initializable, RequestChangedL
     private JFXButton btnDelete;
     @FXML
     private JFXButton btnLocation;
+    @FXML
+    private JFXButton btnComments;
 
     private Logger logger;
     private Language language;
@@ -124,6 +127,16 @@ public class RequestListItemController implements Initializable, RequestChangedL
             } else {
                displayMessage(new MessageContainer(MessageCodes.INFO, localizedValueProvider.getString("messageNoLocationAvailable"))); 
             }
+        } catch (Exception e) {
+            displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
+            logger.error("onBtnLocation: exception occurred", e);
+        }
+    }
+    
+    @FXML
+    void onBtnComments(ActionEvent event) {
+        try {
+            windowService.openShowAllCommentsWindow(request, EntryType.REQUEST);
         } catch (Exception e) {
             displayMessage(new MessageContainer(MessageCodes.SEE_APPLICATION_LOG, localizedValueProvider.getString("messageSeeLogForFurtherInformation")));
             logger.error("onBtnLocation: exception occurred", e);

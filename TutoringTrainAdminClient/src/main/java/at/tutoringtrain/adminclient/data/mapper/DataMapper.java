@@ -1,5 +1,6 @@
 package at.tutoringtrain.adminclient.data.mapper;
 
+import at.tutoringtrain.adminclient.data.entry.Comment;
 import at.tutoringtrain.adminclient.data.entry.Offer;
 import at.tutoringtrain.adminclient.data.entry.Request;
 import at.tutoringtrain.adminclient.data.subject.Subject;
@@ -155,6 +156,14 @@ public class DataMapper {
     
     public String toJSON(Request request, Class jsonView) throws JsonProcessingException  {
         return mapper.writerWithView(jsonView).forType(Request.class).writeValueAsString(request);
+    }
+    
+     public ArrayList<Comment> toCommentArrayList(String json) throws IOException {
+        return mapper.readValue(json, new TypeReference<ArrayList<Comment>>(){});
+    }
+    
+    public ArrayList<Comment> toCommentArrayList(String json, Class jsonView) throws IOException {
+        return mapper.readerWithView(jsonView).forType(new TypeReference<ArrayList<Comment>>(){}).readValue(json);
     }
     
     public MessageContainer toMessageContainer(String json) {

@@ -42,7 +42,7 @@ public final class LocalizedValueProvider {
     public String getString(String key, StringPlaceholder... placeholders) {
         String string = getString(key);
         for (StringPlaceholder placeholder : placeholders) {
-            string = string.replaceAll(placeholder.getKey(), placeholder.getValue());
+            string = string.replaceAll(placeholder.getKey(), placeholder.getValue() != null ? placeholder.getValue() : "");
         }
         return string;
     }

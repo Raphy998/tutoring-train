@@ -17,7 +17,8 @@ public final class User {
         DataMappingViews.User.In.Get.class, 
         DataMappingViews.User.Out.Update.class,
         DataMappingViews.User.Out.UpdatePassowrd.class,
-        DataMappingViews.Entry.In.Get.class
+        DataMappingViews.Entry.In.Get.class,
+        DataMappingViews.Entry.Comment.In.Get.class
     })
     private String username;
     

@@ -171,8 +171,9 @@ public class UserListItemController implements Initializable, UserDataChangedLis
     void onBtnDelete(ActionEvent event) {
         try {
             if (windowService.openConfirmDialog("dialogHeaderDeleteUser", "dialogContenDeleteUser", new StringPlaceholder("name", user.getName()), new StringPlaceholder("username", user.getUsername())).get() == ButtonType.OK) {
+                boolean force = windowService.openYesNoDialog("dialogHeaderDeleteUserForce", "dialogContenDeleteUserForce", new StringPlaceholder("name", user.getName()), new StringPlaceholder("username", user.getUsername())).get() == ButtonType.YES;    
                 btnDelete.setDisable(true);
-                if(!communicator.requestDeleteUser(this, user)) {
+                if(!communicator.requestDeleteUser(this, user, force)) {
                     btnDelete.setDisable(false);
                     displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageReauthentication")));
                 }
@@ -373,8 +374,8 @@ public class UserListItemController implements Initializable, UserDataChangedLis
             displayMessage(new MessageContainer(MessageCodes.OK, localizedValueProvider.getString("messageUserSuccessfullyRemoved")));
             Platform.runLater(() -> parentController.removeListItem(pane));            
         } else {
+            btnDelete.setDisable(false);
             displayMessage(result.getMessageContainer());
-            logger.debug(result.getMessageContainer().toString());
         }
     }
     
