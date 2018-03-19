@@ -38,7 +38,7 @@ public class Chats extends Fragment implements OnClickListener {
             try {
                 chatAdapter.setWithUser(otherUser.getUsername());
                 XmppHandler.setChatCreated(false);
-                if (!DataStore.getInstance().isChatLoaded(otherUser.getUsername())) {
+                if (!DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername())) {
                     XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername(),
                             DataStore.getInstance().getLastQueryResult());
                 }

@@ -263,6 +263,8 @@ public class XmppHandler extends Application {
                 }
             }
 
+            ds.setChatHistoryLoaded(username);
+
 
             loadingMessages = false;
         }

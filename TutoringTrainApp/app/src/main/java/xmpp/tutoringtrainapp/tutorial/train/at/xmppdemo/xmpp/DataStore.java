@@ -27,6 +27,7 @@ public class DataStore extends Application {
 
     private Activity ctx;
     private HashMap<String, ArrayList<ChatMessage>> chats;
+    private HashMap<String, Boolean> chatLoaded;
     private BaseAdapter chatChangedListener;
 
     private ObservableArrayList<Contact> roster;
@@ -38,6 +39,7 @@ public class DataStore extends Application {
         super();
         this.chats = new HashMap<>();
         this.roster = new ObservableArrayList<>();
+        this.chatLoaded = new HashMap<>();
     }
 
     public static DataStore getInstance() {
@@ -81,8 +83,8 @@ public class DataStore extends Application {
         return this.roster.size();
     }
 
-    public boolean isChatLoaded(String username) {
-        return this.chats.get(username) != null;
+    public boolean isChatHistoryLoaded(String username) {
+        return this.chatLoaded.get(username) != null ? this.chatLoaded.get(username) : false;
     }
 
     public int getChatMessageCount(String username) {
@@ -105,6 +107,10 @@ public class DataStore extends Application {
             Collections.sort(this.roster);
             return this.roster.get(index);
         }
+    }
+
+    public void setChatHistoryLoaded(String username) {
+        chatLoaded.put(username, true);
     }
 
     private void notifyChatListener() {
