@@ -397,6 +397,12 @@ public class XmppHandler extends Application {
                               null,
                               Contact.Type.NONE);
 
+                      RosterEntry rosterEntry = getRosterEntry(p.getFrom().asBareJid());
+                      //if I have subscribed to the user, remove him
+                      if (rosterEntry != null && !rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
+                          removeFromRoster(contactToRemove);
+                      }
+
                       ds.removeContact(contactToRemove);
                   }
               }

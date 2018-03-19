@@ -131,6 +131,7 @@ public class DataStore extends Application {
     public void clearRoster() {
         synchronized (this) {
             this.roster.clear();
+            instance.setMsgRoster("No Contacts yet");
         }
     }
 
@@ -145,7 +146,11 @@ public class DataStore extends Application {
 
     public boolean removeContact(Contact c) {
         synchronized (this) {
-            return this.roster.remove(c);
+            boolean removed = this.roster.remove(c);
+            if (this.roster.isEmpty())
+                instance.setMsgRoster("No Contacts yet");
+
+            return removed;
         }
     }
 
