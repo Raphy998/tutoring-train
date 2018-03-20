@@ -75,7 +75,8 @@ public class DataStore extends Application {
 
     public Contact getContactByUsername(String username) {
         synchronized (this) {
-            return this.roster.get(this.roster.indexOf(new Contact(username, "")));
+            int index = this.roster.indexOf(new Contact(username, ""));
+            return (index != -1) ? this.roster.get(index) : null;
         }
     }
 
@@ -173,9 +174,11 @@ public class DataStore extends Application {
                           notifyChatListener();
 
                           Contact c = getContactByUsername(username);
-                          removeContact(c);
-                          c.newMessage();
-                          addContact(c);
+                          if (c != null) {
+                              removeContact(c);
+                              c.newMessage();
+                              addContact(c);
+                          }
                       }
                   }
               }

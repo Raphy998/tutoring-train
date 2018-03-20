@@ -212,9 +212,11 @@ public class XmppHandler extends Application {
             connection.sendStanza(subRequest);
 
             RosterEntry re = getRosterEntry(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN));
-            c = getContact(re);
-            c.setType(Contact.Type.REQUESTED_BY_ME);
-            ds.addContact(c);
+            if (re != null) {
+                c = getContact(re);
+                c.setType(Contact.Type.REQUESTED_BY_ME);
+                ds.addContact(c);
+            }
         }
     }
 
@@ -401,7 +403,8 @@ public class XmppHandler extends Application {
 
                       RosterEntry rosterEntry = getRosterEntry(p.getFrom().asBareJid());
                       //if I have subscribed to the user, remove him
-                      if (rosterEntry != null && !rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
+                      if (rosterEntry != null && (!rosterEntry.getType().equals(RosterPacket.ItemType.none) ||
+                              !rosterEntry.getType().equals(RosterPacket.ItemType.from))) {
                           removeFromRoster(contactToRemove);
                       }
 

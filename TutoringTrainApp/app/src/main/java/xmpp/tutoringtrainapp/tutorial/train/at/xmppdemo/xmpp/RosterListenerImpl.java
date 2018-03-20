@@ -62,20 +62,20 @@ public class RosterListenerImpl implements RosterListener {
 
     @Override
     public void entriesUpdated(Collection<Jid> addresses) {
-        System.out.println("~~~~~~~~~~~~~~~~~~ UPDATED: " + addresses);
 
-        /*for (Jid jid: addresses) {
+        for (Jid jid: addresses) {
             RosterEntry rosterEntry = XmppHandler.getInstance().getRosterEntry(jid.asBareJid());
-            System.out.println("----------------- " + rosterEntry.getJid() + " .... " + rosterEntry.getType());
 
+            //if not subscribed anymore, remove from roster display
             if (rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
                 deleteEntry(jid);
             }
+            //else use logic implemented in addEntry(...) to handle
             else {
                 addEntry(jid);
             }
         }
-        entriesAdded(addresses);*/
+        entriesAdded(addresses);
     }
 
     @Override

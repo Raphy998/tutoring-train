@@ -10,4 +10,5 @@
     <color name="colorContrastLight">#E5380E</color>
     <color name="colorBlack">#000</color>
     <color name="colorChatTimestamp">#949494</color>
+    <color name="colorChatDateSeparatorBg">#c0e2e1</color>
 </resources>

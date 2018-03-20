@@ -38,15 +38,14 @@
 
     <TextView
         android:id="@+id/numNewMsgs"
-        android:layout_width="0dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_margin="6dp"
-        android:layout_height="match_parent"
         android:maxEms="12"
         android:layout_gravity="center"
         android:gravity="center"
         android:text="1"
         android:textColor="#FFFFFF"
-        android:layout_weight=".8"
         android:background="@drawable/new_message_icon" />
 
     <ImageButton
