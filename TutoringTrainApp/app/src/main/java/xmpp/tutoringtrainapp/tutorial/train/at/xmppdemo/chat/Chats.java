@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -16,16 +17,18 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.Random;
 
 import at.train.tutorial.tutoringtrainapp.R;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.ChatHistoryLoadedListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 
 
-public class Chats extends Fragment implements OnClickListener {
+public class Chats extends Fragment implements OnClickListener, ChatHistoryLoadedListener {
 
     private EditText msg_edittext;
     private ImageButton sendButton;
     private ListView msgListView;
+    private ProgressBar progressBar;
 
     private Contact myUser, otherUser;
     private Random random;
@@ -38,6 +41,13 @@ public class Chats extends Fragment implements OnClickListener {
             try {
                 chatAdapter.setWithUser(otherUser.getUsername());
                 XmppHandler.setChatCreated(false);
+
+                //Show or hide progress spinner for loading msgs
+                if (DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername()))
+                    progressBar.setVisibility(View.GONE);
+                else
+                    progressBar.setVisibility(View.VISIBLE);
+
                 if (!DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername())) {
 
                     Runnable r = new Runnable() {
@@ -74,6 +84,7 @@ public class Chats extends Fragment implements OnClickListener {
         }
 
         random = new Random();
+        DataStore.getInstance().addChatHistoryLoadedListener(this);
     }
 
     @Override
@@ -84,13 +95,18 @@ public class Chats extends Fragment implements OnClickListener {
 
         sendButton.setOnClickListener(this);
 
-        // ----Set autoscroll of listview when a new message arrives----//
+        // ----Set auto-scroll of ListView when a new message arrives----//
         msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msgListView.setStackFromBottom(true);
 
         chatAdapter = new ChatAdapter(getActivity());
         chatAdapter.setWithUser(otherUser != null ? otherUser.getUsername() : null);
         msgListView.setAdapter(chatAdapter);
+
+        if (otherUser == null || DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername()))
+            progressBar.setVisibility(View.GONE);
+        else
+            progressBar.setVisibility(View.VISIBLE);
 
         return view;
     }
@@ -104,6 +120,7 @@ public class Chats extends Fragment implements OnClickListener {
         msg_edittext = (EditText) view.findViewById(R.id.messageEditText);
         msgListView = (ListView) view.findViewById(R.id.msgListView);
         sendButton = (ImageButton) view.findViewById(R.id.sendMessageButton);
+        progressBar = (ProgressBar) view.findViewById(R.id.msg_loading_progress);
     }
 
     @Override
@@ -145,5 +162,15 @@ public class Chats extends Fragment implements OnClickListener {
 
     public Contact getWith() {
         return this.otherUser;
+    }
+
+    @Override
+    public void onLoadingChatHistoryDone(String username) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
     }
 }

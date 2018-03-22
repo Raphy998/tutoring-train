@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.ChatMessage;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.ChatHistoryLoadedListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.MessageChangeListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 
@@ -28,6 +29,7 @@ public class DataStore extends Application {
     private Activity ctx;
     private HashMap<String, ArrayList<ChatMessage>> chats;
     private HashMap<String, Boolean> chatLoaded;
+    private ChatHistoryLoadedListener chatLoadedListener;
     private BaseAdapter chatChangedListener;
 
     private ObservableArrayList<Contact> roster;
@@ -51,6 +53,10 @@ public class DataStore extends Application {
 
     public void addOnChatsChangedObserver(BaseAdapter listener) {
         this.chatChangedListener = listener;
+    }
+
+    public void addChatHistoryLoadedListener(ChatHistoryLoadedListener listener) {
+        this.chatLoadedListener = listener;
     }
 
     public void addOnRosterChangedCallback(ObservableList.OnListChangedCallback cb) {
@@ -112,6 +118,9 @@ public class DataStore extends Application {
 
     public void setChatHistoryLoaded(String username) {
         chatLoaded.put(username, true);
+        if (chatLoadedListener != null) {
+            chatLoadedListener.onLoadingChatHistoryDone(username);
+        }
     }
 
     private void notifyChatListener() {
