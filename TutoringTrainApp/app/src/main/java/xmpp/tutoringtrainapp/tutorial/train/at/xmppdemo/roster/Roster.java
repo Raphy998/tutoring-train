@@ -1,8 +1,10 @@
 package xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,9 +60,14 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    TextView emptyView = (TextView) getActivity().findViewById(R.id.emptyResults);
-                    emptyView.setText(newMsg);
-                    contactsListView.setEmptyView(emptyView);
+                    try {
+                        TextView emptyView = (TextView) getActivity().findViewById(R.id.emptyResults);
+                        emptyView.setText(newMsg);
+                        contactsListView.setEmptyView(emptyView);
+                    }
+                    catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         }
@@ -87,11 +94,37 @@ public class Roster extends Fragment implements RosterInteractionListener, Adapt
     @Override
     public void removeFromRoster(Contact c) {
         try {
-            XmppHandler.getInstance().removeFromRoster(c);
+            showRemoveFromRosterDialog(c);
         }
         catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void showRemoveFromRosterDialog(final Contact c) {
+        final AlertDialog dlg = new AlertDialog.Builder(getContext())
+                .setTitle(getResources().getString(R.string.xmpp_remove_contact_title))
+                .setMessage(String.format(getResources().getString(R.string.xmpp_remove_contact_message), c.getFullName()))
+                .setIcon(R.drawable.ic_remove_contact)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        try {
+                            XmppHandler.getInstance().removeFromRoster(c);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }})
+                .setNegativeButton(android.R.string.no, null)
+                .create();
+        dlg.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dlg.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                dlg.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+            }
+        });
+        dlg.show();
     }
 
     @Override

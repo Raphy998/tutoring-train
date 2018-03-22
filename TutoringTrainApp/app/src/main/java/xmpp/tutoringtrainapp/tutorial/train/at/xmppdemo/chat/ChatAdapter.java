@@ -89,6 +89,7 @@ public class ChatAdapter extends BaseAdapter {
         if (message.isMine()) {
             holder.layout.setBackgroundResource(R.drawable.bubble2);
             holder.parent_layout.setGravity(Gravity.END);
+            //holder.layout.setBackgroundTintList(convertView.getResources().getColorStateList(R.color.colorPrimaryLight));
         }
         // If not mine then align to left
         else {
@@ -98,6 +99,7 @@ public class ChatAdapter extends BaseAdapter {
         holder.msg.setTextColor(Color.BLACK);
 
 
+        //display date separator if new date
         holder.sec_hr.setText(df.format(message.getDateTime()));
         holder.sec_hr.setVisibility(View.VISIBLE);
 

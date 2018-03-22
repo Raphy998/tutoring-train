@@ -31,7 +31,11 @@
 
     <string name="xmpp_domain">tutoringtrain.hopto.org</string>
     <string name="xmpp_host">tutoringtrain.hopto.org</string>
+    <string name="xmpp_remove_contact_message">Are you sure you want to delete %1$s?</string>
+    <string name="xmpp_remove_contact_title">Delete Contact</string>
+
     <string name="xmpp_username">user4</string>
     <string name="xmpp_password">3f02ebe3d7929b091e3d8ccfde2f3bc6</string>
+
 
 </resources>

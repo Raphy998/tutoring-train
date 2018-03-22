@@ -31,7 +31,7 @@ public class Chats extends Fragment implements OnClickListener {
     private Random random;
     private ChatAdapter chatAdapter;
 
-    public void setUsers(Contact myUser, Contact otherUser) {
+    public void setUsers(Contact myUser, final Contact otherUser) {
         this.myUser = myUser;
 
         if (this.otherUser == null || !this.otherUser.equals(otherUser)) {
@@ -39,8 +39,23 @@ public class Chats extends Fragment implements OnClickListener {
                 chatAdapter.setWithUser(otherUser.getUsername());
                 XmppHandler.setChatCreated(false);
                 if (!DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername())) {
-                    XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername(),
-                            DataStore.getInstance().getLastQueryResult());
+
+                    Runnable r = new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                XmppHandler.getInstance().loadArchivedMsgs(otherUser.getUsername(),
+                                        DataStore.getInstance().getLastQueryResult());
+                            }
+                            catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    };
+                    Thread th = new Thread(r);
+                    th.setDaemon(true);
+                    th.start();
+
                 }
             }
             catch (Exception ex) {
