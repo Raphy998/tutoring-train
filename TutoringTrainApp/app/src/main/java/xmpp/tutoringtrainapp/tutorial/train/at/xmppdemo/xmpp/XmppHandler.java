@@ -197,7 +197,12 @@ public class XmppHandler extends Application {
         connection.sendStanza(subscribe);
 
         Roster roster = Roster.getInstanceFor(connection);
-        roster.removeEntry(roster.getEntry(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN)));
+        try {
+            roster.removeEntry(roster.getEntry(JidCreate.bareFrom(c.getUsername() + "@" + DOMAIN)));
+        }
+        catch (Exception ex) {
+            //intentional because this might be called even after user was removed from roster
+        }
     }
 
     public void addToRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
@@ -383,17 +388,10 @@ public class XmppHandler extends Application {
                           cType = Contact.Type.REQUESTED_BY_OTHER;
                       }
 
-                      VCard vCardOfUser = getVCard(p.getFrom());
-                      String fullName = (vCardOfUser != null && vCardOfUser.getFirstName() != null) ?
-                              vCardOfUser.getFirstName() :
-                              p.getFrom().getLocalpartOrNull().toString();
-
-                      Contact newContact = new Contact(
-                              p.getFrom().getLocalpartOrNull().toString(),
-                              fullName,
-                              cType);
-
-                      ds.addContact(newContact);
+                      ds.addContact(getContact(p, cType));
+                  }
+                  else if (p.getType().equals(Presence.Type.subscribed)) {
+                      ds.updateContact(getContact(p, Contact.Type.APPROVED));
                   }
                   else if (p.getType().equals(Presence.Type.unsubscribed) || p.getType().equals(Presence.Type.unsubscribe)) {
                       Contact contactToRemove = new Contact(
@@ -426,6 +424,18 @@ public class XmppHandler extends Application {
                 return accept;
             }
         });
+    }
+
+    private Contact getContact(Presence p, Contact.Type cType) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
+        VCard vCardOfUser = getVCard(p.getFrom());
+        String fullName = (vCardOfUser != null && vCardOfUser.getFirstName() != null) ?
+                vCardOfUser.getFirstName() :
+                p.getFrom().getLocalpartOrNull().toString();
+
+        return new Contact(
+                p.getFrom().getLocalpartOrNull().toString(),
+                fullName,
+                cType);
     }
 
     private void addIncomingChatListener() {

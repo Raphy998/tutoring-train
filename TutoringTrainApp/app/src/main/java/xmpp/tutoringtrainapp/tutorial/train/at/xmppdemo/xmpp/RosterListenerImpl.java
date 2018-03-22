@@ -31,8 +31,7 @@ public class RosterListenerImpl implements RosterListener {
                     jid.getLocalpartOrNull().toString();
 
             RosterEntry rosterEntry = XmppHandler.getInstance().getRosterEntry(jid.asBareJid());
-            if (rosterEntry.getType().equals(RosterPacket.ItemType.both)) {
-
+            if (rosterEntry.getType().equals(RosterPacket.ItemType.to) || rosterEntry.getType().equals(RosterPacket.ItemType.both)) {
                 Contact contactToAdd = new Contact(
                         jid.getLocalpartOrNull().toString(),
                         fullName,
@@ -44,10 +43,9 @@ public class RosterListenerImpl implements RosterListener {
                         jid.getLocalpartOrNull().toString(),
                         fullName,
                         Contact.Type.REQUESTED_BY_OTHER);
-
                 XmppHandler.getInstance().addToRoster(contactToAdd);
             }
-            else if (rosterEntry.getType().equals(RosterPacket.ItemType.to) || rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
+            else if (rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
                 Contact contactToAdd = new Contact(
                         jid.getLocalpartOrNull().toString(),
                         fullName,
@@ -62,7 +60,6 @@ public class RosterListenerImpl implements RosterListener {
 
     @Override
     public void entriesUpdated(Collection<Jid> addresses) {
-
         for (Jid jid: addresses) {
             RosterEntry rosterEntry = XmppHandler.getInstance().getRosterEntry(jid.asBareJid());
 
