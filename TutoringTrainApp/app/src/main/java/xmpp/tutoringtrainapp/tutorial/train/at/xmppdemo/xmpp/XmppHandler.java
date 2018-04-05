@@ -225,6 +225,23 @@ public class XmppHandler extends Application {
         }
     }
 
+    public Contact.Type getContactType(String username) throws XmppStringprepException {
+        Contact.Type type = Contact.Type.NONE;
+        RosterEntry rosterEntry = XmppHandler.getInstance().getRosterEntry(JidCreate.bareFrom(username));
+
+        if (rosterEntry.getType().equals(RosterPacket.ItemType.to) || rosterEntry.getType().equals(RosterPacket.ItemType.both)) {
+            type = Contact.Type.APPROVED;
+        }
+        else if (rosterEntry.getType().equals(RosterPacket.ItemType.from)) {
+            type = Contact.Type.REQUESTED_BY_OTHER;
+        }
+        else if (rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
+            type = Contact.Type.REQUESTED_BY_ME;
+        }
+
+        return type;
+    }
+
     public void addToRoster(String username) throws SmackException.NotConnectedException, XmppStringprepException, InterruptedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
         addToRoster(new Contact(username, null, Contact.Type.NONE));
     }
