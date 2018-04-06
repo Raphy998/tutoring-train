@@ -44,8 +44,6 @@ public class Connector extends AsyncTask<Void, Void, Boolean> {
 
         }
         catch (SmackException.ConnectionException ex) {
-            ex.printStackTrace();
-            XmppHandler.getInstance().log(ex.getMessage(), true);
             DataStore.getInstance().setMsgRoster(ex.getMessage());
         }
         catch (IOException | SmackException | XMPPException | InterruptedException ex) {
