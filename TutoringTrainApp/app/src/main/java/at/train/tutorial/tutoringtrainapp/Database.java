@@ -27,6 +27,8 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
     private ArrayList<Entry> entries;
     private ArrayList<User> users;
     private String sharedPrefsSessionKey = "tutoring.train.session.key";
+    private String sharedPrefsUsernameKey = "user";
+    private String sharedPrefsPasswordKey = "password";
     private String sessionKey = null;
     private String url = null;
     private DatabaseListener listener = null;
@@ -44,13 +46,24 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
     }
 
     public void initSharedPrefs(Context context) {
-        prefs = context.getSharedPreferences
-                (context.getResources().getString(R.string.sharedPref_key), Context.MODE_PRIVATE);
+        prefs = context.getSharedPreferences(context.getResources().getString(R.string.sharedPref_key), Context.MODE_PRIVATE);
     }
 
     public void saveSessionKey(String sessionKey){
         this.sessionKey = sessionKey;
         prefs.edit().putString(sharedPrefsSessionKey,sessionKey).apply();
+    }
+
+    public void saveCurrentUser(User user){
+        prefs.edit().putString(sharedPrefsUsernameKey,user.getUsername()).apply();
+        prefs.edit().putString(sharedPrefsPasswordKey,user.getPassword()).apply();
+    }
+
+    public User getCurrentUser(){
+         String name = prefs.getString(sharedPrefsUsernameKey,null);
+         String password = prefs.getString(sharedPrefsPasswordKey,null);
+
+         return new User(name,password);
     }
 
     public void setListener(DatabaseListener listener){

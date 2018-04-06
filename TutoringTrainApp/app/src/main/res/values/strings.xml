@@ -20,6 +20,7 @@
 
     <string name="sharedPref_key">at.train.tutoring.train</string>
 
+
     <string name="offer">Offer</string>
     <string name="request">Request</string>
 
@@ -38,6 +39,9 @@
     <string name="xmpp_password">3f02ebe3d7929b091e3d8ccfde2f3bc6</string>
     <!--<string name="xmpp_username">admin</string>
     <string name="xmpp_password">21232f297a57a5a743894a0e4a801fc3</string>-->
+
+    <string name="preference_file_key">at.tutorial.tutoringtrainapp.PREFERENCE_FILE_KEY</string>
+
 
 
 </resources>

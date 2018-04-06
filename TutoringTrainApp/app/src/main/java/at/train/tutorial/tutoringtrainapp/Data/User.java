@@ -2,12 +2,14 @@ package at.train.tutorial.tutoringtrainapp.Data;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import java.io.Serializable;
+
 /**
  * @author  Raphael Moser
  * created on 06.01.2018.
  */
 
-public class User {
+public class User implements Serializable{
     @JsonView ({Views.User.Out.Login.class,Views.Comment.In.loadNewest.class})
     private String username;
     private String email;

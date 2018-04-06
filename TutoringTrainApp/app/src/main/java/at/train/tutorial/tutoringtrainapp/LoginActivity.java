@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import at.train.tutorial.tutoringtrainapp.Data.User;
+
 /**
  * @author moserr
  */
@@ -24,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ScrollView mLoginFormView;
     private Button bttnLogin;
     private OkHttpAsyncHandler handler;
+    private String username, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +62,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(view == bttnLogin){
             if(checkUsersInput()) {
                 changeStatusOfLoginForm(false);
-                String username = mEmailView.getText().toString();
-                String password = mPasswordView.getText().toString();
-                OkHttpAsyncHandler.performLogin(username,Encrypter.md5(password), this);
+                username = mEmailView.getText().toString();
+                password = Encrypter.md5(mPasswordView.getText().toString());
+                OkHttpAsyncHandler.performLogin(username,password, this);
                 mProgressView.setVisibility(View.VISIBLE);
             }
         }
@@ -76,6 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void loginSuccess() {
+        Database.getInstance().saveCurrentUser(new User(username,password));
         Intent myIntent = new Intent(this, MainActivity.class);
         myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         this.startActivity(myIntent);

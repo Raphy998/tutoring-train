@@ -1,6 +1,7 @@
 package at.train.tutorial.tutoringtrainapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 /**
  * @author moserr
  */
+
 public class StartActivity extends AppCompatActivity implements OnClickListener,LoginListener{
 
     // UI references.
@@ -46,6 +48,7 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
         Database db = Database.getInstance();
         db.setUrl(url);
         db.initSharedPrefs(this);
+
         String sessionKey = db.getSessionKey();
         if(sessionKey != null && !sessionKey.isEmpty()){
             OkHttpAsyncHandler.performSessionCheck(this);
