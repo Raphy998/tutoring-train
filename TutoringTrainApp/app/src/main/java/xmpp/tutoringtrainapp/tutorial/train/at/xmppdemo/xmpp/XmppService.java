@@ -21,8 +21,12 @@ public class XmppService extends Service {
         editor.putString("password", password);
         editor.apply();
 
-        if (!XmppHandler.getInstance(instance, username, password).getUsername().equals(username) ||
-                !XmppHandler.getInstance(instance, username, password).getPassword().equals(password)) {
+        XmppHandler xmppHandler = XmppHandler.getInstance(instance, username, password);
+
+        xmppHandler.connect("login");
+
+        if (!xmppHandler.getUsername().equals(username) ||
+                !xmppHandler.getPassword().equals(password)) {
             disconnectXmpp();
             connectXmpp(username, password);
         }
@@ -49,6 +53,7 @@ public class XmppService extends Service {
     @Override
     public int onStartCommand(final Intent intent, final int flags,
                               final int startId) {
+
         if (intent != null && intent.getExtras() != null) {
             Bundle credentials = intent.getExtras();
             this.username = credentials.getString("username");

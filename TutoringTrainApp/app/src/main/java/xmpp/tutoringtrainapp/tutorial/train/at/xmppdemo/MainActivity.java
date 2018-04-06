@@ -25,7 +25,6 @@ import at.train.tutorial.tutoringtrainapp.R;
 
 public class MainActivity extends AppCompatActivity implements FragmentInteractionListener {
 
-    private static final String TAG = "MainActivity";
     private Chats chats;
     private Roster roster;
 
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
             DataStore.getInstance().setCtx(this);
             getViews();
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
             //display fragment
@@ -56,12 +55,12 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                 showRoster();
             }
 
-            Intent serviceIntent = new Intent(this, XmppService.class);
+            /*Intent serviceIntent = new Intent(this, XmppService.class);
             Bundle credentials = new Bundle();
             credentials.putString("username", Database.getInstance().getCurrentUser().getUsername());
             credentials.putString("password", Database.getInstance().getCurrentUser().getPassword());
             serviceIntent.putExtras(credentials);
-            startService(serviceIntent);
+            startService(serviceIntent);*/
 
             handleIntent(getIntent());
         }

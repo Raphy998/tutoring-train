@@ -1,11 +1,11 @@
 package at.train.tutorial.tutoringtrainapp;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
+import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppService;
 
 public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener, View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private RecyclerView.Adapter adapter;
@@ -76,6 +77,13 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
 
             recView.setAdapter(adapter);
             Database.getInstance().getEntries();
+
+            Intent serviceIntent = new Intent(this, XmppService.class);
+            Bundle credentials = new Bundle();
+            credentials.putString("username", Database.getInstance().getCurrentUser().getUsername());
+            credentials.putString("password", Database.getInstance().getCurrentUser().getPassword());
+            serviceIntent.putExtras(credentials);
+            startService(serviceIntent);
         }
         catch(Exception e){
             e.printStackTrace();

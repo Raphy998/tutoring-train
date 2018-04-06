@@ -97,6 +97,7 @@ public class XmppHandler extends Application {
     }
 
     public static XmppHandler getInstance(XmppService context, String user, String pass) {
+        System.out.println("--------------- XmppHandler: " + user + " ... " + pass);
 
         if (instance == null) {
             instance = new XmppHandler(context, user, pass);
@@ -227,16 +228,16 @@ public class XmppHandler extends Application {
 
     public Contact.Type getContactType(String username) throws XmppStringprepException {
         Contact.Type type = Contact.Type.NONE;
-        RosterEntry rosterEntry = XmppHandler.getInstance().getRosterEntry(JidCreate.bareFrom(username));
+        RosterEntry rosterEntry = getRosterEntry(JidCreate.bareFrom(username));
 
-        if (rosterEntry.getType().equals(RosterPacket.ItemType.to) || rosterEntry.getType().equals(RosterPacket.ItemType.both)) {
-            type = Contact.Type.APPROVED;
-        }
-        else if (rosterEntry.getType().equals(RosterPacket.ItemType.from)) {
-            type = Contact.Type.REQUESTED_BY_OTHER;
-        }
-        else if (rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
-            type = Contact.Type.REQUESTED_BY_ME;
+        if (rosterEntry != null) {
+            if (rosterEntry.getType().equals(RosterPacket.ItemType.to) || rosterEntry.getType().equals(RosterPacket.ItemType.both)) {
+                type = Contact.Type.APPROVED;
+            } else if (rosterEntry.getType().equals(RosterPacket.ItemType.from)) {
+                type = Contact.Type.REQUESTED_BY_OTHER;
+            } else if (rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
+                type = Contact.Type.REQUESTED_BY_ME;
+            }
         }
 
         return type;
@@ -576,7 +577,7 @@ public class XmppHandler extends Application {
         reconnThread.start();
     }
 
-    private boolean isConnected() {
+    public boolean isConnected() {
         boolean isConnected;
         try {
             ping();
