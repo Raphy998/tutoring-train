@@ -24,7 +24,7 @@ import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
 import at.train.tutorial.tutoringtrainapp.Data.User;
 
-public class UserActivity extends AppCompatActivity implements DatabaseListener, BottomNavigationView.OnNavigationItemSelectedListener {
+public class UserActivity extends AppCompatActivity implements DatabaseListener, BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<User> users =new ArrayList();
@@ -67,7 +67,7 @@ public class UserActivity extends AppCompatActivity implements DatabaseListener,
             db.loadUsers();
             db.setListener(this);
 
-            adapter = new CustomUserAdapter(this.users,getApplicationContext());
+            adapter = new CustomUserAdapter(this.users,getApplicationContext(),this);
 
             recView.setAdapter(adapter);
         }
@@ -109,5 +109,15 @@ public class UserActivity extends AppCompatActivity implements DatabaseListener,
                 break;
         }
         return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        int itemPosition = recView.getChildLayoutPosition(view);
+        User item = users.get(itemPosition);
+
+        Intent myIntent = new Intent(this, UserDisplayActivity.class);
+        myIntent.putExtra("User",item); //Optional parameters
+        this.startActivity(myIntent);
     }
 }
