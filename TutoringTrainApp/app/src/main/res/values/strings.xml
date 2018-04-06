@@ -34,11 +34,7 @@
     <string name="xmpp_host">tutoringtrain.hopto.org</string>
     <string name="xmpp_remove_contact_message">Are you sure you want to delete %1$s?</string>
     <string name="xmpp_remove_contact_title">Delete Contact</string>
-
-    <string name="xmpp_username">user4</string>
-    <string name="xmpp_password">3f02ebe3d7929b091e3d8ccfde2f3bc6</string>
-    <!--<string name="xmpp_username">admin</string>
-    <string name="xmpp_password">21232f297a57a5a743894a0e4a801fc3</string>-->
+    <string name="xmpp_no_messages">No messages yet</string>
 
     <string name="preference_file_key">at.tutorial.tutoringtrainapp.PREFERENCE_FILE_KEY</string>
 

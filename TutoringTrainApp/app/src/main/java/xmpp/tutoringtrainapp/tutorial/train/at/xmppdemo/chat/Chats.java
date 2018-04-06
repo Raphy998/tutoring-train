@@ -50,6 +50,11 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
 
                 if (!DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername())) {
 
+                    /*
+                    TextView emptyView = (TextView) getActivity().findViewById(R.id.emptyResults);
+                    emptyView.setText(getResources().getString(R.string.xmpp_no_messages));
+                    msgListView.setEmptyView(emptyView);*/
+
                     Runnable r = new Runnable() {
                         @Override
                         public void run() {

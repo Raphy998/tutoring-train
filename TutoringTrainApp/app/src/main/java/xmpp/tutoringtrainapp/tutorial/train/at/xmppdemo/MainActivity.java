@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import at.train.tutorial.tutoringtrainapp.Database;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
@@ -57,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
 
             Intent serviceIntent = new Intent(this, XmppService.class);
             Bundle credentials = new Bundle();
-            credentials.putString("username", getString(R.string.xmpp_username));
-            credentials.putString("password", getString(R.string.xmpp_password));
+            credentials.putString("username", Database.getInstance().getCurrentUser().getUsername());
+            credentials.putString("password", Database.getInstance().getCurrentUser().getPassword());
             serviceIntent.putExtras(credentials);
             startService(serviceIntent);
 
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     public void openChatWithUser(Object sender, Contact otherUser) {
         try {
             chats.setUsers(
-                    new Contact(getString(R.string.xmpp_username), "myFullName"),
+                    new Contact(Database.getInstance().getCurrentUser().getUsername(), "myFullName"),
                     otherUser);
             showChat();
         }
