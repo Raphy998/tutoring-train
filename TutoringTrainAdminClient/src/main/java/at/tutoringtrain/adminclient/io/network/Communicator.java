@@ -1144,7 +1144,7 @@ public class Communicator {
                 listener.requestGetCommentsOfEntryFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.GET, true, entryType.toString() + "/" + entryId + "/comments", requestCallback);
+        return enqueueRequest(HttpMethod.GET, true, entryType.name().toLowerCase() + "/" + entryId + "/comments", requestCallback);
     }
     
     public boolean requestDeleteComment(RequestDeleteCommentListener listener, BigDecimal entryId, EntryType entryType, BigDecimal commentId) throws Exception {
@@ -1158,6 +1158,6 @@ public class Communicator {
                 listener.requestDeleteCommentFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        return enqueueRequest(HttpMethod.DELTE, true, entryType.toString() + "/" + entryId + "/comments/" + commentId, requestCallback);
+        return enqueueRequest(HttpMethod.DELTE, true, entryType.name().toLowerCase() + "/" + entryId + "/comments/" + commentId, requestCallback);
     }
 } 

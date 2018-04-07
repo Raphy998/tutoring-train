@@ -29,7 +29,8 @@ public final class User {
         DataMappingViews.User.Out.Update.class,
         DataMappingViews.User.Out.UpdateOwn.class,
         DataMappingViews.Entry.In.Get.class,
-        DataMappingViews.Entry.In.Create.class
+        DataMappingViews.Entry.In.Create.class,
+        DataMappingViews.Entry.Comment.In.Get.class
     })
     private String name;
     

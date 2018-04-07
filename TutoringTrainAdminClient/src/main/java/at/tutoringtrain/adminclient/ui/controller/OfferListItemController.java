@@ -30,6 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -179,12 +180,13 @@ public class OfferListItemController implements Initializable, OfferChangedListe
             lblPostedOn.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(offer.getPostedon()));
             lblActive.setText(localizedValueProvider.getString(offer.getIsactive() ? "active" : "inactive"));
             lblSubject.setText(offer.getSubject().getName());
-            lblUsername.setText("@" + offer.getUser().getUsername() + " (" + offer.getUser().getName() + ")");
+            lblUsername.setText("@" + offer.getUser().getUsername() + (!StringUtils.isBlank(offer.getUser().getName()) ? " (" + offer.getUser().getName() + ")" : ""));
             lblDescription.setText(offer.getDescription());
             lblLocation.setText(offer.getLocation() != null ? offer.getLocation().getName() : "");
             ivIcon.setOpacity(offer.getIsactive()? 1 : 0.5);
             btnDelete.setDisable(false);
             btnEdit.setDisable(false);
+            
         }
     }
     

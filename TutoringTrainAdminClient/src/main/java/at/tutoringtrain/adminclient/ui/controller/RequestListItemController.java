@@ -30,6 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -179,7 +180,7 @@ public class RequestListItemController implements Initializable, RequestChangedL
             lblPostedOn.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(request.getPostedon()));
             lblActive.setText(localizedValueProvider.getString(request.getIsactive() ? "active" : "inactive"));
             lblSubject.setText(request.getSubject().getName());
-            lblUsername.setText("@" + request.getUser().getUsername() + " (" + request.getUser().getName() + ")");
+            lblUsername.setText("@" + request.getUser().getUsername() + (!StringUtils.isBlank(request.getUser().getName()) ? " (" + request.getUser().getName() + ")" : ""));
             lblDescription.setText(request.getDescription());
             lblLocation.setText(request.getLocation() != null ? request.getLocation().getName() : "");
             ivIcon.setOpacity(request.getIsactive()? 1 : 0.5);

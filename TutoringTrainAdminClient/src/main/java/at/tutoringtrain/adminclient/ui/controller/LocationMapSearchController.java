@@ -45,6 +45,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -166,7 +167,7 @@ public class LocationMapSearchController implements Initializable, TutoringTrain
     
     private void generateInfoWindow(EntryMarker entryMarker) {
         InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-        infoWindowOptions.content("<h1>" + entryMarker.getEntry().getHeadline() + "</h1><h2>" + entryMarker.getEntry().getSubject().getName() + "</h2><p>" + entryMarker.getEntry().getUser().getUsername() + " (" + entryMarker.getEntry().getUser().getName() + ")</p>");
+        infoWindowOptions.content("<h1>" + entryMarker.getEntry().getHeadline() + "</h1><h2>" + entryMarker.getEntry().getSubject().getName() + "</h2><p>" + entryMarker.getEntry().getUser().getUsername() + (!StringUtils.isBlank(entryMarker.getEntry().getUser().getName()) ? " (" + entryMarker.getEntry().getUser().getName() + ")" : "") + "</p>");
         InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
         infoWindow.open(map, entryMarker);
     }
