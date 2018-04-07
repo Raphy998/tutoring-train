@@ -1,6 +1,7 @@
 package at.tutoringtrain.adminclient.io.network;
 
 import at.tutoringtrain.adminclient.data.entry.EntryType;
+import at.tutoringtrain.adminclient.data.entry.Location;
 import at.tutoringtrain.adminclient.data.mapper.DataMapper;
 import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.data.subject.Subject;
@@ -15,6 +16,7 @@ import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewes
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestNewestOffersOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSearchLocationListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSimpleSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestResetPropertyOfOfferListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestUpdateOfferListener;
@@ -23,6 +25,7 @@ import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNew
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestNewestRequestsOfUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSearchLocationListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSimpleSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestResetPropertyOfRequestListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestUpdateRequestListener;
@@ -52,11 +55,17 @@ import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserCountLis
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserSearchListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
+import at.tutoringtrain.adminclient.ui.search.OrderElement;
+import at.tutoringtrain.adminclient.ui.search.SearchCriteria;
+import at.tutoringtrain.adminclient.ui.search.SpatialOperation;
+import at.tutoringtrain.adminclient.ui.search.SpatialSearchCriteria;
+import at.tutoringtrain.adminclient.ui.search.entry.EntryProp;
 import at.tutoringtrain.adminclient.ui.search.entry.EntrySearch;
 import at.tutoringtrain.adminclient.ui.search.user.UserSearch;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import okhttp3.Call;
@@ -887,6 +896,27 @@ public class Communicator {
         return enqueueRequest(HttpMethod.POST, true, "offer/search", requestCallback, json, dataMapper.toJSON(entrySearch));
     }
     
+    public boolean requestOfferSearchLocation(RequestOfferSearchLocationListener listener, Location location, double radius) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (location == null) {
+             throw new RequiredParameterException(location, "must not be null");
+        }
+        ArrayList<SearchCriteria<EntryProp>> criteria = new ArrayList<>();
+        ArrayList<OrderElement<EntryProp>> order = new ArrayList<>();
+        criteria.add(new SpatialSearchCriteria<>(EntryProp.LOCATION, SpatialOperation.INSIDE, location, radius));
+        EntrySearch search = new EntrySearch(criteria, order);
+        requestCallback = new RequestCallback<RequestOfferSearchLocationListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestOfferSearchLocationFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "offer/search", requestCallback, json, dataMapper.toJSON(search));
+    }
+    
     public boolean requestUpdateOffer(RequestUpdateOfferListener listener, at.tutoringtrain.adminclient.data.entry.Offer offer) throws Exception {
         RequestCallback requestCallback;  
         if (listener == null) {
@@ -1032,6 +1062,27 @@ public class Communicator {
         return enqueueRequest(HttpMethod.POST, true, "request/search", requestCallback, json, dataMapper.toJSON(entrySearch));
     }
     
+    public boolean requestRequestSearchLocation(RequestRequestSearchLocationListener listener, Location location, double radius) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (location == null) {
+             throw new RequiredParameterException(location, "must not be null");
+        }
+        ArrayList<SearchCriteria<EntryProp>> criteria = new ArrayList<>();
+        ArrayList<OrderElement<EntryProp>> order = new ArrayList<>();
+        criteria.add(new SpatialSearchCriteria<>(EntryProp.LOCATION, SpatialOperation.INSIDE, location, radius));
+        EntrySearch search = new EntrySearch(criteria, order);
+        requestCallback = new RequestCallback<RequestRequestSearchLocationListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestRequestSearchLocationFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "request/search", requestCallback, json, dataMapper.toJSON(search));
+    }
+    
     public boolean requestUpdateRequest(RequestUpdateRequestListener listener, at.tutoringtrain.adminclient.data.entry.Request request) throws Exception {
         RequestCallback requestCallback;  
         if (listener == null) {
@@ -1093,7 +1144,6 @@ public class Communicator {
                 listener.requestGetCommentsOfEntryFinished(new RequestResult(response.code(), response.body().string()));
             }
         };
-        logger.warn(entryType.toString() + "/" + entryId + "/comments");
         return enqueueRequest(HttpMethod.GET, true, entryType.toString() + "/" + entryId + "/comments", requestCallback);
     }
     

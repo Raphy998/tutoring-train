@@ -71,6 +71,8 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @FXML
     private JFXButton btnSearch;
     @FXML
+    private JFXButton btnMapSearch;
+    @FXML
     private JFXButton btnClear;
     @FXML
     private JFXSpinner spinner;
@@ -155,6 +157,16 @@ public class MainController implements Initializable, ApplicationExitListener, T
     void onBtnAllSubjects(ActionEvent event) {
         try {
             windowService.openShowAllSubjectsWindow();  
+        } catch (Exception ex) {
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+        }
+    }
+    
+     @FXML
+    void onBtnMapSearch(ActionEvent event) {
+        try {
+            windowService.openLocationMapSearchWindow();
         } catch (Exception ex) {
             logger.error(ex);
             displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));

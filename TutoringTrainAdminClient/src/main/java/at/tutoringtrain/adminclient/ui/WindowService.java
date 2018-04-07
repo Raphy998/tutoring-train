@@ -20,6 +20,7 @@ import at.tutoringtrain.adminclient.ui.controller.AuthenticationController;
 import at.tutoringtrain.adminclient.ui.controller.BlockUserController;
 import at.tutoringtrain.adminclient.ui.controller.CreditsController;
 import at.tutoringtrain.adminclient.ui.controller.LocationMapController;
+import at.tutoringtrain.adminclient.ui.controller.LocationMapSearchController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterUserController;
 import at.tutoringtrain.adminclient.ui.controller.SettingsController;
@@ -240,6 +241,23 @@ public class WindowService {
         stage.setResizable(true);
         stage.setScene(new Scene(root));
         controller.setEntry(entry);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openLocationMapSearchWindow() throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        LocationMapSearchController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/LocationMapSearch.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (LocationMapSearchController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(true);
+        stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
     }

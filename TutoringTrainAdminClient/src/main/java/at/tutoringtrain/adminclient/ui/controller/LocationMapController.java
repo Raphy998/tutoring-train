@@ -17,6 +17,7 @@ import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
+import com.lynden.gmapsfx.shapes.Circle;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -45,6 +46,9 @@ public class LocationMapController implements Initializable, TutoringTrainWindow
     private Entry entry;
     private GoogleMap map;
     
+    private Marker lastMarker;
+    private Circle lastCircle;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         logger = LogManager.getLogger(this);
@@ -62,7 +66,7 @@ public class LocationMapController implements Initializable, TutoringTrainWindow
         LatLong location = new LatLong(entry.getLocation().getLat(), entry.getLocation().getLon());
         MapOptions mapOptions = new MapOptions();
         mapOptions.center(location);
-        mapOptions.mapType(MapTypeIdEnum.ROADMAP);
+        mapOptions.mapType(MapTypeIdEnum.TERRAIN);
         mapOptions.overviewMapControl(true);
         mapOptions.panControl(true);
         mapOptions.rotateControl(true);
@@ -71,14 +75,19 @@ public class LocationMapController implements Initializable, TutoringTrainWindow
         mapOptions.zoomControl(true);
         mapOptions.zoom(13); 
         map = mapView.createMap(mapOptions);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(location);
-        Marker marker = new Marker(markerOptions);
+        Marker marker = generateMarker(location);
         map.addMarker(marker);
         InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
         infoWindowOptions.content("<h1>" + entry.getHeadline() + "</h1><p>" + entry.getUser().getUsername() + " (" + entry.getUser().getName() + ")</p>");
         InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
-        infoWindow.open(map, marker);
+        infoWindow.open(map, marker);        
+    }
+    
+    private Marker generateMarker(LatLong latlong) {
+        MarkerOptions mo = new MarkerOptions();
+        mo.label(latlong.toString());
+        mo.position(latlong);
+        return new Marker(mo);
     }
     
     @FXML

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXSlider?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.lynden.gmapsfx.GoogleMapView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="640.0" prefWidth="1000.0" styleClass="pane" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.tutoringtrain.adminclient.ui.controller.LocationMapSearchController">
+    <children>
+      <Label alignment="CENTER" text="%search" textAlignment="CENTER" textFill="#084c61" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+         <padding>
+            <Insets bottom="10.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </Label>
+      <StackPane AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="90.0">
+         <children>
+            <GoogleMapView fx:id="mapView" />
+            <JFXSpinner fx:id="spinner" radius="25.0" startingAngle="0.0" />
+         </children>
+      </StackPane>
+      <HBox alignment="CENTER_RIGHT" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <JFXButton fx:id="btnClose" buttonType="RAISED" onAction="#onBtnClose" prefHeight="30.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%close">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </JFXButton>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="8.0" right="8.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox layoutX="20.0" layoutY="20.0" spacing="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <Label alignment="CENTER" prefHeight="40.0" prefWidth="120.0" text="%searchRadius" wrapText="true">
+               <padding>
+                  <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
+               </padding>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <JFXSlider fx:id="sliderRadius" blockIncrement="0.25" majorTickUnit="10.0" max="150.0" minorTickCount="1" prefWidth="0.0" showTickLabels="true" showTickMarks="true" value="1.0" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets left="5.0" right="10.0" />
+               </padding>
+            </JFXSlider>
+            <JFXComboBox fx:id="comboType" focusColor="#084c61" labelFloat="true" prefHeight="30.0" prefWidth="115.0" promptText="%type" unFocusColor="#86bab8">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </JFXComboBox>
+            <JFXButton fx:id="btnReset" alignment="CENTER" buttonType="RAISED" onAction="#onBtnReset" prefHeight="30.0" prefWidth="110.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%reset">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+               <padding>
+                  <Insets bottom="5.0" left="1.0" right="1.0" top="5.0" />
+               </padding>
+            </JFXButton>
+            <JFXButton fx:id="btnSearch" alignment="CENTER" buttonType="RAISED" onAction="#onBtnSearch" prefHeight="30.0" prefWidth="110.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%search" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+               <padding>
+                  <Insets bottom="5.0" left="1.0" right="1.0" top="5.0" />
+               </padding>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </JFXButton>
+         </children>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding>
+      </HBox>
+   </children>
+</AnchorPane>

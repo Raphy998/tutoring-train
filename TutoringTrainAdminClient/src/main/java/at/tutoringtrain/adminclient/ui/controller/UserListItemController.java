@@ -227,7 +227,7 @@ public class UserListItemController implements Initializable, UserDataChangedLis
             lblName.setText(user.getName() + (user.isCurrentUser() ? (" (" + localizedValueProvider.getString("myAccount") + ")") : ""));
             lblEducation.setText(user.getEducation());
             lblGender.setText(dataStorage.getGender(user.getGender()).getName());
-            lblRating.setText(localizedValueProvider.getString("rating") + ": " + user.getAveragerating());
+            lblRating.setText(localizedValueProvider.getString("rating") + ": " + user.getAveragerating() + " / 5 " + localizedValueProvider.getString("stars"));
             lblEmail.setText(user.getEmail());        
             displayAvatar();
             displayBlocked();

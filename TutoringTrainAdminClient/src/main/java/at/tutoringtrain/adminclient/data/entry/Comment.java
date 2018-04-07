@@ -2,7 +2,6 @@ package at.tutoringtrain.adminclient.data.entry;
 
 import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.data.user.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,7 +19,6 @@ public class Comment {
     @JsonView({
         DataMappingViews.Entry.Comment.In.Get.class
     })
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date postedon;
     
     @JsonView({

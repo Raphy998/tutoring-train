@@ -21,7 +21,8 @@ public enum EntryProp implements EntityProp {
     DESCRIPTION(STRING), 
     SUBJECT(NUMBER),
     HEADLINE(STRING),
-    USERNAME(STRING);
+    USERNAME(STRING),
+    LOCATION(SPATIAL);
     
     private final DataType dataType;
 
