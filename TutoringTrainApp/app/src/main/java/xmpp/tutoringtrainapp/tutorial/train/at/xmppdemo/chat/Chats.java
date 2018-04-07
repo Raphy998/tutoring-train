@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -29,6 +30,7 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
     private ImageButton sendButton;
     private ListView msgListView;
     private ProgressBar progressBar;
+    private TextView emptyView;
 
     private Contact myUser, otherUser;
     private Random random;
@@ -49,12 +51,6 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
                     progressBar.setVisibility(View.VISIBLE);
 
                 if (!DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername())) {
-
-                    /*
-                    TextView emptyView = (TextView) getActivity().findViewById(R.id.emptyResults);
-                    emptyView.setText(getResources().getString(R.string.xmpp_no_messages));
-                    msgListView.setEmptyView(emptyView);*/
-
                     Runnable r = new Runnable() {
                         @Override
                         public void run() {
@@ -99,7 +95,6 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
         getViews(view);
 
         sendButton.setOnClickListener(this);
-
         // ----Set auto-scroll of ListView when a new message arrives----//
         msgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msgListView.setStackFromBottom(true);
@@ -116,6 +111,14 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
         return view;
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden) {
+            emptyView.setText(getResources().getString(R.string.xmpp_no_messages));
+            msgListView.setEmptyView(emptyView);
+        }
+    }
+
     private boolean listIsAtTop()   {
         if(msgListView.getChildCount() == 0) return true;
         return msgListView.getChildAt(0).getTop() == 0;
@@ -126,6 +129,7 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
         msgListView = (ListView) view.findViewById(R.id.msgListView);
         sendButton = (ImageButton) view.findViewById(R.id.sendMessageButton);
         progressBar = (ProgressBar) view.findViewById(R.id.msg_loading_progress);
+        emptyView = (TextView) view.findViewById(R.id.emptyResults);
     }
 
     @Override
