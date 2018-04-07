@@ -12,19 +12,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
-import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
+import at.train.tutorial.tutoringtrainapp.Data.MenuEntry;
 import at.train.tutorial.tutoringtrainapp.Data.User;
 
-public class UserActivity extends AppCompatActivity implements DatabaseListener, BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class UserActivity extends AppCompatActivity implements DatabaseListener, View.OnClickListener {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<User> users =new ArrayList();
@@ -40,9 +38,7 @@ public class UserActivity extends AppCompatActivity implements DatabaseListener,
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.USERS);
 
 
         recView = (RecyclerView) findViewById(R.id.lv_test);
@@ -92,23 +88,6 @@ public class UserActivity extends AppCompatActivity implements DatabaseListener,
                 adapter.notifyDataSetChanged();
             }
         });
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Intent myIntent;
-        switch (item.getItemId()){
-            case R.id.ic_main:
-                myIntent = new Intent(this, UserActivity.class);
-                this.startActivity(myIntent);
-                break;
-
-            case R.id.c_users:
-                //myIntent = new Intent(this, UserActivity.class);
-                //this.startActivity(myIntent);
-                break;
-        }
-        return false;
     }
 
     @Override

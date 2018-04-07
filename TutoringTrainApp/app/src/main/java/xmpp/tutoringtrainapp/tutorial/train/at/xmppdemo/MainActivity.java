@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import at.train.tutorial.tutoringtrainapp.BottomNavigationViewHelper;
+import at.train.tutorial.tutoringtrainapp.Data.MenuEntry;
 import at.train.tutorial.tutoringtrainapp.Database;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
@@ -54,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
             else {
                 showRoster();
             }
+
+            BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
+            BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.CHAT);
 
             /*Intent serviceIntent = new Intent(this, XmppService.class);
             Bundle credentials = new Bundle();

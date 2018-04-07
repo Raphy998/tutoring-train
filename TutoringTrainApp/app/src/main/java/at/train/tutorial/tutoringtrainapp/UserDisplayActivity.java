@@ -30,19 +30,17 @@ public class UserDisplayActivity extends AppCompatActivity implements View.OnCli
         btn_chat = findViewById(R.id.btn_ChatRequest);
         btn_chat.setOnClickListener(this);
 
-        /*
-        * Check if user is already added / request has already been sent:
-        * Contact c = DataStore.getInstance().getContactByUsername(user.getUsername());
-            if (c != null && c.getType() != Contact.Type.NONE) {
-                throw new Exception("User already in some sort of contact relation");
-            }
+        Contact c = DataStore.getInstance().getContactByUsername(user.getUsername());
+        if (c != null && c.getType() != Contact.Type.NONE) {
+                //throw new Exception("User already in some sort of contact relation");
+                btn_chat.setEnabled(false);
+        }
 
-            NONE ... no relation
-            APPROVED ... already added
-            REQUESTED_BY_ME ... I have already sent a request
-            REQUESTED_BY_OTHER ... Other user has already requested my friendship
-        *
-        * */
+           // NONE ... no relation
+           // APPROVED ... already added
+           // REQUESTED_BY_ME ... I have already sent a request
+           // REQUESTED_BY_OTHER ... Other user has already requested my friendship
+
 
         Toast.makeText(this, user.getUsername(),Toast.LENGTH_LONG).show();
         }

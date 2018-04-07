@@ -7,18 +7,18 @@
         android:title="Main"/>
 
     <item
-        android:id="@+id/c_users"
+        android:id="@+id/ic_users"
         android:icon="@drawable/ic_people_black_24dp"
         android:title="Users"/>
 
     <item
-        android:id="@+id/c_user"
+        android:id="@+id/ic_user"
         android:icon="@mipmap/ic_launcher"
         android:title="User"/>
 
     <item
-        android:id="@+id/c_user2"
+        android:id="@+id/ic_chat"
         android:icon="@mipmap/ic_launcher"
-        android:title="Test"/>
+        android:title="chat"/>
 
 </menu>
