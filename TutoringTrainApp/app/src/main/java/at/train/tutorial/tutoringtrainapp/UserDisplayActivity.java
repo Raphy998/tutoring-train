@@ -31,6 +31,7 @@ public class UserDisplayActivity extends AppCompatActivity implements View.OnCli
         btn_chat.setOnClickListener(this);
 
         Contact c = DataStore.getInstance().getContactByUsername(user.getUsername());
+        System.out.println("c.getType(): " + ((c != null) ? c.getType() : "null"));
         if (c != null && c.getType() != Contact.Type.NONE) {
                 //throw new Exception("User already in some sort of contact relation");
                 btn_chat.setEnabled(false);

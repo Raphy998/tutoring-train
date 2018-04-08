@@ -81,7 +81,7 @@ public class DataStore extends Application {
 
     public Contact getContactByUsername(String username) {
         synchronized (this) {
-            int index = this.roster.indexOf(new Contact(username, ""));
+            int index = this.roster.indexOf(new Contact(username.toLowerCase(), ""));
             return (index != -1) ? this.roster.get(index) : null;
         }
     }
