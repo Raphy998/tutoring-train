@@ -228,7 +228,7 @@ public class XMPPService extends AbstractService {
             conn.login(username.toLowerCase(), getXMPPPassword(password));
 
             Presence subscribe = new Presence(Presence.Type.subscribe);
-            subscribe.setTo(JidCreate.bareFrom(usernameToAdd + "@" + DOMAIN));
+            subscribe.setTo(JidCreate.bareFrom(usernameToAdd.toLowerCase() + "@" + DOMAIN));
             conn.sendStanza(subscribe);
             
             conn.disconnect();
@@ -252,8 +252,8 @@ public class XMPPService extends AbstractService {
                 r.reloadAndWait();
             }
             
-            if (r.contains(JidCreate.bareFrom(otherUsername + "@" + DOMAIN))) {
-                switch (r.getEntry(JidCreate.bareFrom(otherUsername + "@" + DOMAIN)).getType()) {
+            if (r.contains(JidCreate.bareFrom(otherUsername.toLowerCase() + "@" + DOMAIN))) {
+                switch (r.getEntry(JidCreate.bareFrom(otherUsername.toLowerCase() + "@" + DOMAIN)).getType()) {
                     case none:
                         type = XmppContactType.REQUESTED;
                         break;

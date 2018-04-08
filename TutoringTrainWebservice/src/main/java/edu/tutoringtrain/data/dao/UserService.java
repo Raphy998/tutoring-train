@@ -94,7 +94,7 @@ public class UserService extends AbstractService {
             if (ex.getMessage().contains("U_USER_EMAIL")) {
                 err = new ErrorBuilder(Error.EMAIL_CONFLICT).withParams(userIn.getEmail());
             }
-            else if (ex.getMessage().contains("PK_TUSER")) {
+            else if (ex.getMessage().contains("PK_TUSER") || ex.getMessage().contains("IDX_UNIQ_NAME")) {
                 err = new ErrorBuilder(Error.USERNAME_CONFLICT).withParams(userIn.getUsername());
             }
             else {
