@@ -144,29 +144,10 @@ INSERT INTO user_sdo_geom_metadata (
 CREATE INDEX spatial_index_entry_location ON
     entry ( location )
         INDEXTYPE IS mdsys.spatial_index;
+	
+	
+create unique index idx_uniq_name on tuser( lower(username) );
 		
-		
-create or replace FUNCTION WITHIN_DISTANCE(g sdo_geometry, lon number, lat number, distLimit number)
-RETURN VARCHAR2 AS 
-
-dist NUMBER;
-result VARCHAR2(5);
-tmpGeo SDO_GEOMETRY;
-
-BEGIN
-  tmpGeo := SDO_GEOMETRY(2001, 8307, SDO_POINT_TYPE(lon, lat, NULL), NULL, NULL);
-  SELECT SDO_GEOM.SDO_DISTANCE(g, tmpGeo, 0.005) INTO dist FROM dual;
-  
-  IF dist <= distLimit THEN
-    result := 'TRUE';
-  ELSE
-    result := 'FALSE';
-  END IF;
-  
-  RETURN result;
-END WITHIN_DISTANCE;
-
-
 CREATE OR REPLACE FORCE VIEW V_USER ("USERNAME", "PASSWORD", "ROLE", "EMAIL", "NAME", "AVATAR", "AVERAGERATING", "EDUCATION", "GENDER") AS 
 SELECT "USERNAME","PASSWORD","ROLE","EMAIL","NAME","AVATAR", NVL((select avg(stars) from rating where ratedUser = username), 0) as "AVERAGERATING","EDUCATION","GENDER" 
 FROM TUSER;
@@ -195,3 +176,23 @@ INSERT INTO tuser VALUES (
 );
 
 COMMIT;
+
+create or replace FUNCTION WITHIN_DISTANCE(g sdo_geometry, lon number, lat number, distLimit number)
+RETURN VARCHAR2 AS 
+
+dist NUMBER;
+result VARCHAR2(5);
+tmpGeo SDO_GEOMETRY;
+
+BEGIN
+  tmpGeo := SDO_GEOMETRY(2001, 8307, SDO_POINT_TYPE(lon, lat, NULL), NULL, NULL);
+  SELECT SDO_GEOM.SDO_DISTANCE(g, tmpGeo, 0.005) INTO dist FROM dual;
+  
+  IF dist <= distLimit THEN
+    result := 'TRUE';
+  ELSE
+    result := 'FALSE';
+  END IF;
+  
+  RETURN result;
+END WITHIN_DISTANCE;
