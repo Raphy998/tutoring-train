@@ -50,7 +50,7 @@ public class UserDisplayActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View view) {
         try {
             if (view.getId() == R.id.btn_ChatRequest) {
-                if (this.user.getName().equals(Database.getInstance().getCurrentUser().getName())) {
+                if (this.user.getUsername().equals(Database.getInstance().getCurrentUser().getUsername())) {
                     throw new Exception("Cannot add own user");
                 }
 
