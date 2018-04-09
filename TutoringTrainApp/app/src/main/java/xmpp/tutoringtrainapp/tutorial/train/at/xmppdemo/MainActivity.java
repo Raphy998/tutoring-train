@@ -10,21 +10,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import at.train.tutorial.tutoringtrainapp.BottomNavigationViewHelper;
 import at.train.tutorial.tutoringtrainapp.Data.MenuEntry;
 import at.train.tutorial.tutoringtrainapp.Database;
+import at.train.tutorial.tutoringtrainapp.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Roster;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
-import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppService;
-import at.train.tutorial.tutoringtrainapp.R;
 
 public class MainActivity extends AppCompatActivity implements FragmentInteractionListener {
 
@@ -187,23 +183,5 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        try {
-            XmppHandler.getInstance().addToRoster("admin");
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return true;
     }
 }
