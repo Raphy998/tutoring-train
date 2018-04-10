@@ -872,6 +872,30 @@ public class UserResource extends AbstractResource {
         return response.build();
     }
     
+    @Secured(UserRole.ADMIN)
+    @GET
+    @Path("/newsletter")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.TEXT_HTML + "; charset=UTF-8")
+    public Response getNewsletterTemplate(@Context HttpServletRequest httpServletRequest) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            response.entity(emailService.getNewsletterTemplate());
+        }
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
     
     @Secured(UserRole.ADMIN)
     @POST

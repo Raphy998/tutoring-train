@@ -11,8 +11,10 @@ import edu.tutoringtrain.entities.User;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -142,6 +144,13 @@ public class EmailService extends AbstractService {
                         InternetAddress.parse(user.getEmail()));
         message.setSubject(VER_SUBJECT);
         message.setText(String.format(VER_CONTENT, user.getUsername(), String.format(VER_EMAIL, key)));
+    }
+    
+    public String getNewsletterTemplate() throws FileNotFoundException, UnsupportedEncodingException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("NewsLetter/newsletter.html").getFile());
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
+        return in.lines().collect(Collectors.joining());
     }
     
     public void sendNewsletter(final NewsletterRequest nlr, final boolean errorIfNotSend) {
