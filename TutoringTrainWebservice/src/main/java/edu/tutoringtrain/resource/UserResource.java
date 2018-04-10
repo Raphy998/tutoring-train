@@ -11,6 +11,7 @@ import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.PrincipalInRole;
 import edu.tutoringtrain.annotations.Secured;
 import edu.tutoringtrain.data.Gender;
+import edu.tutoringtrain.data.NewsletterRequest;
 import edu.tutoringtrain.data.error.ErrorBuilder;
 import edu.tutoringtrain.data.error.Error;
 import edu.tutoringtrain.data.dao.UserService;
@@ -43,6 +44,8 @@ import edu.tutoringtrain.utils.StringUtils;
 import edu.tutoringtrain.utils.Views;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
@@ -870,24 +873,27 @@ public class UserResource extends AbstractResource {
     }
     
     
-    @Secured
-    @GET
-    @Path("/newsletter/{username}")
+    @Secured(UserRole.ADMIN)
+    @POST
+    @Path("/newsletter")
     @Produces(value = MediaType.APPLICATION_JSON)
-    public Response testNL(@Context HttpServletRequest httpServletRequest,
-                            @PathParam("username") String username) throws Exception {
+    public Response sendNewsletter(@Context HttpServletRequest httpServletRequest,
+                            final String nlr) throws Exception {
         
+        Language lang = getLang(httpServletRequest);
         Response.ResponseBuilder response = Response.status(Response.Status.OK);
-
+        
         try {
-            emailService.sendNewsletter(userService.getUserByUsername(username), false);
-        } 
+            NewsletterRequest nlrIn = getMapper().reader().forType(NewsletterRequest.class).readValue(nlr);
+            checkConstraints(nlrIn, lang);
+            emailService.sendNewsletter(nlrIn, false);
+        }
         catch (Exception ex) {
             try {
-                handleException(ex, response, Language.EN);
+                handleException(ex, response, lang);
             }
             catch (Exception e) {
-                unknownError(e, response, Language.EN);
+                unknownError(e, response, lang);
             } 
         }
  

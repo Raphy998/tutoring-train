@@ -7,7 +7,6 @@ package edu.tutoringtrain.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.tutoringtrain.data.error.ConstraintGroups;
 import edu.tutoringtrain.utils.Views;
 import java.io.Serializable;
@@ -49,6 +48,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "User.findByEducation", query = "SELECT u FROM User u WHERE u.education = :education")
     , @NamedQuery(name = "User.findByGender", query = "SELECT u FROM User u WHERE u.gender = :gender")
     , @NamedQuery(name = "User.findByUsernameAndPassword", query = "SELECT u FROM User u WHERE u.username = :username AND u.password = :password")
+    , @NamedQuery(name = "User.findByRole", query = "SELECT u FROM User u WHERE u.role = :role")
     , @NamedQuery(name = "User.countAll", query = "SELECT count(u) FROM User u")})
 public class User implements Serializable {
 

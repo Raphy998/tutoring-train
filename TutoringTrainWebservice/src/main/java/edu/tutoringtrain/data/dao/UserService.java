@@ -255,6 +255,16 @@ public class UserService extends AbstractService {
     }
     
     @Transactional
+    public List<User> getUsersByRole(UserRole role) {
+        List<User> users;
+        TypedQuery<User> query = em.createNamedQuery("User.findByRole", User.class);
+        query.setParameter("role", role.getChar());
+        users = query.getResultList();
+        
+        return users;
+    }
+    
+    @Transactional
     public Blocked getBlockOfUser(String username) throws NullValueException {
         if (username == null) {
             throw new NullValueException(new ErrorBuilder(Error.USERNAME_NULL));
