@@ -223,6 +223,8 @@ public class EmailService extends AbstractService {
                 .replaceAll("\\{title\\}", nlr.getTitle().replaceAll("@name", user.getName()).replaceAll("@username", user.getUsername()))
                 .replaceAll("\\{text_top\\}", nlr.getText_top().replaceAll("@name", user.getName()).replaceAll("@username", user.getUsername()))
                 .replaceAll("\\{text_bottom\\}", nlr.getText_bottom().replaceAll("@name", user.getName()).replaceAll("@username", user.getUsername()))
+                .replaceAll("\\{url_img_top\\}", (nlr.getUrl_img_top()!= null ? nlr.getUrl_img_top(): NewsletterRequest.DEFAULT_URL_IMG_TOP))
+                .replaceAll("\\{url_img_bottom\\}", (nlr.getUrl_img_bottom() != null ? nlr.getUrl_img_bottom() : NewsletterRequest.DEFAULT_URL_IMG_BOTTOM))
                 , "text/html; charset=utf-8");
     }
     

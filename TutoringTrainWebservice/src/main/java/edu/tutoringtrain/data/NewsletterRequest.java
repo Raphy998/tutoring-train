@@ -16,6 +16,10 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 public class NewsletterRequest implements Serializable {
+    
+    public static final String DEFAULT_URL_IMG_TOP = "http://tutoringtrain.wilscher.eu/tt_logo.png";
+    public static final String DEFAULT_URL_IMG_BOTTOM = "http://tutoringtrain.wilscher.eu/logo.png";
+    
     @NotNull
     private String subject;
     @Id
@@ -25,16 +29,22 @@ public class NewsletterRequest implements Serializable {
     private String text_top;
     @NotNull
     private String text_bottom;
+    
+    private String url_img_top;
+    private String url_img_bottom;
+    
     private Character[] targets;
 
     public NewsletterRequest() {
     }
 
-    public NewsletterRequest(String subject, String title, String text_top, String text_bottom, Character[] targets) {
+    public NewsletterRequest(String subject, String title, String text_top, String text_bottom, String url_img_top, String url_img_bottom, Character[] targets) {
         this.subject = subject;
         this.title = title;
         this.text_top = text_top;
         this.text_bottom = text_bottom;
+        this.url_img_top = url_img_top;
+        this.url_img_bottom = url_img_bottom;
         this.targets = targets;
     }
 
@@ -78,8 +88,24 @@ public class NewsletterRequest implements Serializable {
         this.targets = targets;
     }
 
+    public String getUrl_img_top() {
+        return url_img_top;
+    }
+
+    public void setUrl_img_top(String url_img_top) {
+        this.url_img_top = url_img_top;
+    }
+
+    public String getUrl_img_bottom() {
+        return url_img_bottom;
+    }
+
+    public void setUrl_img_bottom(String url_img_bottom) {
+        this.url_img_bottom = url_img_bottom;
+    }
+
     @Override
     public String toString() {
-        return "NewsletterRequest{" + "subject=" + subject + ", title=" + title + ", text_top=" + text_top + ", text_bottom=" + text_bottom + ", targets=" + targets + '}';
+        return "NewsletterRequest{" + "subject=" + subject + ", title=" + title + ", text_top=" + text_top + ", text_bottom=" + text_bottom + ", url_img_top=" + url_img_top + ", url_img_bottom=" + url_img_bottom + ", targets=" + targets + '}';
     }
 }
