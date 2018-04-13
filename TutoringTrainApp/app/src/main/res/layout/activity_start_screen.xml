@@ -1,37 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:background="@color/colorAccent"
     android:layout_height="match_parent">
-
+    <!--android:background="@color/colorAccent>"-->
 
     <Button
         android:id="@+id/btnRegister"
-        android:text="@string/btnRegister"
-        android:textSize="20sp"
-        android:background="@drawable/button_register"
-        android:textColor="@color/colorBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp" />
+        android:layout_marginStart="10dp"
+        android:background="@drawable/button_register"
+        android:text="@string/btnRegister"
+        android:textColor="@color/colorBackground"
+        android:textSize="20sp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnLogin"
-        android:text="@string/btnLogin"
-        android:textSize="20sp"
-        android:background="@drawable/button_login"
-        android:textColor="@color/colorBlack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btnRegister"
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp" />
+        android:layout_marginStart="10dp"
+        android:background="@drawable/button_login"
+        android:text="@string/btnLogin"
+        android:textColor="@color/colorBlack"
+        android:textSize="20sp"
+        android:visibility="gone" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:indeterminateTint="@color/colorPrimaryLight"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="57dp"
+        android:max="200"
+        android:progress="100"
+        android:progressTint="@android:color/holo_red_light"
+        android:visibility="visible"
+        tools:visibility="visible" />
 
 
 </RelativeLayout>
