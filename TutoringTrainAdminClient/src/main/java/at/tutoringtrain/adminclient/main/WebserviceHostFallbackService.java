@@ -47,7 +47,7 @@ public class WebserviceHostFallbackService {
             checkRequested = false;      
             logger.debug("HOST AVAILABILITY CHECK");
             if (isHostReachable(applicationConfiguration.getWebserviceHostInfo())) {               
-                logger.debug("MAIN HOST REACHABLE");            
+                logger.debug("MAIN HOST REACHABLE");      
                 if (isWebServiceDeployed(applicationConfiguration.getWebserviceHostInfo())) {
                     logger.debug("MAIN HOST WEBSERVICE DEPLOYED");
                     host = applicationConfiguration.getWebserviceHostInfo();

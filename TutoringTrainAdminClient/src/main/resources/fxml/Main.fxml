@@ -44,6 +44,11 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </JFXButton>
+            <JFXButton fx:id="btnNewsletter" alignment="CENTER" buttonType="RAISED" onAction="#onBtnNewsletter" prefHeight="35.0" prefWidth="210.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%newsletter">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </JFXButton>
             <JFXButton fx:id="btnNewSubject" alignment="CENTER" buttonType="RAISED" onAction="#onBtnNewSubject" prefHeight="35.0" prefWidth="210.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" stylesheets="@../styles/Styles.css" text="%newSubject">
                <font>
                   <Font name="System Bold" size="15.0" />
@@ -98,7 +103,7 @@
             </JFXButton>
          </children>
          <padding>
-            <Insets bottom="5.0" left="8.0" right="5.0" top="18.0" />
+            <Insets bottom="10.0" left="8.0" right="5.0" top="18.0" />
          </padding>
       </VBox>
       <HBox layoutX="10.0" layoutY="10.0" spacing="8.0" AnchorPane.leftAnchor="235.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="75.0">

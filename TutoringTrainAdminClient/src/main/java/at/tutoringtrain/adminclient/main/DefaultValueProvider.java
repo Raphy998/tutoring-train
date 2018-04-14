@@ -77,7 +77,7 @@ public final class DefaultValueProvider {
         this.jsonMediaType = MediaType.parse("application/json; charset=utf-8");
         this.pngImageMediaType = MediaType.parse("image/png");
         this.jpgImageMediaType = MediaType.parse("image/jpg");
-        this.defaultWebserviceHostInfo = new WebserviceHostInfo("tutoringtrain.hopto.org", 8080);
+        this.defaultWebserviceHostInfo = new WebserviceHostInfo("tutoringtrain.zapto.org", 8080);
         this.defaultWebserviceFallbackHosts = new ArrayList<>();
         this.defaultWebServiceProtokoll = "http";
         this.defaultWebServiceRootPath = "/TutoringTrainWebservice/services/";
@@ -104,7 +104,8 @@ public final class DefaultValueProvider {
     
     private void initializeDefaultWebserviceFallbackHosts() {
         //defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("tutoringtrain.hopto.org", 8080));
-        //defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("localhost", 8080));
+        defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("127.0.0.1", 8080));
+        defaultWebserviceFallbackHosts.add(new WebserviceHostInfo("192.168.194.21", 8080));
     }
 
     private void initializeDefaultBlockDurations() {
@@ -124,6 +125,10 @@ public final class DefaultValueProvider {
         this.defaultValidationPatterns.put("description", new ValidationPattern("^.{1,500}$", "messageValidationDescription"));
         this.defaultValidationPatterns.put("serverip", new ValidationPattern("^.+$", "messageValidationServerIp"));
         this.defaultValidationPatterns.put("serverport", new ValidationPattern("^[1-9][0-9]*$", "messageValidationServerPort"));
+        this.defaultValidationPatterns.put("subject", new ValidationPattern(".+", "messageValidationSubject"));
+        this.defaultValidationPatterns.put("title", new ValidationPattern(".+", "messageValidationTitle"));
+        this.defaultValidationPatterns.put("txt", new ValidationPattern(".*", "messageValidationTxt"));
+        this.defaultValidationPatterns.put("img", new ValidationPattern(".*", "messageValidationImg"));
     }
     
     private void initializeDefaultAvatar() {

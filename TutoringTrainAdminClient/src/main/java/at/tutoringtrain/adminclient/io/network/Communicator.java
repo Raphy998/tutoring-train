@@ -7,6 +7,7 @@ import at.tutoringtrain.adminclient.data.mapper.DataMappingViews;
 import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.data.user.BlockRequest;
 import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.user.newsletter.Newsletter;
 import at.tutoringtrain.adminclient.exception.ParameterValueException;
 import at.tutoringtrain.adminclient.exception.RequiredParameterException;
 import at.tutoringtrain.adminclient.io.network.listener.entry.comment.RequestCommentsOfEntryListener;
@@ -53,6 +54,9 @@ import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateOwnUse
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUpdateUserListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserCountListener;
 import at.tutoringtrain.adminclient.io.network.listener.user.RequestUserSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.newsletter.RequestNewsletterListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.newsletter.RequestNewsletterTemplateDefaultImagesListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.newsletter.RequestNewsletterTemplateListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.DefaultValueProvider;
 import at.tutoringtrain.adminclient.ui.search.OrderElement;
@@ -1159,5 +1163,50 @@ public class Communicator {
             }
         };
         return enqueueRequest(HttpMethod.DELTE, true, entryType.name().toLowerCase() + "/" + entryId + "/comments/" + commentId, requestCallback);
+    }
+    
+    public boolean requestNewsletter(RequestNewsletterListener listener, Newsletter newsletter) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        if (newsletter == null) {
+             throw new RequiredParameterException(newsletter, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestNewsletterListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestNewsletterFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.POST, true, "user/newsletter", requestCallback, json, dataMapper.toJSON(newsletter));
+    }
+    
+    public boolean requestNewsletterTemplate(RequestNewsletterTemplateListener listener) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestNewsletterTemplateListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestNewsletterTemplateFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.GET, true, "user/newsletter", requestCallback);
+    }
+    
+    public boolean requestNewsletterTemplateDefaultImages(RequestNewsletterTemplateDefaultImagesListener listener) throws Exception {
+        RequestCallback requestCallback;  
+        if (listener == null) {
+             throw new RequiredParameterException(listener, "must not be null");
+        }
+        requestCallback = new RequestCallback<RequestNewsletterTemplateDefaultImagesListener>(listener) {  
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.requestNewsletterTemplateDefaultImagesFinished(new RequestResult(response.code(), response.body().string()));
+            }
+        };
+        return enqueueRequest(HttpMethod.GET, true, "user/newsletter/default", requestCallback);
     }
 } 

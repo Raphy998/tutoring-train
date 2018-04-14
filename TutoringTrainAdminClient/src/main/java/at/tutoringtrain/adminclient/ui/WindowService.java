@@ -21,6 +21,7 @@ import at.tutoringtrain.adminclient.ui.controller.BlockUserController;
 import at.tutoringtrain.adminclient.ui.controller.CreditsController;
 import at.tutoringtrain.adminclient.ui.controller.LocationMapController;
 import at.tutoringtrain.adminclient.ui.controller.LocationMapSearchController;
+import at.tutoringtrain.adminclient.ui.controller.NewsletterController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterSubjectController;
 import at.tutoringtrain.adminclient.ui.controller.RegisterUserController;
 import at.tutoringtrain.adminclient.ui.controller.SettingsController;
@@ -402,6 +403,23 @@ public class WindowService {
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
         stage.setResizable(false);
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+    
+    public void openNewsletterWindow() throws Exception {
+        Parent root;
+        Stage stage;
+        FXMLLoader loader;
+        NewsletterController controller;
+        loader = new FXMLLoader(getClass().getResource("/fxml/Newsletter.fxml"), resourceBundle);
+        root = loader.load();
+        controller = (NewsletterController)loader.getController();
+        stage = new Stage();
+        stage.setTitle(localizedValueProvider.getString("titleApplication"));
+        stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
+        stage.setResizable(true);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();

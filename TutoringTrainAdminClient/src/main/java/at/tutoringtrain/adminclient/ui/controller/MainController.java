@@ -12,6 +12,7 @@ import at.tutoringtrain.adminclient.io.network.Communicator;
 import at.tutoringtrain.adminclient.io.network.RequestResult;
 import at.tutoringtrain.adminclient.io.network.listener.entry.offer.RequestOfferSimpleSearchListener;
 import at.tutoringtrain.adminclient.io.network.listener.entry.request.RequestRequestSimpleSearchListener;
+import at.tutoringtrain.adminclient.io.network.listener.user.newsletter.RequestNewsletterListener;
 import at.tutoringtrain.adminclient.main.ApplicationManager;
 import at.tutoringtrain.adminclient.main.ListItemFactory;
 import at.tutoringtrain.adminclient.main.MessageCodes;
@@ -45,7 +46,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Marco Wilscher marco.wilscher@edu.htl-villach.at
  */
-public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindow, UserDataChangedListner, RequestOfferSimpleSearchListener, RequestRequestSimpleSearchListener, MessageListener, RemoveItemListener {
+public class MainController implements Initializable, ApplicationExitListener, TutoringTrainWindow, UserDataChangedListner, RequestOfferSimpleSearchListener, RequestRequestSimpleSearchListener, MessageListener, RemoveItemListener, RequestNewsletterListener {
     @FXML
     private AnchorPane pane;
     @FXML
@@ -62,6 +63,8 @@ public class MainController implements Initializable, ApplicationExitListener, T
     private JFXButton btnAllOffers;
     @FXML
     private JFXButton btnSettings;
+    @FXML
+    private JFXButton btnNewsletter;
     @FXML
     private JFXButton btnLogout;
     @FXML
@@ -237,6 +240,16 @@ public class MainController implements Initializable, ApplicationExitListener, T
     }
     
     @FXML
+    void onBtnNewsletter(ActionEvent event) {
+        try {
+            windowService.openNewsletterWindow();
+        } catch (Exception ex) {
+            logger.error(ex);
+            displayMessage(new MessageContainer(MessageCodes.EXCEPTION, localizedValueProvider.getString("messageUnexpectedFailure")));
+        }
+    }
+    
+    @FXML
     void onBtnClear(ActionEvent event) {
         try {
             txtSearch.setText("");
@@ -283,6 +296,11 @@ public class MainController implements Initializable, ApplicationExitListener, T
     @Override
     public void closeWindow() {
         windowService.closeWindow(pane);
+    }
+
+    @Override
+    public void requestNewsletterFinished(RequestResult result) {
+        displayMessage(result.getMessageContainer());
     }
 
     @Override

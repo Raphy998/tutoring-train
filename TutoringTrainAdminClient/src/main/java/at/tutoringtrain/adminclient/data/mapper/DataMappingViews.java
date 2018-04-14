@@ -36,6 +36,9 @@ public interface DataMappingViews {
             public static interface Block {}
             public static interface UpdatePassowrd {}
             public static interface UpdateRole {}
+            public static interface Newsletter {
+                public static interface DefaultImages{}
+            }
         } 
         public static interface In {
             public static interface Register {}

@@ -7,6 +7,8 @@ import at.tutoringtrain.adminclient.data.subject.Subject;
 import at.tutoringtrain.adminclient.data.user.BlockRequest;
 import at.tutoringtrain.adminclient.data.user.Gender;
 import at.tutoringtrain.adminclient.data.user.User;
+import at.tutoringtrain.adminclient.data.user.newsletter.Newsletter;
+import at.tutoringtrain.adminclient.data.user.newsletter.NewsletterTemplateDefaultImages;
 import at.tutoringtrain.adminclient.io.network.Credentials;
 import at.tutoringtrain.adminclient.main.ApplicationConfiguration;
 import at.tutoringtrain.adminclient.main.MessageCodes;
@@ -202,5 +204,13 @@ public class DataMapper {
     
     public String toJSON(Object object) throws JsonProcessingException {
         return mapper.writeValueAsString(object);
+    }
+    
+    public String toJSON(Newsletter newsletter) throws JsonProcessingException  {
+        return mapper.writerWithView(DataMappingViews.User.Out.Newsletter.class).forType(Newsletter.class).writeValueAsString(newsletter);
+    }
+    
+    public NewsletterTemplateDefaultImages toNewsletterTemplateDefaultImages(String json) throws IOException {
+        return mapper.readerWithView(DataMappingViews.User.Out.Newsletter.DefaultImages.class).forType(NewsletterTemplateDefaultImages.class).readValue(json);
     }
 }
