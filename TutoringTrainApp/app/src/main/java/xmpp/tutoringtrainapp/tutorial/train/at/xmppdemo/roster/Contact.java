@@ -10,6 +10,7 @@ public class Contact implements Comparable<Contact> {
     private String username;
     private String fullName;
     private Type type;
+    private byte[] avatar;
     private int countNewMsgs;
 
     public enum Type {APPROVED, REQUESTED_BY_OTHER, REQUESTED_BY_ME, NONE}
@@ -59,6 +60,14 @@ public class Contact implements Comparable<Contact> {
 
     public synchronized void newMessage() {
         countNewMsgs++;
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 
     @Override

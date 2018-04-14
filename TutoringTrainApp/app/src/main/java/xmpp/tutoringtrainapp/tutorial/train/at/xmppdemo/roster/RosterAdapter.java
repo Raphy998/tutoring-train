@@ -3,13 +3,18 @@ package xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster;
 import android.app.Activity;
 import android.content.Context;
 import android.databinding.ObservableList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.io.ByteArrayInputStream;
 
 import at.train.tutorial.tutoringtrainapp.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.RosterInteractionListener;
@@ -104,6 +109,12 @@ public class RosterAdapter extends BaseAdapter {
         return vi;
     }
 
+    private Bitmap convertByteArrayToBitmap(byte[] byteArray) {
+        ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(byteArray);
+        Bitmap b = BitmapFactory.decodeStream(arrayInputStream);
+        return Bitmap.createScaledBitmap(b, 160, 160, false);
+    }
+
     private View getViewApproved(final Contact c) {
         View vi = inflater.inflate(R.layout.roster_list_item_approved, null);
         ((ViewGroup) vi).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
@@ -111,10 +122,17 @@ public class RosterAdapter extends BaseAdapter {
         TextView txtName = (TextView) vi.findViewById(R.id.name);
         TextView txtUsername = (TextView) vi.findViewById(R.id.username);
         TextView txtNumNewMsgs = (TextView) vi.findViewById(R.id.numNewMsgs);
+        ImageView imgAvatar = (ImageView) vi.findViewById(R.id.imgAvatar);
 
+        if (c.getAvatar() != null) {
+            imgAvatar.setImageBitmap(convertByteArrayToBitmap(c.getAvatar()));
+        }
         txtName.setText(c.getFullName());
         txtUsername.setText("@" + c.getUsername());
         txtNumNewMsgs.setText(Integer.toString(c.getCountNewMsgs()));
+
+
+
         if (c.getCountNewMsgs() > 0) {
             txtNumNewMsgs.setVisibility(View.VISIBLE);
         }
@@ -139,6 +157,11 @@ public class RosterAdapter extends BaseAdapter {
 
         TextView txtName = (TextView) vi.findViewById(R.id.name);
         TextView txtUsername = (TextView) vi.findViewById(R.id.username);
+        ImageView imgAvatar = (ImageView) vi.findViewById(R.id.imgAvatar);
+
+        if (c.getAvatar() != null) {
+            imgAvatar.setImageBitmap(convertByteArrayToBitmap(c.getAvatar()));
+        }
         txtName.setText(c.getFullName());
         txtUsername.setText("@" + c.getUsername());
 
@@ -167,6 +190,11 @@ public class RosterAdapter extends BaseAdapter {
 
         TextView txtName = (TextView) vi.findViewById(R.id.name);
         TextView txtUsername = (TextView) vi.findViewById(R.id.username);
+        ImageView imgAvatar = (ImageView) vi.findViewById(R.id.imgAvatar);
+
+        if (c.getAvatar() != null) {
+            imgAvatar.setImageBitmap(convertByteArrayToBitmap(c.getAvatar()));
+        }
         txtName.setText(c.getFullName());
         txtUsername.setText("@" + c.getUsername());
 

@@ -97,8 +97,6 @@ public class XmppHandler extends Application {
     }
 
     public static XmppHandler getInstance(XmppService context, String user, String pass) {
-        System.out.println("--------------- XmppHandler: " + user + " ... " + pass);
-
         if (instance == null) {
             instance = new XmppHandler(context, user, pass);
         }
@@ -175,6 +173,7 @@ public class XmppHandler extends Application {
     }
 
     private Contact getContact(RosterEntry entry) throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
+        Contact contact;
         VCard vCardOfUser = getVCard(entry.getJid());
         String fullName = (vCardOfUser != null && vCardOfUser.getFirstName() != null) ?
                 vCardOfUser.getFirstName() :
@@ -186,10 +185,15 @@ public class XmppHandler extends Application {
             type = Contact.Type.REQUESTED_BY_ME;
         }
 
-        return new Contact(
+        contact = new Contact(
                 entry.getJid().getLocalpartOrNull().toString(),
                 fullName,
                 type);
+        if (vCardOfUser != null) {
+            contact.setAvatar(vCardOfUser.getAvatar());
+        }
+
+        return contact;
     }
 
     public void removeFromRoster(Contact c) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException, SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NoResponseException {

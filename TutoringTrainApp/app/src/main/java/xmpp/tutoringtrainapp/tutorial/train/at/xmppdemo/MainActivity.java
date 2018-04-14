@@ -57,13 +57,6 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
             BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
             BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.CHAT);
 
-            /*Intent serviceIntent = new Intent(this, XmppService.class);
-            Bundle credentials = new Bundle();
-            credentials.putString("username", Database.getInstance().getCurrentUser().getUsername());
-            credentials.putString("password", Database.getInstance().getCurrentUser().getPassword());
-            serviceIntent.putExtras(credentials);
-            startService(serviceIntent);*/
-
             handleIntent(getIntent());
         }
         catch (Exception ex) {
