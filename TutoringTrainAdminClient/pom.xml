@@ -4,10 +4,10 @@
 
     <groupId>at.tutoringtrain.adminclient</groupId>
     <artifactId>TutoringTrainAdminClient</artifactId>
-    <version>2.0.1</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
 
-    <name>TutoringTrain_Administration_Client</name>
+    <name>TutoringTrain Administratio Client</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,7 +16,7 @@
 
     <organization>
         <!-- Used as the 'Vendor' for JNLP generation -->
-        <name>Your Organisation</name>
+        <name>Marco Wilscher</name>
     </organization>
 
     <build>
