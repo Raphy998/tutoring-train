@@ -72,17 +72,26 @@ public class JSONConverter {
         return entries;
     }
 
-    public static ArrayList<Comment> JsonToComment(String json){
+    public static ArrayList<Comment> JsonToComments(String json) throws Exception{
         ArrayList<Comment> comments = new ArrayList<>();
-        try {
             ObjectMapper mapper = getMapper();
             mapper.readerWithView(Views.Comment.In.loadNewest.class);
             comments = mapper.readValue(json,new TypeReference<List<Comment>>() {});
+        return comments;
+    }
+
+    public static Comment JsonToComment(String json){
+        Comment comment = new Comment();
+        try {
+            ObjectMapper mapper = getMapper();
+            mapper.readerWithView(Views.Comment.In.loadNewest.class);
+            comment = mapper.readValue(json,new TypeReference<Comment>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return comments;
+        return comment;
     }
+
 
     public static String commentToJson(Comment comment){
         String retVal = "";
