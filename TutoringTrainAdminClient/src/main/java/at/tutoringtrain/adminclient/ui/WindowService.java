@@ -402,7 +402,7 @@ public class WindowService {
         stage = new Stage();
         stage.setTitle(localizedValueProvider.getString("titleApplication"));
         stage.getIcons().add(defaultValueProvider.getDefaultApplicationIcon());
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();

@@ -2,12 +2,14 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
@@ -22,33 +24,7 @@
             <Insets bottom="10.0" left="8.0" right="8.0" top="8.0" />
          </padding>
       </Label>
-      <VBox layoutX="24.0" layoutY="53.0" prefWidth="400.0" spacing="35.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
-         <children>
-            <JFXTextField fx:id="txtSubject" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%nsubject" unFocusColor="#86bab8" />
-            <JFXTextField fx:id="txtTitle" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%title" unFocusColor="#86bab8" />
-            <JFXTextArea fx:id="txtTextTop" focusColor="#084c61" labelFloat="true" promptText="%textTop" unFocusColor="#86bab8" wrapText="true" />
-            <JFXTextArea fx:id="txtTextBottom" focusColor="#084c61" labelFloat="true" promptText="%textBottom" unFocusColor="#86bab8" wrapText="true" />
-            <JFXTextField fx:id="txtImgTop" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%imgTop" unFocusColor="#86bab8" />
-            <JFXTextField fx:id="txtImgBottom" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%imgBottom" unFocusColor="#86bab8" />
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <JFXCheckBox fx:id="checkUser" checkedColor="#084c61" text="%user" unCheckedColor="#86bab8" HBox.hgrow="ALWAYS" />
-                  <JFXCheckBox fx:id="checkModerator" checkedColor="#084c61" text="%moderator" unCheckedColor="#86bab8" HBox.hgrow="ALWAYS" />
-                  <JFXCheckBox fx:id="checkAdministrator" checkedColor="#084c61" text="%admin" unCheckedColor="#86bab8" HBox.hgrow="ALWAYS" />
-               </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </HBox>
-         </children>
-      </VBox>
-      <WebView fx:id="webView" layoutX="665.0" layoutY="114.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="50.0" />
+      <WebView fx:id="webView" layoutX="665.0" layoutY="114.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="50.0" />
       <HBox alignment="CENTER_RIGHT" spacing="8.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <JFXButton fx:id="btnPreview" buttonType="RAISED" onAction="#onBtnPreview" prefHeight="30.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%preview">
@@ -74,5 +50,36 @@
             <Insets bottom="10.0" left="8.0" right="8.0" top="5.0" />
          </padding>
       </HBox>
+      <StackPane prefWidth="325.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <VBox prefWidth="325.0" spacing="35.0">
+               <children>
+                  <JFXTextField fx:id="txtSubject" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%nsubject" unFocusColor="#86bab8" />
+                  <JFXTextField fx:id="txtTitle" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%title" unFocusColor="#86bab8" />
+                  <JFXTextArea fx:id="txtTextTop" focusColor="#084c61" labelFloat="true" promptText="%textTop" unFocusColor="#86bab8" wrapText="true" />
+                  <JFXTextArea fx:id="txtTextBottom" focusColor="#084c61" labelFloat="true" promptText="%textBottom" unFocusColor="#86bab8" wrapText="true" />
+                  <JFXTextField fx:id="txtImgTop" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%imgTop" unFocusColor="#86bab8" />
+                  <JFXTextField fx:id="txtImgBottom" focusColor="#084c61" labelFloat="true" prefHeight="25.0" prefWidth="280.0" promptText="%imgBottom" unFocusColor="#86bab8" />
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <JFXCheckBox fx:id="checkUser" checkedColor="#084c61" text="%user" unCheckedColor="#86bab8" HBox.hgrow="ALWAYS" />
+                        <JFXCheckBox fx:id="checkModerator" checkedColor="#084c61" text="%moderator" unCheckedColor="#86bab8" HBox.hgrow="ALWAYS" />
+                        <JFXCheckBox fx:id="checkAdministrator" checkedColor="#084c61" text="%admin" unCheckedColor="#86bab8" HBox.hgrow="ALWAYS" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+            <JFXSpinner fx:id="spinner" radius="25.0" startingAngle="0.0" />
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

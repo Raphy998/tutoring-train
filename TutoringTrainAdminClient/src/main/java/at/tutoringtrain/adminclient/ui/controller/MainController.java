@@ -37,6 +37,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,6 +115,14 @@ public class MainController implements Initializable, ApplicationExitListener, T
             btnMyAccount.setDisable(true);
         }
         setWelcomeMessage(applicationManager.getCurrentUser());
+        
+        txtSearch.setOnKeyReleased((KeyEvent event) -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                btnSearch.fire();
+            } else if (event.getCode().equals(KeyCode.DELETE)) {
+                btnClear.fire();
+            }
+        });
     }
     
     private void disableControls(boolean disable) {

@@ -24,6 +24,7 @@ import at.tutoringtrain.adminclient.ui.validators.TextFieldValidator;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
@@ -76,6 +77,8 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
     private JFXButton btnSend;
     @FXML
     private JFXButton btnClose;
+    @FXML
+    private JFXSpinner spinner;
 
     private JFXSnackbar snackbar;
     
@@ -117,6 +120,7 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
     
     private void initializeControls() {
         snackbar = new JFXSnackbar(pane);
+        spinner.setVisible(false); 
     }
     
      private void initializeControlValidators() {
@@ -167,10 +171,11 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
             checkUser.setDisable(disable);
             checkModerator.setDisable(disable);
             checkAdministrator.setDisable(disable);
+            webView.setDisable(disable);
             btnClose.setDisable(disable);       
             btnPreview.setDisable(disable);       
             btnSend.setDisable(disable);       
-            //spinner.setVisible(disable);
+            spinner.setVisible(disable);
         });
     }
     
