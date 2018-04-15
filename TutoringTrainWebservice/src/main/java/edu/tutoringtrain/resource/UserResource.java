@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.tutoringtrain.annotations.Localized;
 import edu.tutoringtrain.annotations.PrincipalInRole;
 import edu.tutoringtrain.annotations.Secured;
+import edu.tutoringtrain.data.DefaultNewsletterImages;
 import edu.tutoringtrain.data.Gender;
 import edu.tutoringtrain.data.NewsletterRequest;
 import edu.tutoringtrain.data.error.ErrorBuilder;
@@ -44,8 +45,6 @@ import edu.tutoringtrain.utils.StringUtils;
 import edu.tutoringtrain.utils.Views;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.activation.UnsupportedDataTypeException;
 import javax.enterprise.context.RequestScoped;
@@ -884,6 +883,31 @@ public class UserResource extends AbstractResource {
         
         try {
             response.entity(emailService.getNewsletterTemplate());
+        }
+        catch (Exception ex) {
+            try {
+                handleException(ex, response, lang);
+            }
+            catch (Exception e) {
+                unknownError(e, response, lang);
+            } 
+        }
+ 
+        return response.build();
+    }
+    
+    @Secured(UserRole.ADMIN)
+    @GET
+    @Path("/newsletter/default")
+    @Consumes(value = MediaType.APPLICATION_JSON)
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response getDefaultNewsletterImages(@Context HttpServletRequest httpServletRequest) throws Exception {
+        
+        Language lang = getLang(httpServletRequest);
+        Response.ResponseBuilder response = Response.status(Response.Status.OK);
+        
+        try {
+            response.entity(new DefaultNewsletterImages(NewsletterRequest.DEFAULT_URL_IMG_TOP, NewsletterRequest.DEFAULT_URL_IMG_BOTTOM));
         }
         catch (Exception ex) {
             try {
