@@ -111,17 +111,19 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
             try {
                 comments.addAll(JSONConverter.JsonToComment(response.body().string()));
                 for(final Comment c : comments){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            values.add(c.getText());
-                            txtMessage.setText("");
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
+                    if(c.getText() != null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                values.add(c.getText());
+                                txtMessage.setText("");
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
                 }
             } catch (IOException e) {
-                //e.printStackTrace();
+                e.printStackTrace();
                 //todo wenn hier, dann versuchen json to comment zu machen, sonst fehler ausgeben
             }
         }
