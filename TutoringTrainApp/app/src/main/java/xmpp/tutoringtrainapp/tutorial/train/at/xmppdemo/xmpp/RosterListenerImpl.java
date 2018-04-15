@@ -29,6 +29,7 @@ public class RosterListenerImpl implements RosterListener {
             String fullName = (vCardOfUser != null && vCardOfUser.getFirstName() != null) ?
                     vCardOfUser.getFirstName() :
                     jid.getLocalpartOrNull().toString();
+            byte[] avatar = (vCardOfUser != null ? vCardOfUser.getAvatar() : null);
 
             RosterEntry rosterEntry = XmppHandler.getInstance().getRosterEntry(jid.asBareJid());
             if (rosterEntry.getType().equals(RosterPacket.ItemType.to) || rosterEntry.getType().equals(RosterPacket.ItemType.both)) {
@@ -36,6 +37,7 @@ public class RosterListenerImpl implements RosterListener {
                         jid.getLocalpartOrNull().toString(),
                         fullName,
                         Contact.Type.APPROVED);
+                contactToAdd.setAvatar(avatar);
                 DataStore.getInstance().addContact(contactToAdd);
             }
             else if (rosterEntry.getType().equals(RosterPacket.ItemType.from)) {
@@ -43,6 +45,7 @@ public class RosterListenerImpl implements RosterListener {
                         jid.getLocalpartOrNull().toString(),
                         fullName,
                         Contact.Type.REQUESTED_BY_OTHER);
+                contactToAdd.setAvatar(avatar);
                 XmppHandler.getInstance().addToRoster(contactToAdd);
             }
             else if (rosterEntry.getType().equals(RosterPacket.ItemType.none)) {
@@ -50,6 +53,7 @@ public class RosterListenerImpl implements RosterListener {
                         jid.getLocalpartOrNull().toString(),
                         fullName,
                         Contact.Type.REQUESTED_BY_ME);
+                contactToAdd.setAvatar(avatar);
                 DataStore.getInstance().addContact(contactToAdd);
             }
         }
