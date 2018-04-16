@@ -1,4 +1,4 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,11 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import at.train.tutorial.tutoringtrainapp.Data.User;
+import at.train.tutorial.tutoringtrainapp.Data.Database;
+import at.train.tutorial.tutoringtrainapp.Support.Encrypter;
+import at.train.tutorial.tutoringtrainapp.Listener.LoginListener;
+import at.train.tutorial.tutoringtrainapp.Support.OkHttpAsyncHandler;
+import at.train.tutorial.tutoringtrainapp.R;
 
 /**
  * @author moserr

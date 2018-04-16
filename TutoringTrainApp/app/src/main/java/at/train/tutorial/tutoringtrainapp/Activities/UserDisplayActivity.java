@@ -1,4 +1,4 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import at.train.tutorial.tutoringtrainapp.Data.User;
+import at.train.tutorial.tutoringtrainapp.Data.Database;
+import at.train.tutorial.tutoringtrainapp.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.roster.Contact;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.DataStore;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppHandler;

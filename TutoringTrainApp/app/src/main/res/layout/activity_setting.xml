@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="at.train.tutorial.tutoringtrainapp.Activities.MainActivity">
+    tools:context=".Activities.SettingActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:fitsSystemWindows="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -21,19 +22,31 @@
 
     </android.support.design.widget.AppBarLayout>
 
-
-    <android.support.v7.widget.RecyclerView
+    <Button
+        android:id="@+id/btn_logout"
+        android:text="logout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="49dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:id="@+id/lv_test"/>
+        android:layout_height="50dp"
+        android:textAlignment="center"
+        android:layout_below="@id/appBar"
+        android:textSize="16sp"
+        />
+
+    <Button
+        android:text="test"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/btn_logout"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        />
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/bottomBar"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom">
 
         <android.support.design.widget.BottomNavigationView
@@ -41,14 +54,10 @@
             android:layout_height="match_parent"
             android:id="@+id/navViewBottom"
             android:background="@drawable/border_menu"
-            app:menu="@menu/bottom_navigation_menu"
-            >
+            app:menu="@menu/bottom_navigation_menu">
 
         </android.support.design.widget.BottomNavigationView>
 
     </RelativeLayout>
 
-
-
-
-</android.support.design.widget.CoordinatorLayout>
+</android.widget.RelativeLayout>

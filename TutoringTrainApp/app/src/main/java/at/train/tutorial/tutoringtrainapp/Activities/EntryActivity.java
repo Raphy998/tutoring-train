@@ -1,4 +1,4 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Activities;
 
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
@@ -21,10 +21,14 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import at.train.tutorial.tutoringtrainapp.Data.Comment;
-import at.train.tutorial.tutoringtrainapp.Data.CommentListAdapter;
+import at.train.tutorial.tutoringtrainapp.Adapter.CommentListAdapter;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
-import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
+import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListener;
+import at.train.tutorial.tutoringtrainapp.Data.Database;
+import at.train.tutorial.tutoringtrainapp.Support.JSONConverter;
+import at.train.tutorial.tutoringtrainapp.Support.OkHttpHandler;
+import at.train.tutorial.tutoringtrainapp.R;
 import okhttp3.Response;
 
 public class EntryActivity extends AppCompatActivity implements okHttpHandlerListener, View.OnClickListener {
@@ -184,14 +188,16 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
 
     @Override
     public void onClick(View view) {
-        String message = txtMessage.getText().toString();
-        Comment c = new Comment(message);
-        txtMessage.setEnabled(false);
-        try {
-            OkHttpHandler.sendComment(EntryType.OFFER,this,id,c.getText());
-        } catch (IOException e) {
-            e.printStackTrace();
-            txtMessage.setEnabled(true);
+        if(!txtMessage.getText().toString().isEmpty()) {
+            String message = txtMessage.getText().toString();
+            Comment c = new Comment(message);
+            txtMessage.setEnabled(false);
+            try {
+                OkHttpHandler.sendComment(EntryType.OFFER, this, id, c.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+                txtMessage.setEnabled(true);
+            }
         }
     }
 

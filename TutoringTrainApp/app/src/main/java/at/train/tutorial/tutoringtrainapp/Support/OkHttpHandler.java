@@ -1,13 +1,14 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Support;
 
 import java.io.IOException;
 
 import at.train.tutorial.tutoringtrainapp.Data.Comment;
-import at.train.tutorial.tutoringtrainapp.Data.Entry;
+import at.train.tutorial.tutoringtrainapp.Data.Database;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
 import at.train.tutorial.tutoringtrainapp.Data.URLExtension;
-import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
-import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListenerUser;
+import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListener;
+import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListenerUser;
+import at.train.tutorial.tutoringtrainapp.Support.JSONConverter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -132,7 +133,7 @@ public class OkHttpHandler {
 
             HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
             String url = urlBuilder.build().toString();
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),JSONConverter.commentToJson(new Comment(commentText)));
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), JSONConverter.commentToJson(new Comment(commentText)));
 
             Request request = new Request.Builder()
                     .url(url)

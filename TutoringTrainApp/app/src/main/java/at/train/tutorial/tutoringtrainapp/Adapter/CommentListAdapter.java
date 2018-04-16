@@ -1,4 +1,4 @@
-package at.train.tutorial.tutoringtrainapp.Data;
+package at.train.tutorial.tutoringtrainapp.Adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.util.List;
 
+import at.train.tutorial.tutoringtrainapp.Data.Comment;
 import at.train.tutorial.tutoringtrainapp.R;
 
 public class CommentListAdapter extends ArrayAdapter<Comment> {

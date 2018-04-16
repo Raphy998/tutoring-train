@@ -1,4 +1,4 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Support;
 
 import android.os.AsyncTask;
 
@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
+import at.train.tutorial.tutoringtrainapp.Data.Database;
 import at.train.tutorial.tutoringtrainapp.Data.URLExtension;
 import at.train.tutorial.tutoringtrainapp.Data.User;
+import at.train.tutorial.tutoringtrainapp.Listener.LoginListener;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

@@ -12,13 +12,15 @@
         android:title="Users"/>
 
     <item
-        android:id="@+id/ic_user"
-        android:icon="@drawable/ic_people_black_24dp"
-        android:title="User"/>
+        android:id="@+id/ic_chat"
+        android:icon="@drawable/ic_chat_black_24dp"
+        android:title="chat"/>
 
     <item
-        android:id="@+id/ic_chat"
-        android:icon="@drawable/ic_people_black_24dp"
-        android:title="chat"/>
+        android:id="@+id/ic_settings"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="settings"/>
+
+
 
 </menu>

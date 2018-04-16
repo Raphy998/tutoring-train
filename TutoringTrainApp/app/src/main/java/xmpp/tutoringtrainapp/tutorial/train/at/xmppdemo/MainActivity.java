@@ -13,9 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import at.train.tutorial.tutoringtrainapp.BottomNavigationViewHelper;
+import at.train.tutorial.tutoringtrainapp.Support.BottomNavigationViewHelper;
 import at.train.tutorial.tutoringtrainapp.Data.MenuEntry;
-import at.train.tutorial.tutoringtrainapp.Database;
+import at.train.tutorial.tutoringtrainapp.Data.Database;
 import at.train.tutorial.tutoringtrainapp.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat.Chats;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.listener.FragmentInteractionListener;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
 
             bottomNavigationLayout = findViewById(R.id.bottomBar);
             BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
-            BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.CHAT);
+            BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.CHAT,this);
 
             handleIntent(getIntent());
         }

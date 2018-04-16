@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="at.train.tutorial.tutoringtrainapp.MainActivity">
+    tools:context="at.train.tutorial.tutoringtrainapp.Activities.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar"
@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/colorPrimary"
+            android:tooltipText="dasdfh"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlways"
             android:fitsSystemWindows="true"/>
 

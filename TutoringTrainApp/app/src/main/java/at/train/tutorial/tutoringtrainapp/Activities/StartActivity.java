@@ -1,4 +1,4 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +12,16 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import at.train.tutorial.tutoringtrainapp.Data.Database;
+import at.train.tutorial.tutoringtrainapp.Listener.LoginListener;
+import at.train.tutorial.tutoringtrainapp.Support.OkHttpAsyncHandler;
+import at.train.tutorial.tutoringtrainapp.R;
+
 /**
  * @author moserr
  */
 
-public class StartActivity extends AppCompatActivity implements OnClickListener,LoginListener{
+public class StartActivity extends AppCompatActivity implements OnClickListener,LoginListener {
 
     // UI references.
     private Button btnRegister;
@@ -24,10 +29,10 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
     private ProgressBar progress;
     private boolean loginFailed = false;
 
-    // TODO: 19.11.2017 change Output to res/values
     //private String url = "http://tutoringtrain.zapto.org:8080/TutoringTrainWebservice/services";
+    private String url = "http://10.0.0.140:8080/TutoringTrainWebservice/services";
     //private String url = "http://192.168.194.21:8080/TutoringTrainWebservice/services";
-    private String url = "http://192.168.207.211:8080/TutoringTrainWebservice/services";
+    //private String url = "http://192.168.207.211:8080/TutoringTrainWebservice/services";
 
 
     @Override
@@ -88,6 +93,12 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
     public void loginSuccess() {
         Intent myIntent = new Intent(this, MainActivity.class);
         this.startActivity(myIntent);
+        this.finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         this.finish();
     }
 }

@@ -1,61 +1,55 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
-import at.train.tutorial.tutoringtrainapp.Data.Entry;
+import at.train.tutorial.tutoringtrainapp.Data.User;
+import at.train.tutorial.tutoringtrainapp.R;
 
 /**
  * Created by Moe on 16.11.2017
  */
 
-    public class CustomEntryAdapter extends RecyclerView.Adapter<CustomEntryAdapter.CustomViewHolder> {
+    public class CustomUserAdapter extends RecyclerView.Adapter<CustomUserAdapter.CustomViewHolder> {
 
-    ArrayList<Entry> entries;
+    ArrayList<User> users;
     private Context context;
     private View.OnClickListener listener;
 
-    public CustomEntryAdapter(ArrayList<Entry> entries, Context context, View.OnClickListener listener) {
-        this.entries = entries;
+    public CustomUserAdapter(ArrayList<User> users, Context context, View.OnClickListener listener) {
+        this.users = users;
         this.context = context;
         this.listener = listener;
     }
 
     @Override
-    public CustomEntryAdapter.CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CustomUserAdapter.CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_row, parent, false);
         v.setOnClickListener(listener);
         CustomViewHolder viewHolder = new CustomViewHolder(v);
+
         return viewHolder;
     }
 
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
-        Entry entry = entries.get(position);
-        holder.txtHeadline.setText(entry.getHeadline());
-        holder.txtUser.setText(entry.getUser().getUsername());
-        holder.txtSubject.setText(entry.getSubject().getName());
-        holder.txtDate.setText(formatDate(entry.getPostedOn()));
+        User user = users.get(position);
+        holder.txtHeadline.setText(user.getUsername());
+        holder.txtUser.setText(user.getName());
+        holder.txtSubject.setText(user.getEducation());
     }
 
-    private String formatDate(Date date){
-        DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
-        return dateFormat.format(date);
-    }
 
     @Override
     public int getItemCount() {
-        return entries.size();
+        return users.size();
     }
 
     public static class CustomViewHolder extends RecyclerView.ViewHolder {

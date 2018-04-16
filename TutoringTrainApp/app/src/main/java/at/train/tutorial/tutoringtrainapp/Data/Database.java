@@ -1,4 +1,4 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,15 +7,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
-import at.train.tutorial.tutoringtrainapp.Data.Entry;
-import at.train.tutorial.tutoringtrainapp.Data.EntryType;
-import at.train.tutorial.tutoringtrainapp.Data.Error;
-import at.train.tutorial.tutoringtrainapp.Data.User;
-import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListener;
-import at.train.tutorial.tutoringtrainapp.Data.okHttpHandlerListenerUser;
+import at.train.tutorial.tutoringtrainapp.Support.JSONConverter;
+import at.train.tutorial.tutoringtrainapp.Listener.DatabaseListener;
+import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListener;
+import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListenerUser;
+import at.train.tutorial.tutoringtrainapp.Support.OkHttpHandler;
+import at.train.tutorial.tutoringtrainapp.R;
 import okhttp3.Response;
-import okhttp3.internal.http.HttpMethod;
 
 /**
  * @author moserr
@@ -54,6 +52,11 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
         prefs.edit().putString(sharedPrefsSessionKey,sessionKey).apply();
     }
 
+    public void deleteSessionKey(){
+        sessionKey = null;
+        prefs.edit().remove(sharedPrefsSessionKey).apply();
+    }
+
     public void saveCurrentUser(User user){
         prefs.edit().putString(sharedPrefsUsernameKey,user.getUsername()).apply();
         prefs.edit().putString(sharedPrefsPasswordKey,user.getPassword()).apply();
@@ -87,9 +90,9 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
         return url;
     }
 
-    public void loadOffer() throws Exception{
-        entries.clear();
-       OkHttpHandler.loadEntries(EntryType.OFFER,this,0,5);
+    public void loadOffer() throws Exception {
+        //entries.clear();
+        OkHttpHandler.loadEntries(EntryType.OFFER, this, 0, 5);
     }
 
     public void loadUsers() throws Exception{
@@ -99,7 +102,7 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
     }
 
     public void loadRequest() throws Exception{
-        entries.clear();
+        //entries.clear();
         OkHttpHandler.loadEntries(EntryType.REQUEST,this,0,5);
     }
 
@@ -130,6 +133,7 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
     public void onSuccess(Response response) {
         if(response.code() == HttpURLConnection.HTTP_OK){
             try {
+                entries.clear();
                 entries.addAll(JSONConverter.JsonToEntry(response.body().string()));
                 notifySuccessToListener();
             } catch (IOException e) {

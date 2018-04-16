@@ -1,14 +1,12 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Activities;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,10 +15,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
+import at.train.tutorial.tutoringtrainapp.Support.BottomNavigationViewHelper;
+import at.train.tutorial.tutoringtrainapp.Adapter.CustomUserAdapter;
+import at.train.tutorial.tutoringtrainapp.Listener.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
 import at.train.tutorial.tutoringtrainapp.Data.MenuEntry;
 import at.train.tutorial.tutoringtrainapp.Data.User;
+import at.train.tutorial.tutoringtrainapp.Data.Database;
+import at.train.tutorial.tutoringtrainapp.R;
 
 public class UserActivity extends AppCompatActivity implements DatabaseListener, View.OnClickListener {
     private RecyclerView.Adapter adapter;
@@ -38,8 +40,7 @@ public class UserActivity extends AppCompatActivity implements DatabaseListener,
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
-        BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.USERS);
-
+        BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.USERS,this);
 
         recView = (RecyclerView) findViewById(R.id.lv_test);
 
@@ -53,6 +54,9 @@ public class UserActivity extends AppCompatActivity implements DatabaseListener,
 
         // finally change the color
         window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary));
+
+        Spinner spinner = (Spinner) findViewById(R.id.sp_entryTyp);
+        spinner.setVisibility(View.GONE);
 
         try{
             layoutManager = new LinearLayoutManager(this);

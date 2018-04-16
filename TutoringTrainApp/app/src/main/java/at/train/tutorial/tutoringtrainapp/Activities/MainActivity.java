@@ -1,14 +1,12 @@
-package at.train.tutorial.tutoringtrainapp;
+package at.train.tutorial.tutoringtrainapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,10 +17,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import at.train.tutorial.tutoringtrainapp.Data.DatabaseListener;
+import at.train.tutorial.tutoringtrainapp.Support.BottomNavigationViewHelper;
+import at.train.tutorial.tutoringtrainapp.Adapter.CustomEntryAdapter;
+import at.train.tutorial.tutoringtrainapp.Listener.DatabaseListener;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
 import at.train.tutorial.tutoringtrainapp.Data.MenuEntry;
+import at.train.tutorial.tutoringtrainapp.Data.Database;
+import at.train.tutorial.tutoringtrainapp.R;
 import xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.xmpp.XmppService;
 
 public class MainActivity extends AppCompatActivity implements DatabaseListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
-        BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.MAIN);
+        BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.MAIN,this);
 
         recView = (RecyclerView) findViewById(R.id.lv_test);
 
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
             layoutManager = new LinearLayoutManager(this);
             recView.setLayoutManager(layoutManager);
 
+            //setup Spinner
             entryType[0] = getResources().getString(R.string.offer);
             entryType[1] = getResources().getString(R.string.request);
             Spinner spinner = (Spinner) findViewById(R.id.sp_entryTyp);
@@ -67,14 +70,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
             spinner.setAdapter(spAdapter);
             entryTyp = spinner;
 
+            //setup entries
             db = Database.getInstance();
             db.setListener(this);
-
             entries = db.getEntries();
             adapter = new CustomEntryAdapter(this.entries,getApplicationContext(),this);
-
             recView.setAdapter(adapter);
-            Database.getInstance().getEntries();
 
             Intent serviceIntent = new Intent(this, XmppService.class);
             Bundle credentials = new Bundle();
@@ -98,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
     @Override
     public void onSuccess() {
         entries = Database.getInstance().getEntries();
-        System.out.println("lel2");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
