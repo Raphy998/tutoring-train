@@ -37,7 +37,7 @@ CREATE TABLE subject (
 );
 
 CREATE TABLE tuser (
-    username        VARCHAR(20),
+    username        VARCHAR2(20),
     password        VARCHAR2(64),
     role            CHAR(1),
     email           VARCHAR2(50),
@@ -50,8 +50,8 @@ CREATE TABLE tuser (
 );
 
 CREATE TABLE tsession (
-    username     VARCHAR(20),
-    authkey      VARCHAR(32),
+    username     VARCHAR2(20),
+    authkey      VARCHAR2(32),
     expirydate   TIMESTAMP,
     CONSTRAINT pk_session PRIMARY KEY ( authkey ),
     CONSTRAINT fk_session_username FOREIGN KEY ( username )
@@ -59,7 +59,7 @@ CREATE TABLE tsession (
 );
 
 CREATE TABLE blocked (
-    username   VARCHAR(20),
+    username   VARCHAR2(20),
     reason     VARCHAR2(100),
     duedate    DATE,
     CONSTRAINT pk_blocked PRIMARY KEY ( username ),
@@ -111,6 +111,14 @@ CREATE TABLE tcomment (
         REFERENCES tuser ( username ),
     CONSTRAINT fk_tcomment_entry FOREIGN KEY ( entryid )
         REFERENCES entry ( id )
+);
+
+create table activation(
+    username VARCHAR2(20),
+    key VARCHAR2(32),
+    CONSTRAINT pk_activation PRIMARY KEY ( username ),
+    CONSTRAINT fk_pk_activation_username FOREIGN KEY ( username ) REFERENCES tuser ( username ),
+    CONSTRAINT u_activation_key UNIQUE ( key )
 );
 
 DELETE FROM user_sdo_geom_metadata WHERE
