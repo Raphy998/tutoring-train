@@ -116,10 +116,10 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
 
     @Override
     public void onFailure(final String response) {
-        refreshLayout.setRefreshing(false);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                refreshLayout.setRefreshing(false);
                 Toast.makeText(EntryActivity.this,response,Toast.LENGTH_SHORT).show();
             }
         });
@@ -127,7 +127,13 @@ public class EntryActivity extends AppCompatActivity implements okHttpHandlerLis
 
     @Override
     public void onSuccess(final Response response) {
-        refreshLayout.setRefreshing(false);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
         int oldComments = values.size();
         String json = "";
         if(response.code() == HttpURLConnection.HTTP_OK){
