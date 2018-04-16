@@ -39,6 +39,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,6 +113,12 @@ public class AllUsersController implements Initializable, TutoringTrainWindow, M
         comboOperation.getSelectionModel().select(StringOperation.CONTAINS);
         comboProperty.getItems().addAll(UserProp.USERNAME, UserProp.NAME, UserProp.EDUCATION);
         comboProperty.getSelectionModel().select(UserProp.USERNAME);
+        
+        txtSearch.setOnKeyReleased((KeyEvent event) -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                btnSearch.fire();
+            }
+        });
     }
     
     private void initializeControlValidators() {

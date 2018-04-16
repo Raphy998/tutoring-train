@@ -48,6 +48,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -141,6 +143,12 @@ public class AllOffersController implements Initializable, TutoringTrainWindow, 
         comboStatus.getSelectionModel().select(EntryActiveState.IGNORE);
         
         pickerDate.setValue(LocalDate.now());
+        
+        txtSearch.setOnKeyReleased((KeyEvent event) -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                btnSearch.fire();
+            }
+        });
     }
     
     private void initializeControlValidators() {
