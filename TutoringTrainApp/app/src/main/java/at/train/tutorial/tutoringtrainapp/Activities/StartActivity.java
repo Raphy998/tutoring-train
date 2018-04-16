@@ -60,7 +60,7 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
             this.startActivity(myIntent);
         }
         else if (view == btnRegister){
-            Intent myIntent = new Intent(this, MainActivity.class);
+            Intent myIntent = new Intent(this, RegisterActivity.class);
             this.startActivity(myIntent);
         }
     }

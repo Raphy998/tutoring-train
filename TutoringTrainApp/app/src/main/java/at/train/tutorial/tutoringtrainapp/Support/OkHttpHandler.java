@@ -6,9 +6,9 @@ import at.train.tutorial.tutoringtrainapp.Data.Comment;
 import at.train.tutorial.tutoringtrainapp.Data.Database;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
 import at.train.tutorial.tutoringtrainapp.Data.URLExtension;
+import at.train.tutorial.tutoringtrainapp.Data.User;
 import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListener;
 import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListenerUser;
-import at.train.tutorial.tutoringtrainapp.Support.JSONConverter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -143,6 +143,47 @@ public class OkHttpHandler {
             if ((sessionKey = Database.getInstance().getSessionKey()) != null) {
                 request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
             }
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    listener.onFailure(e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    listener.onSuccess(response);
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void RegisterUser(final okHttpHandlerListener listener,User user,boolean password) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        String urlExtension = "";
+
+        urlExtension = urlExtension.concat(URLExtension.REGISTER_USER);
+
+        try{
+            HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
+            String url = urlBuilder.build().toString();
+            RequestBody body = null;
+
+            if(password) {
+                body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), JSONConverter.UserToJson(user));
+            }
+            else {
+                body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), JSONConverter.UserNoPasswordToJson(user));
+            }
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
 
             client.newCall(request).enqueue(new Callback() {
                 @Override

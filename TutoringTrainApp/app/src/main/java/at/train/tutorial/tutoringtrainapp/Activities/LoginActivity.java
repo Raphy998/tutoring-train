@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //set status bar color
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimary));
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -56,10 +56,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(handler != null){
+        if (handler != null) {
             handler.cancel(true);
         }
+        Intent myIntent = new Intent(this, StartActivity.class);
+        myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        this.startActivity(myIntent);
+        this.finish();
     }
+
 
     @Override
     public void onClick(View view) {
@@ -99,10 +104,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(this,"Please insert username",Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(mPasswordView.getText().toString().length() <= 0){
+       if(mPasswordView.getText().toString().length() <= 0){
             Toast.makeText(this,"Please insert password",Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
     }
+
+
 }

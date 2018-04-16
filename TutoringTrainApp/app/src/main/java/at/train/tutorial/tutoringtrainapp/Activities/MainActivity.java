@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseListener,
     }
 
 
-
     @Override
     public void onFailure(Error e) {
         Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();

@@ -32,7 +32,7 @@ public class OkHttpAsyncHandler extends AsyncTask<Void,Void,Void> {
     private String method;
 
     public static void performLogin(String username, String password, LoginListener listener) {
-        new OkHttpAsyncHandler(JSONConverter.userToJson(new User(username, password)),
+        new OkHttpAsyncHandler(JSONConverter.userToJsonLogin(new User(username, password)),
                 listener, URLExtension.AUTHENTICATION).execute();
     }
 

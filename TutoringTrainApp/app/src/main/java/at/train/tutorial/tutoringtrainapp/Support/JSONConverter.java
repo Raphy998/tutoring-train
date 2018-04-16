@@ -45,7 +45,7 @@ public class JSONConverter {
     }
 
 
-    public static String userToJson(User user){
+    public static String userToJsonLogin(User user){
         String retVal = "";
         try {
             ObjectMapper mapper = getMapper();
@@ -100,6 +100,30 @@ public class JSONConverter {
             e.printStackTrace();
         }
         System.out.println("-------------------" + retVal);
+        return retVal;
+    }
+
+    public static String UserToJson(User user){
+        String retVal = "";
+        try {
+            ObjectMapper mapper = getMapper();
+            mapper.writerWithView(Views.User.Out.Register.class);
+            retVal = mapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return retVal;
+    }
+
+    public static String UserNoPasswordToJson(User user){
+        String retVal = "";
+        try {
+            ObjectMapper mapper = getMapper();
+            mapper.writerWithView(Views.User.Out.RegisterNoPassword.class);
+            retVal = mapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         return retVal;
     }
 

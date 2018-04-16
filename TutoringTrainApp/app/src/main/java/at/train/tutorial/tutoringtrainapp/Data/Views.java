@@ -7,6 +7,8 @@ package at.train.tutorial.tutoringtrainapp.Data;
 public interface Views {
     public static interface User{
      public static interface Out{
+         public static interface Register{};
+         public static interface RegisterNoPassword{};
          public static interface Login{};
          public static interface create{};
      };

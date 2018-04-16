@@ -10,15 +10,20 @@ import java.io.Serializable;
  */
 
 public class User implements Serializable{
-    @JsonView ({Views.User.Out.Login.class,Views.Comment.In.loadNewest.class})
+    @JsonView ({Views.User.Out.Login.class,Views.Comment.In.loadNewest.class,Views.User.Out.Register.class,Views.User.Out.RegisterNoPassword.class})
     private String username;
+    @JsonView ({Views.User.Out.Register.class,Views.User.Out.RegisterNoPassword.class})
     private String email;
+    @JsonView ({Views.User.Out.Register.class,Views.User.Out.RegisterNoPassword.class})
     private String name;
+    @JsonView ({Views.User.Out.Register.class,Views.User.Out.RegisterNoPassword.class})
     private String education;
-    @JsonView ({Views.User.Out.Login.class})
+    @JsonView ({Views.User.Out.Login.class,Views.User.Out.Register.class})
     private String password;
     private UserRole role;
+    @JsonView ({Views.User.Out.Register.class,Views.User.Out.RegisterNoPassword.class})
     private Gender gender;
+    private float averagerating;
 
     // TODO: 06.01.2018 avatar
     // TODO: 06.01.2018 Rating
@@ -33,6 +38,15 @@ public class User implements Serializable{
         this.name = name;
         this.password = password;
         this.role = role;
+        this.gender = gender;
+    }
+
+    public User(String username,String email, String name,String education,String password,Gender gender){
+        this.username = username;
+        this.email = email;
+        this.education = education;
+        this.name = name;
+        this.password = password;
         this.gender = gender;
     }
 
