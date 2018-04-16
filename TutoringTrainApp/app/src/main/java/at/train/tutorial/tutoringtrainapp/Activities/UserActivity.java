@@ -68,7 +68,6 @@ public class UserActivity extends AppCompatActivity implements DatabaseListener,
             db.setListener(this);
 
             adapter = new CustomUserAdapter(this.users,getApplicationContext(),this);
-
             recView.setAdapter(adapter);
         }
         catch(Exception e){

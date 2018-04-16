@@ -96,7 +96,7 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
     }
 
     public void loadUsers() throws Exception{
-        users.clear();
+        //users.clear();
         OkHttpHandler.loadUsers(this,0,5);
         System.out.println("----------------- load User --------------------");
     }
@@ -157,9 +157,9 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
 
     @Override
     public void onSuccessUser(Response response) {
-        System.out.println("++++++++++++++++++++++++ load User end --------------------");
         if(response.code() == HttpURLConnection.HTTP_OK){
             try {
+                users.clear();
                 users.addAll(JSONConverter.JsonToUser(response.body().string()));
                 notifySuccessToListener();
             } catch (IOException e) {
