@@ -53,7 +53,7 @@ public class ChatAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return position;
+        return ds.getChatMessageAt(position, withUser);
     }
 
     @Override
@@ -104,6 +104,7 @@ public class ChatAdapter extends BaseAdapter {
         holder.sec_hr.setVisibility(View.VISIBLE);
 
         try {
+            //hide date separator if not required
             if (position - 1 >= 0) {
                 ChatMessage prevMessage = ds.getChatMessageAt(position - 1, withUser);
                 if (df.format(message.getDateTime()).equals(df.format(prevMessage.getDateTime()))) {

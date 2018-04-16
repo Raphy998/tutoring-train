@@ -1,11 +1,18 @@
 package xmpp.tutoringtrainapp.tutorial.train.at.xmppdemo.chat;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -102,6 +109,7 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
         chatAdapter = new ChatAdapter(getActivity());
         chatAdapter.setWithUser(otherUser != null ? otherUser.getUsername() : null);
         msgListView.setAdapter(chatAdapter);
+        registerForContextMenu(msgListView);
 
         if (otherUser == null || DataStore.getInstance().isChatHistoryLoaded(otherUser.getUsername()))
             progressBar.setVisibility(View.GONE);
@@ -109,6 +117,42 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
             progressBar.setVisibility(View.VISIBLE);
 
         return view;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.chats_context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        try {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+            switch (item.getItemId()) {
+                case R.id.copy_text:
+
+                    if (info.position >= 0) {
+                        ChatMessage selectedMsg = ((ChatMessage) chatAdapter.getItem(info.position));
+
+                        if (getActivity() != null) {
+                            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText(selectedMsg.getBody(), selectedMsg.getBody());
+                            clipboard.setPrimaryClip(clip);
+                        }
+                    }
+
+                    return true;
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 
     @Override
@@ -175,11 +219,16 @@ public class Chats extends Fragment implements OnClickListener, ChatHistoryLoade
 
     @Override
     public void onLoadingChatHistoryDone(String username) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+        try {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(View.GONE);
+                }
+            });
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
