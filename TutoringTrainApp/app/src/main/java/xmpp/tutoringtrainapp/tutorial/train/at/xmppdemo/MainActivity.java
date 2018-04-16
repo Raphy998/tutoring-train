@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import at.train.tutorial.tutoringtrainapp.BottomNavigationViewHelper;
 import at.train.tutorial.tutoringtrainapp.Data.MenuEntry;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
 
     private Chats chats;
     private Roster roster;
+    private RelativeLayout bottomNavigationLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                 showRoster();
             }
 
+            bottomNavigationLayout = findViewById(R.id.bottomBar);
             BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navViewBottom);
             BottomNavigationViewHelper.setupNavigationBar(bottomNavigationView,this, MenuEntry.CHAT);
 
@@ -154,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         this.setTitle("Chats: " + chats.getWith().getFullName());
         setFragmentVisible(roster, false);
         setFragmentVisible(chats, true);
+        bottomNavigationLayout.setVisibility(View.GONE);
     }
 
     private void showRoster() throws Exception {
@@ -167,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         try {
             if (!chats.isHidden()) {
                 chats.getWith().setCountNewMsgs(0);
+                bottomNavigationLayout.setVisibility(View.VISIBLE);
                 showRoster();
             }
             else {
