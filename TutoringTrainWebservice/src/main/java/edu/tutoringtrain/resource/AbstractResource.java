@@ -50,7 +50,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
  * @author Elias
  */
 public abstract class AbstractResource {
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
     
     static {
         //By default all fields without explicit view definition are included, disable this
@@ -58,7 +58,7 @@ public abstract class AbstractResource {
         mapper.setSerializationInclusion(Include.NON_NULL);
         mapper.setVisibility(FIELD, Visibility.NONE);
         mapper.setVisibility(GETTER, Visibility.PROTECTED_AND_PUBLIC);
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"));
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     }

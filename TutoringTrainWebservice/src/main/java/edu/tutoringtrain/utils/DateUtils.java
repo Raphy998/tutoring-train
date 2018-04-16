@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Elias
  */
 public class DateUtils {
-    private static String datePattern = "yyyy-MM-dd'T'hh:mm:ss";
+    private static final String datePattern = "yyyy-MM-dd'T'HH:mm:ss";
     
     public static Date toDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
