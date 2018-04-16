@@ -27,6 +27,7 @@
       <WebView fx:id="webView" layoutX="665.0" layoutY="114.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="50.0" />
       <HBox alignment="CENTER_RIGHT" spacing="8.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
+            <JFXCheckBox fx:id="checkUseUserData" checkedColor="#084c61" text="%useUserData" unCheckedColor="#86bab8" />
             <JFXButton fx:id="btnPreview" buttonType="RAISED" onAction="#onBtnPreview" prefHeight="30.0" prefWidth="135.0" ripplerFill="#084c61" style="-fx-background-color: #86bab8;" text="%preview">
                <font>
                   <Font name="System Bold" size="13.0" />

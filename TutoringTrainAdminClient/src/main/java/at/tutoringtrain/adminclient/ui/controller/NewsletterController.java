@@ -5,6 +5,7 @@
  */
 package at.tutoringtrain.adminclient.ui.controller;
 
+import at.tutoringtrain.adminclient.data.user.User;
 import at.tutoringtrain.adminclient.data.user.UserRole;
 import at.tutoringtrain.adminclient.data.user.newsletter.Newsletter;
 import at.tutoringtrain.adminclient.data.user.newsletter.NewsletterTemplateDefaultImages;
@@ -76,7 +77,9 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
     @FXML
     private JFXButton btnSend;
     @FXML
-    private JFXButton btnClose;
+    private JFXButton btnClose;  
+    @FXML
+    private JFXCheckBox checkUseUserData;
     @FXML
     private JFXSpinner spinner;
 
@@ -121,6 +124,7 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
     private void initializeControls() {
         snackbar = new JFXSnackbar(pane);
         spinner.setVisible(false); 
+        webView.setContextMenuEnabled(false);
     }
     
      private void initializeControlValidators() {
@@ -171,7 +175,9 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
             checkUser.setDisable(disable);
             checkModerator.setDisable(disable);
             checkAdministrator.setDisable(disable);
+            checkUseUserData.setDisable(disable);
             webView.setDisable(disable);
+            webView.setOpacity(disable ? 0.5 : 1);
             btnClose.setDisable(disable);       
             btnPreview.setDisable(disable);       
             btnSend.setDisable(disable);       
@@ -217,6 +223,10 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
         return txtImgBottom.getText();
     }    
     
+    public boolean isUseUserData() {
+        return checkUseUserData.isSelected();
+    }
+    
     @FXML
     void onBtnSend(ActionEvent event) {
         try {
@@ -255,6 +265,15 @@ public class NewsletterController implements Initializable, TutoringTrainWindow,
                             preview = preview.replace("{url_img_bottom}", defaultImages.getDefault_url_img_bottom());
                         } 
                     }  
+                    if (isUseUserData()) {
+                        User user = ApplicationManager.getInstance().getCurrentUser();
+                        if (!StringUtils.isBlank(user.getUsername())) {
+                            preview = preview.replace("@username", user.getUsername());
+                        }
+                        if (!StringUtils.isBlank(user.getName())) {
+                            preview = preview.replace("@name", user.getName());
+                        }
+                    }
                     webView.getEngine().loadContent(preview);
                 }
             }    
