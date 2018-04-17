@@ -16,6 +16,7 @@ import java.util.List;
 import at.train.tutorial.tutoringtrainapp.Data.Comment;
 import at.train.tutorial.tutoringtrainapp.Data.Entry;
 import at.train.tutorial.tutoringtrainapp.Data.Error;
+import at.train.tutorial.tutoringtrainapp.Data.Rating;
 import at.train.tutorial.tutoringtrainapp.Data.User;
 import at.train.tutorial.tutoringtrainapp.Data.Views;
 
@@ -96,6 +97,19 @@ public class JSONConverter {
             ObjectMapper mapper = getMapper();
             mapper.writerWithView(Views.Comment.Out.create.class);
             retVal = mapper.writeValueAsString(comment);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println("-------------------" + retVal);
+        return retVal;
+    }
+
+    public static String RatingToJson(Rating rating){
+        String retVal = "";
+        try {
+            ObjectMapper mapper = getMapper();
+            mapper.writerWithView(Views.Rating.Out.create.class);
+            retVal = mapper.writeValueAsString(rating);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

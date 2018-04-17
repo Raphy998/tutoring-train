@@ -5,6 +5,7 @@ import java.io.IOException;
 import at.train.tutorial.tutoringtrainapp.Data.Comment;
 import at.train.tutorial.tutoringtrainapp.Data.Database;
 import at.train.tutorial.tutoringtrainapp.Data.EntryType;
+import at.train.tutorial.tutoringtrainapp.Data.Rating;
 import at.train.tutorial.tutoringtrainapp.Data.URLExtension;
 import at.train.tutorial.tutoringtrainapp.Data.User;
 import at.train.tutorial.tutoringtrainapp.Listener.okHttpHandlerListener;
@@ -184,6 +185,46 @@ public class OkHttpHandler {
                     .url(url)
                     .post(body)
                     .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    listener.onFailure(e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    listener.onSuccess(response);
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendRating(final okHttpHandlerListener listener,User user,Rating rating) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        String urlExtension = URLExtension.USER_RATING;
+
+
+        urlExtension = urlExtension.concat("/" + user.getUsername());
+
+        try{
+
+            HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
+            String url = urlBuilder.build().toString();
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), JSONConverter.RatingToJson(rating));
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+
+            if ((sessionKey = Database.getInstance().getSessionKey()) != null) {
+                request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
+            }
 
             client.newCall(request).enqueue(new Callback() {
                 @Override

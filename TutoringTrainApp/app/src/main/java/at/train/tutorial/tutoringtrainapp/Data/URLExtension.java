@@ -14,4 +14,5 @@ public class URLExtension {
     public static final String COMMENTS = "/comments";
     public static final String ALL_USERS = "/user/all";
     public static final String REGISTER_USER = "/user/register";
+    public static final String USER_RATING = "/user/rating";
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.RateActivity">
+
+    <EditText
+        android:id="@+id/edt_txt"
+        android:layout_width="match_parent"
+        android:layout_height="178dp"
+        android:inputType="text" />
+
+    <NumberPicker
+        android:id="@+id/np_stars"
+        android:layout_width="159dp"
+        android:layout_height="75dp"
+        android:background="@drawable/black_rectangle"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="190dp" />
+
+    <Button
+        android:id="@+id/send_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="271dp"
+        android:background="@color/colorPrimary"
+        android:text="Send Rating"
+        android:textSize="16sp" />
+
+</android.widget.RelativeLayout>

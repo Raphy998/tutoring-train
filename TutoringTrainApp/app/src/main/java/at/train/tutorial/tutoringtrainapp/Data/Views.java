@@ -27,5 +27,14 @@ public interface Views {
         }
     }
 
+    public static interface Rating{
+        public static interface In{
+            public static interface load{};
+        }
+        public static interface Out{
+            public static interface create{};
+        }
+    }
+
     public static interface Error{}
 }

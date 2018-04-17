@@ -74,7 +74,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/MainTheme" />
         <activity android:name=".Activities.SettingActivity" />
-        <activity android:name=".Activities.RegisterActivity"></activity>
+        <activity android:name=".Activities.RegisterActivity" />
+        <activity android:name=".Activities.RateActivity"></activity>
     </application>
 
 </manifest>

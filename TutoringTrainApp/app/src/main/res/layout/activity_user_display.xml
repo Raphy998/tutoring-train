@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,25 +9,154 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
         android:theme="@style/MainTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <TextView
+            android:id="@+id/txt_title"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/MainTheme.PopupOverlay" />
+            android:layout_height="50dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/colorBlack"
+            android:textSize="28sp" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_user_display" />
+    <ImageView
+        android:id="@+id/iv_avatar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/black_rectangle"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="58dp" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+
+    <TextView
+        android:id="@+id/txt_label_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="126dp"
+        android:layout_marginTop="65dp"
+        android:text="Name: "
+        android:textColor="@color/colorAccent"
+        android:textSize="13sp" />
 
-</android.support.design.widget.CoordinatorLayout>
+    <TextView
+        android:id="@+id/txt_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/txt_education"
+        android:textColor="@color/colorPrimary"
+        android:layout_alignTop="@+id/txt_label_name"
+        android:text="-"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/txt_label_education"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/txt_label_name"
+        android:textColor="@color/colorAccent"
+        android:layout_marginTop="92dp"
+        android:text="Education: "
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/txt_education"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/txt_label_education"
+        android:layout_marginEnd="99dp"
+        android:textColor="@color/colorPrimary"
+        android:text="-"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/txt_label_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/txt_label_name"
+        android:textColor="@color/colorAccent"
+        android:layout_marginTop="120dp"
+        android:text="Gender: "
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/txt_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/txt_education"
+        android:textColor="@color/colorPrimary"
+        android:layout_alignTop="@+id/txt_label_gender"
+        android:text="-"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/btn_ChatRequest"
+        android:layout_width="79dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/txt_label_name"
+        android:layout_marginTop="150dp"
+        android:background="@color/colorPrimary"
+        android:text="Request Chat"
+        android:layout_marginBottom="5dp"
+        android:textAlignment="center"
+        android:textSize="16sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/btn_ChatRequest"
+        android:layout_alignParentStart="true"
+        android:background="@color/colorAccent" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/iv_avatar"
+        android:src="@drawable/ic_star_black_24dp"
+        android:layout_marginTop="208dp" />
+
+    <TextView
+        android:id="@+id/txt_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="74dp"
+        android:layout_marginTop="225dp"
+        android:textColor="@color/colorAccent"
+        android:text="0"
+        android:textSize="18sp" />
+
+    <ListView
+        android:id="@+id/lv_rating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/black_rectangle"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/iv_avatar"
+        android:layout_marginTop="280dp" />
+
+    <Button
+        android:background="@color/colorPrimary"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:id="@+id/rate_User"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txt_rating"
+        android:layout_alignStart="@+id/txt_label_name"
+        android:text="Rate User" />
+
+
+</android.widget.RelativeLayout>

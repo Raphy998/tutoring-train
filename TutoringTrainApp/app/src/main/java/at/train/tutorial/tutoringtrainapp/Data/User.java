@@ -82,4 +82,12 @@ public class User implements Serializable{
     public Gender getGender() {
         return gender;
     }
+
+    public float getAveragerating() {
+        return averagerating;
+    }
+
+    public void setAveragerating(float averagerating) {
+        this.averagerating = averagerating;
+    }
 }
