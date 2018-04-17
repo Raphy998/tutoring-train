@@ -1,5 +1,6 @@
 package at.train.tutorial.tutoringtrainapp.Data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.io.Serializable;
  */
 
 public class User implements Serializable{
+    @JsonIgnoreProperties
     @JsonView ({Views.User.Out.Login.class,Views.Comment.In.loadNewest.class,Views.User.Out.Register.class,Views.User.Out.RegisterNoPassword.class})
     private String username;
     @JsonView ({Views.User.Out.Register.class,Views.User.Out.RegisterNoPassword.class})

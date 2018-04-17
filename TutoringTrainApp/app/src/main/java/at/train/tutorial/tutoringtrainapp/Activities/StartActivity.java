@@ -29,8 +29,8 @@ public class StartActivity extends AppCompatActivity implements OnClickListener,
     private ProgressBar progress;
     private boolean loginFailed = false;
 
-    //private String url = "http://tutoringtrain.zapto.org:8080/TutoringTrainWebservice/services";
-    private String url = "http://10.0.0.140:8080/TutoringTrainWebservice/services";
+    private String url = "http://tutoringtrain.zapto.org:8080/TutoringTrainWebservice/services";
+    //private String url = "http://10.0.0.140:8080/TutoringTrainWebservice/services";
     //private String url = "http://192.168.194.21:8080/TutoringTrainWebservice/services";
     //private String url = "http://192.168.207.211:8080/TutoringTrainWebservice/services";
 
