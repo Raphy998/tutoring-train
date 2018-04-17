@@ -92,12 +92,12 @@ public class Database implements okHttpHandlerListener, okHttpHandlerListenerUse
 
     public void loadOffer() throws Exception {
         //entries.clear();
-        OkHttpHandler.loadEntries(EntryType.OFFER, this, 0, 5);
+        OkHttpHandler.loadEntries(EntryType.OFFER, this, 0, 20);
     }
 
     public void loadUsers() throws Exception{
         //users.clear();
-        OkHttpHandler.loadUsers(this,0,5);
+        OkHttpHandler.loadUsers(this,0,20);
         System.out.println("----------------- load User --------------------");
     }
 

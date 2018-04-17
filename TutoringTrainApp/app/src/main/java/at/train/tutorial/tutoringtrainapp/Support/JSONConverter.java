@@ -90,6 +90,14 @@ public class JSONConverter {
         return comment;
     }
 
+    public static ArrayList<Rating> JsonToRatings(String json) throws Exception{
+        ArrayList<Rating> ratings = new ArrayList<>();
+        ObjectMapper mapper = getMapper();
+        mapper.readerWithView(Views.Comment.In.loadNewest.class);
+        ratings = mapper.readValue(json,new TypeReference<List<Rating>>() {});
+        return ratings;
+    }
+
 
     public static String commentToJson(Comment comment){
         String retVal = "";

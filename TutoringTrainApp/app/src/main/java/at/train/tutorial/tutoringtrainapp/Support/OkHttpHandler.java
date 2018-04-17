@@ -281,4 +281,42 @@ public class OkHttpHandler {
             e.printStackTrace();
         }
     }
+
+    public static void loadRatings(final okHttpHandlerListener listener,User user) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        String urlExtension = URLExtension.USER_RATING;
+
+
+        urlExtension = urlExtension.concat("/" + user.getUsername());
+
+        try{
+            HttpUrl.Builder urlBuilder = HttpUrl.parse(Database.getInstance().getUrl() + urlExtension).newBuilder();
+            String url = urlBuilder.build().toString();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            if ((sessionKey = Database.getInstance().getSessionKey()) != null) {
+                request = request.newBuilder().addHeader("Authorization", "Bearer " + sessionKey).build();
+            }
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    listener.onFailure(e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    listener.onSuccess(response);
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 }

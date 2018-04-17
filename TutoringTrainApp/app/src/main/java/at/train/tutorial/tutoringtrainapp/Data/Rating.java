@@ -7,12 +7,15 @@ import java.util.Date;
 
 public class Rating {
     @JsonIgnoreProperties
-    @JsonView({Views.Rating.Out.create.class})
+    @JsonView({Views.Rating.Out.create.class,Views.Rating.In.load.class})
     private String text;
-    @JsonView({Views.Rating.Out.create.class})
+    @JsonView({Views.Rating.Out.create.class,Views.Rating.In.load.class})
     private int stars;
+    @JsonView({Views.Rating.In.load.class})
     private Date writtenon;
+    @JsonView({Views.Rating.In.load.class})
     private User ratedUser;
+    @JsonView({Views.Rating.In.load.class})
     private User ratingUser;
 
     public Rating(){
